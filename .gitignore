@@ -3,6 +3,9 @@ __pycache__/
 *.pyc
 .venv/
 venv/
-signals_log.csv
+signals_log*.csv
 charts/*
 !charts/.gitkeep
+_old/
+upload-to-github/
+.DS_Store

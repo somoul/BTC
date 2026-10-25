@@ -1103,7 +1103,9 @@ function renderForecast(f) {
 }
 setInterval(pollForecast, 60000);
 
-let browserMode = false;   // true = the Python server is old, compute here instead
+// GitHub Pages (or any static host) has no Python server → do everything in the browser
+const HOSTED = !/^(localhost|127\.0\.0\.1|\[::1\]|\d+\.\d+\.\d+\.\d+)$/.test(location.hostname) || location.protocol === "file:";
+let browserMode = HOSTED;  // true = no (new) Python server, compute here instead
 
 function applyData(data) {
   const first = !payload;
@@ -1322,7 +1324,9 @@ function checkLevels(price) {
 async function pollHistory() {
   if (browserMode) {
     $("histSummary").innerHTML = "";
-    $("histBody").innerHTML = `<tr><td colspan="6" class="skeleton">ប្រវត្តិ ត្រូវ/ខុស ត្រូវការ server ថ្មី — ចុចពីរដងលើ start.command ម្តង ដើម្បីចាប់ផ្តើមកត់ទុក</td></tr>`;
+    $("histBody").innerHTML = HOSTED
+      ? `<tr><td colspan="6" class="skeleton">ប្រវត្តិ ត្រូវ/ខុស មានតែពេលដំណើរការលើកុំព្យូទ័រ (python app.py) ព្រោះត្រូវកត់ទុកទិន្នន័យ</td></tr>`
+      : `<tr><td colspan="6" class="skeleton">ប្រវត្តិ ត្រូវ/ខុស ត្រូវការ server ថ្មី — ចុចពីរដងលើ start.command ម្តង ដើម្បីចាប់ផ្តើមកត់ទុក</td></tr>`;
     $("histNote").textContent = "";
     return;
   }
@@ -1425,7 +1429,7 @@ $("coinForm").addEventListener("submit", e => {
   switchCoin(v);
 });
 
-fetch("/api/symbols").then(r => r.json()).then(j => {
+(HOSTED ? Promise.reject() : fetch("/api/symbols")).then(r => r.json()).then(j => {
   presets = j.presets;
   if (!urlSym && !savedSym && j.default) symbol = j.default;
   paintCoin();
@@ -1434,6 +1438,7 @@ fetch("/api/symbols").then(r => r.json()).then(j => {
 // reload the page by itself when the dashboard is updated
 let pageVersion = null;
 async function checkVersion() {
+  if (HOSTED) return;
   try {
     const v = (await fetch("/api/version", { cache: "no-store" }).then(r => r.json())).version;
     if (pageVersion && v && v !== pageVersion) location.reload();

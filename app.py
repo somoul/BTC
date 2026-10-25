@@ -42,7 +42,7 @@ SYMBOL_RE = re.compile(r"^[A-Z0-9]{2,15}(USDT|USDC|FDUSD|BTC|ETH)$")
 
 LOG_HEADER = ["time", "price", "verdict", "confidence", "overall", "score", "5m", "15m", "1h", "4h", "1d"]
 
-app = Flask(__name__, static_folder=os.path.join(HERE, "static"))
+app = Flask(__name__, static_folder=None)
 
 # ស្ថានភាពរបស់កាក់នីមួយៗ
 coins = {}
@@ -141,7 +141,7 @@ def get_symbol():
 
 @app.route("/")
 def index():
-    return send_from_directory(app.static_folder, "index.html")
+    return send_from_directory(HERE, "index.html")
 
 
 @app.route("/api/symbols")
@@ -226,7 +226,7 @@ def api_history():
 def page_version():
     """ពេលកូដ ឬទំព័រត្រូវបានកែ → ទំព័រក្នុង browser reload ដោយខ្លួនឯង"""
     files = [os.path.join(HERE, f) for f in ("app.py", "analysis.py", "btc_monitor.py")]
-    files.append(os.path.join(HERE, "static", "index.html"))
+    files.append(os.path.join(HERE, "index.html"))
     return str(int(max(os.path.getmtime(f) for f in files if os.path.exists(f))))
 
 

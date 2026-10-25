@@ -11,7 +11,7 @@ btc-chart-bot/
 ├── btc_monitor.py     # ទាញតម្លៃពី Binance ជាប្រចាំ ហើយវាយតម្លៃ ឡើង/ចុះ
 ├── analysis.py        # សញ្ញា BUY/SELL, Support/Resistance, គោលដៅ, Stop-loss
 ├── app.py             # Web server
-├── static/index.html  # Dashboard UI
+├── index.html         # Dashboard UI (ដំណើរការលើ GitHub Pages ក៏បាន)
 ├── start.command      # ចុចពីរដងនៅលើ Mac ដើម្បីបើក
 ├── requirements.txt   # library ដែលត្រូវការ
 ├── .env.example       # គំរូសម្រាប់ API key
@@ -54,6 +54,14 @@ python btc_chart_bot.py charts/chart.png 4H, RSI 14
 ```bash
 python btc_chart_bot.py
 ```
+
+## 🌐 បើកតាម Internet (GitHub Pages)
+
+`index.html` អាចដំណើរការដោយខ្លួនឯងនៅក្នុង browser ដោយទាញទិន្នន័យពី Binance ផ្ទាល់ ដូច្នេះអាចបង្ហោះលើ GitHub Pages ដោយឥតគិតថ្លៃ។
+Repo → **Settings › Pages** → Source: **Deploy from a branch** → Branch: **main** / **(root)** → Save។
+បន្ទាប់ពី 1–2 នាទី បើក `https://<ឈ្មោះ-github>.github.io/<ឈ្មោះ-repo>/`
+
+ពេលបើកតាម GitHub Pages គ្រប់យ៉ាងដំណើរការ លើកលែងតែ **ប្រវត្តិ ត្រូវ/ខុស** ដែលត្រូវការ `python app.py` នៅលើកុំព្យូទ័រ។
 
 ## 🖥️ Web Dashboard (ស្រួលបំផុត)
 
@@ -116,4 +124,3 @@ python btc_monitor.py --backtest         # សាកល្បងលើទិន�
 - AI អាចអានបានតែអ្វីដែលមើលឃើញក្នុងរូបប៉ុណ្ណោះ វាមិនអាចទាយតម្លៃអនាគតបានត្រឹមត្រូវទេ។
 - នេះមិនមែនជាដំបូន្មានហិរញ្ញវត្ថុទេ។ សូមប្រើជាជំនួយក្នុងការគិតតែប៉ុណ្ណោះ។
 - ការហៅ API នីមួយៗមានថ្លៃ។ កុំចែករំលែកឯកសារ `.env` ឬ API key ជាមួយអ្នកណាម្នាក់។
-# BTC
