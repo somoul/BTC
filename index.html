@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ស្កេន</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="theme-color" content="#0b0d10">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ស្កេន">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -132,6 +139,321 @@
   .decide .steps li { padding: 8px 12px; }
   .decide .steps .px { font-size: 17px; }
   .disclaimer { margin: 10px 4px 16px; font-size: 12px; color: var(--muted); }
+  .tested { font-size: 11px; font-weight: 600; color: var(--up); background: rgba(46,204,143,.12); border: 1px solid rgba(46,204,143,.35); border-radius: 99px; padding: 1px 8px; margin-left: 4px; white-space: nowrap; }
+  .v-stats { font-size: 13px; color: var(--muted); background: rgba(0,0,0,.2); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; }
+  .v-stats b { font-family: var(--mono); }
+  .v-stats .bad { color: var(--down); } .v-stats .good { color: var(--up); }
+  .s-warn { font-size: 12px; color: var(--hold); background: rgba(242,181,74,.08); border: 1px solid rgba(242,181,74,.3); border-radius: 8px; padding: 7px 10px; }
+  .decide .verdict.scalp { opacity: .92; }
+
+  /* ---------- 🔍 scanner ---------- */
+  .scan-t { width: 100%; border-collapse: collapse; font-size: 14px; white-space: nowrap; }
+  .scan-t th { text-align: left; color: var(--muted); font-weight: 500; font-size: 12px; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  .scan-t td { padding: 10px; border-bottom: 1px solid #1a1f26; }
+  .scan-t tbody tr { cursor: pointer; transition: background .15s; }
+  .scan-t tbody tr:hover { background: var(--panel-2); }
+  .scan-t .coinc { display: flex; align-items: center; gap: 8px; font-weight: 700; }
+  .scan-t .coinc i { font-style: normal; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-family: var(--mono); font-size: 11px; font-weight: 800; color: #14110a; }
+  .scan-t .num { font-family: var(--mono); }
+  .pill { display: inline-block; font-weight: 700; font-size: 13px; padding: 3px 10px; border-radius: 99px; }
+  .pill.BUY { color: var(--up); background: rgba(46,204,143,.14); } .pill.SELL { color: var(--down); background: rgba(255,93,108,.14); }
+  .pill.WAIT { color: var(--hold); background: rgba(242,181,74,.12); }
+  .pill.fresh::after { content: " 🆕"; }
+  .scan-t .go { font: inherit; font-size: 12px; color: var(--text); background: var(--panel-2); border: 1px solid var(--line); border-radius: 99px; padding: 3px 10px; cursor: pointer; }
+
+  /* ---------- 🌡 market mood ---------- */
+  .mood {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin-bottom: 16px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden;
+  }
+  .md { padding: 14px 16px; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .md + .md { border-left: 1px solid var(--line); }
+  .md-l { font-size: 12px; color: var(--muted); font-weight: 600; }
+  .md-big { font-size: 26px; font-weight: 700; }
+  .md-v { font-size: 15px; font-weight: 700; }
+  .md-s { font-size: 12px; color: var(--muted); }
+  .md-gauge {
+    --v: 50; position: relative; width: 120px; height: 60px; border-radius: 120px 120px 0 0; overflow: hidden; margin: 2px 0;
+    background: conic-gradient(from -90deg at 50% 100%, #ff5d6c 0deg, #f2b54a 60deg, #8a94a3 90deg, #9bd16a 120deg, #2ecc8f 180deg, transparent 180deg);
+  }
+  .md-gauge::before { content: ""; position: absolute; left: 18px; right: 18px; top: 18px; bottom: -42px; border-radius: 50%; background: var(--panel); }
+  .md-gauge::after {
+    content: ""; position: absolute; left: 50%; bottom: 0; width: 3px; height: 54px; background: var(--text); border-radius: 3px;
+    transform-origin: 50% 100%; transform: translateX(-50%) rotate(calc(var(--v) * 1.8deg - 90deg)); transition: transform .8s;
+  }
+  .md-gauge span { position: absolute; left: 50%; transform: translateX(-50%); bottom: 0; width: 40px; background: var(--panel); border-radius: 8px 8px 0 0; text-align: center; font-family: var(--mono); font-weight: 700; font-size: 16px; z-index: 1; }
+  .ob-bar { position: relative; height: 12px; border-radius: 99px; background: var(--down); overflow: hidden; margin-top: 8px; }
+  .ob-bar i { position: absolute; inset: 0 auto 0 0; width: 50%; background: var(--up); transition: width .6s; }
+  .ob-bar::after { content: ""; position: absolute; left: 50%; top: -2px; bottom: -2px; width: 2px; background: var(--bg); }
+  .ob-l { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 12px; }
+  .md-note { grid-column: 1 / -1; font-size: 11px; color: var(--muted); padding: 7px 16px; border-top: 1px solid var(--line); background: rgba(0,0,0,.15); }
+  @media (max-width: 900px) {
+    .mood { grid-template-columns: 1fr 1fr; }
+    .md:nth-child(3) { border-left: 0; }
+    .md:nth-child(n+3) { border-top: 1px solid var(--line); }
+  }
+
+  /* ---------- 🚦 entry times ---------- */
+  .entry {
+    display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr) minmax(0, 1.6fr); margin-bottom: 16px;
+    background: var(--panel); border: 2px solid var(--line); border-radius: 18px; overflow: hidden;
+  }
+  .entry > div { padding: 16px 18px; min-width: 0; }
+  .entry > div + div { border-left: 1px solid var(--line); }
+  .entry.go { border-color: var(--up); box-shadow: 0 0 0 5px rgba(46,204,143,.08); }
+  .entry.go .en-now { background: linear-gradient(135deg, rgba(46,204,143,.2), transparent 75%); }
+  .entry.late .en-now { background: linear-gradient(135deg, rgba(242,181,74,.16), transparent 75%); }
+  .entry.stop .en-now { background: linear-gradient(135deg, rgba(255,93,108,.16), transparent 75%); }
+  .en-label { font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 6px; }
+  .en-state { font-size: 24px; font-weight: 700; line-height: 1.3; }
+  .entry.go .en-state { color: var(--up); } .entry.late .en-state { color: var(--hold); }
+  .entry.stop .en-state { color: var(--down); } .entry.wait .en-state { color: var(--text); }
+  .en-sub { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .en-count { font-size: 30px; font-weight: 700; }
+  .en-times { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+  .en-t {
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 8px 4px; text-align: center;
+    display: flex; flex-direction: column; gap: 1px; min-width: 0;
+  }
+  .en-t b { font-family: var(--mono); font-size: 16px; }
+  .en-t small { font-size: 11px; color: var(--muted); }
+  .en-t.next { border-color: var(--btc); background: rgba(247,147,26,.12); }
+  .en-t.next small { color: var(--btc); font-weight: 600; }
+  .en-t.hot b::after { content: " ⚡"; font-size: 11px; }
+  @media (max-width: 980px) {
+    .entry { grid-template-columns: 1fr 1fr; }
+    .entry .en-sched { grid-column: 1 / -1; border-left: 0; border-top: 1px solid var(--line); }
+  }
+  @media (max-width: 560px) {
+    .entry { grid-template-columns: 1fr; }
+    .entry > div + div { border-left: 0; border-top: 1px solid var(--line); }
+    .en-times { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+
+  /* ---------- 🤖 AI chat ---------- */
+  .ai-fab {
+    position: fixed; left: 16px; bottom: 16px; z-index: 60; display: flex; align-items: center; gap: 6px;
+    font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; color: #120a02;
+    background: linear-gradient(135deg, #f7931a, #f2b54a); border: 0; border-radius: 99px; padding: 11px 18px;
+    box-shadow: 0 10px 30px -8px rgba(247,147,26,.7);
+  }
+  .ai-fab:hover { transform: translateY(-1px); }
+  .ai {
+    position: fixed; left: 16px; bottom: 16px; z-index: 61; width: min(420px, calc(100vw - 32px)); height: min(640px, calc(100vh - 32px));
+    display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--line); border-radius: 18px;
+    box-shadow: 0 24px 60px -12px rgba(0,0,0,.7); overflow: hidden;
+  }
+  .ai[hidden] { display: none; }
+  .ai-h { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--line); background: var(--panel-2); }
+  .ai-h small { display: block; font-size: 11px; color: var(--muted); }
+  .ai-hb { display: flex; gap: 4px; }
+  .ai-hb button { font-size: 14px; background: none; border: 0; color: var(--muted); cursor: pointer; padding: 4px 6px; border-radius: 6px; }
+  .ai-hb button:hover { background: var(--line); color: var(--text); }
+  .ai-body { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .ai-m { max-width: 88%; padding: 9px 12px; border-radius: 14px; font-size: 14px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; }
+  .ai-m.u { align-self: flex-end; background: rgba(247,147,26,.16); border: 1px solid rgba(247,147,26,.35); border-bottom-right-radius: 4px; }
+  .ai-m.a { align-self: flex-start; background: var(--panel-2); border: 1px solid var(--line); border-bottom-left-radius: 4px; }
+  .ai-m.e { align-self: center; color: var(--down); background: rgba(255,93,108,.08); font-size: 13px; }
+  .ai-m.typing::after { content: "▍"; animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .ai-hello { color: var(--muted); font-size: 13px; text-align: center; margin: 8px 0; }
+  .ai-setup { padding: 12px 14px; border-top: 1px solid var(--line); font-size: 13px; }
+  .ai-setup p { margin: 6px 0; color: var(--muted); }
+  .ai-setup a { color: var(--btc); }
+  .ai-setup code { font-family: var(--mono); font-size: 11px; background: var(--panel-2); padding: 1px 4px; border-radius: 4px; }
+  .ai-setup form { display: flex; gap: 6px; margin: 8px 0; }
+  .ai-setup input { flex: 1; min-width: 0; font: inherit; font-family: var(--mono); font-size: 13px; color: var(--text); background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px; }
+  .ai-setup button { font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; background: var(--btc); color: #120a02; border: 0; border-radius: 8px; padding: 0 12px; }
+  .ai-tip { font-size: 11px; }
+  .ai-steps { margin: 6px 0 4px; padding-left: 20px; color: var(--muted); }
+  .ai-steps li { margin: 3px 0; }
+  .ai-prov { font-size: 10px; color: var(--muted); margin-top: 4px; }
+  .ai-chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 8px 12px 0; }
+  .ai-chips button { flex: 0 0 auto; font: inherit; font-size: 12px; cursor: pointer; color: var(--text); background: var(--panel-2); border: 1px solid var(--line); border-radius: 99px; padding: 5px 11px; }
+  .ai-chips button:hover { border-color: var(--btc); }
+  .ai-in { display: flex; gap: 8px; padding: 10px 12px 12px; align-items: flex-end; }
+  .ai-in textarea { flex: 1; resize: none; max-height: 120px; font: inherit; font-size: 14px; color: var(--text); background: var(--panel-2); border: 1px solid var(--line); border-radius: 12px; padding: 9px 12px; }
+  .ai-in textarea:focus { outline: none; border-color: var(--btc); }
+  .ai-in button { width: 40px; height: 40px; flex: 0 0 auto; font-size: 16px; cursor: pointer; color: #120a02; background: var(--btc); border: 0; border-radius: 50%; }
+  .ai-in button:disabled { background: var(--line); color: var(--muted); cursor: wait; }
+  @media (max-width: 560px) {
+    .ai { left: 0; right: 0; bottom: 0; width: 100%; height: 88vh; border-radius: 18px 18px 0 0; }
+    .ai-fab { left: 12px; bottom: 12px; padding: 10px 14px; }
+  }
+
+  /* ---------- page tabs ---------- */
+  .stick {
+    position: sticky; top: 0; z-index: 30; margin: -6px -16px 16px; padding: 10px 16px 8px;
+    background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .pages { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+
+  /* ---------- 🕯️ candle clocks ---------- */
+  .cbar { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin-top: 8px; align-items: stretch; }
+  .cbar::-webkit-scrollbar { display: none; }
+  .cbar .cl-t { flex: 0 0 auto; align-self: center; font-size: 12px; color: var(--muted); margin-right: 2px; }
+  .ck {
+    flex: 1 0 104px; position: relative; overflow: hidden; display: flex; align-items: center; gap: 8px;
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 5px 8px 7px 10px; cursor: default;
+  }
+  .ck .tf { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--muted); }
+  .ck .left { font-family: var(--mono); font-size: 14px; font-weight: 700; flex: 1; }
+  .ck .bell { font-size: 13px; background: none; border: 0; cursor: pointer; padding: 0; opacity: .35; filter: grayscale(1); }
+  .ck .bell.on { opacity: 1; filter: none; }
+  .ck .bar { position: absolute; left: 0; bottom: 0; height: 3px; background: var(--btc); opacity: .7; transition: width 1s linear; }
+  .ck.soon { border-color: rgba(247,147,26,.6); }
+  .ck.soon .left { color: var(--btc); }
+  .ck.new { animation: cknew 1.2s ease-in-out 6; border-color: var(--text); }
+  .ck.new .left { color: var(--text); }
+  .ck.new.up { background: rgba(46,204,143,.18); } .ck.new.dn { background: rgba(255,93,108,.18); }
+  .ck .res { font-family: var(--mono); font-size: 11px; font-weight: 700; }
+  @keyframes cknew { 50% { box-shadow: 0 0 0 4px rgba(255,255,255,.18); } }
+  @media (max-width: 560px) { .ck { flex-basis: 92px; } .cbar .cl-t { display: none; } }
+  .pages::-webkit-scrollbar { display: none; }
+  .pages button {
+    flex: 0 0 auto; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--muted);
+    background: transparent; border: 1px solid transparent; border-radius: 99px; padding: 7px 16px;
+  }
+  .pages button:hover { color: var(--text); }
+  .pages button.active { color: var(--text); background: var(--panel-2); border-color: var(--line); }
+  .page { display: none; }
+  .page.on { display: block; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(4px); } }
+
+  /* ---------- my trade ---------- */
+  .trade { margin-top: 16px; }
+  .tr-coin { font-size: 12px; color: var(--muted); }
+  .tr-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 18px; }
+  .tr-hint { font-weight: 400; color: var(--muted); margin-left: 4px; }
+  .tr-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .tr-inputs label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+  .tr-inputs input, .tr-pos input {
+    font: inherit; font-family: var(--mono); font-size: 16px; color: var(--text); width: 100%;
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 9px; padding: 8px 10px;
+  }
+  .tr-inputs input:focus, .tr-pos input:focus { outline: none; border-color: var(--btc); }
+  .tr-out { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .tr-out div { background: var(--panel-2); border-radius: 10px; padding: 9px 12px; }
+  .tr-out small { display: block; font-size: 12px; color: var(--muted); }
+  .tr-out b { font-family: var(--mono); font-size: 17px; }
+  .tr-out .wide { grid-column: 1 / -1; font-size: 13px; color: var(--muted); background: transparent; padding: 0 2px; }
+  .tr-btn {
+    width: 100%; font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; color: #06130d;
+    background: var(--up); border: 0; border-radius: 11px; padding: 11px 14px;
+  }
+  .tr-btn:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
+  .tr-btn.ghost { background: var(--panel-2); color: var(--text); border: 1px solid var(--line); }
+  .tr-btn.sell { background: var(--down); color: #1a0508; }
+  .tr-pos { background: var(--panel-2); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+  .tr-empty { color: var(--muted); font-size: 14px; display: grid; place-items: center; text-align: center; min-height: 160px; }
+  .tr-pnl { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .tr-pnl b { font-family: var(--mono); font-size: 32px; }
+  .tr-pnl span { font-family: var(--mono); font-size: 15px; }
+  .tr-status { font-weight: 700; font-size: 15px; padding: 8px 12px; border-radius: 10px; background: rgba(0,0,0,.25); }
+  .tr-status.win { color: var(--up); background: rgba(46,204,143,.12); }
+  .tr-status.loss { color: var(--down); background: rgba(255,93,108,.12); }
+  .tr-status.time { color: var(--hold); background: rgba(242,181,74,.12); }
+  .tr-track { position: relative; height: 10px; border-radius: 99px; background: linear-gradient(90deg, var(--down), #3a3f47 30%, #3a3f47 70%, var(--up)); }
+  .tr-track i { position: absolute; top: 50%; width: 16px; height: 16px; border-radius: 50%; background: var(--text); border: 3px solid var(--bg); transform: translate(-50%, -50%); transition: left .5s; }
+  .tr-track-l { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .tr-meta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .tr-meta div { background: rgba(0,0,0,.2); border-radius: 9px; padding: 7px 10px; }
+  .tr-meta small { display: block; font-size: 11px; color: var(--muted); }
+  .tr-meta b { font-family: var(--mono); font-size: 14px; }
+  .tr-actions { display: flex; gap: 8px; }
+  .tr-actions button { flex: 1; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 9px; padding: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--text); }
+  .tr-actions .sell { background: var(--down); color: #1a0508; border-color: var(--down); }
+  .tr-hist { margin-top: 14px; }
+  .tr-hist table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .tr-hist th { text-align: left; color: var(--muted); font-weight: 500; padding: 5px 8px; border-bottom: 1px solid var(--line); }
+  .tr-hist td { padding: 6px 8px; border-bottom: 1px solid #1a1f26; font-family: var(--mono); }
+  .tr-hist .sum { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  .tr-hist button { font: inherit; font-size: 11px; color: var(--muted); background: none; border: 0; cursor: pointer; }
+  @media (max-width: 860px) { .tr-grid { grid-template-columns: 1fr; } }
+
+  /* ---------- equity curve ---------- */
+  .eq-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+  .eq-tiles div { background: var(--panel-2); border-radius: 10px; padding: 10px 12px; }
+  .eq-tiles small { display: block; color: var(--muted); font-size: 12px; }
+  .eq-tiles b { font-family: var(--mono); font-size: 20px; }
+  #eqChart { height: 300px; width: 100%; }
+  .eq-legend { margin-top: 8px; }
+  @media (max-width: 760px) { .eq-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } #eqChart { height: 240px; } }
+  .page[data-page="test"] > section + section, .page[data-page="test"] > section + .card { margin-top: 16px; }
+
+  /* ---------- best hours ---------- */
+  .hrs {
+    display: grid; grid-template-columns: 230px minmax(0, 1fr); margin-bottom: 16px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden;
+  }
+  .hrs-now { padding: 16px 18px; border-right: 1px solid var(--line); display: flex; flex-direction: column; justify-content: center; gap: 4px; }
+  .hrs-now.good { background: linear-gradient(135deg, rgba(46,204,143,.16), transparent 70%); }
+  .hrs-now.bad { background: linear-gradient(135deg, rgba(255,93,108,.16), transparent 70%); }
+  .hrs-clock { font-size: 30px; font-weight: 700; }
+  .hrs-state { font-size: 17px; font-weight: 700; }
+  .hrs-now.good .hrs-state { color: var(--up); } .hrs-now.bad .hrs-state { color: var(--down); } .hrs-now.normal .hrs-state { color: var(--hold); }
+  .hrs-next { font-size: 13px; color: var(--muted); }
+  .hrs-body { padding: 14px 16px; min-width: 0; }
+  .hrs-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; margin-bottom: 10px; }
+  .hrs-title { font-size: 14px; font-weight: 600; }
+  .hrs-tabs button { font-family: inherit; font-size: 13px; }
+  .hrs-title small { color: var(--muted); font-weight: 400; margin-left: 6px; }
+  .hrs-strip { display: grid; grid-template-columns: repeat(24, minmax(0, 1fr)); gap: 3px; }
+  .hc {
+    position: relative; border-radius: 7px; padding: 6px 0 5px; text-align: center; background: var(--panel-2);
+    border: 1px solid transparent; display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0;
+  }
+  .hc.good { background: rgba(46,204,143,.22); }
+  .hc.bad { background: rgba(255,93,108,.18); }
+  .hc.now { border-color: var(--text); box-shadow: 0 0 0 2px rgba(255,255,255,.12); }
+  .hc .h { font-family: var(--mono); font-size: 12px; font-weight: 700; }
+  .hc .w { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+  .hc.good .w { color: var(--up); } .hc.bad .w { color: var(--down); }
+  .hc .m { display: flex; gap: 2px; }
+  .hc .m i { width: 4px; height: 4px; border-radius: 1px; background: var(--line); }
+  .hc .m i.g { background: var(--up); } .hc .m i.b { background: var(--down); }
+  .hrs-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 10px; font-size: 12px; color: var(--muted); }
+  .hrs-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+  .hrs-legend i.g { background: rgba(46,204,143,.6); } .hrs-legend i.b { background: rgba(255,93,108,.55); } .hrs-legend i.n { background: var(--line); }
+  .s-hour { font-size: 13px; font-weight: 600; }
+  .s-hour.good { color: var(--up); } .s-hour.bad { color: var(--down); } .s-hour.normal { color: var(--muted); }
+  @media (max-width: 900px) {
+    .hrs { grid-template-columns: 1fr; }
+    .hrs-now { border-right: 0; border-bottom: 1px solid var(--line); }
+    .hrs-strip { grid-template-columns: repeat(12, minmax(0, 1fr)); row-gap: 5px; }
+  }
+
+  /* ---------- backtest ---------- */
+  .bt { margin-top: 16px; }
+  .bt-run {
+    font: inherit; font-size: 13px; cursor: pointer; color: var(--text);
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 99px; padding: 4px 12px;
+  }
+  .bt-run:disabled { opacity: .5; cursor: wait; }
+  .bt-verdict { font-size: 17px; font-weight: 600; padding: 12px 14px; border-radius: 10px; background: var(--panel-2); border-left: 4px solid var(--muted); }
+  .bt-verdict.bad { border-left-color: var(--down); }
+  .bt-verdict.good { border-left-color: var(--up); }
+  .bt-verdict.meh { border-left-color: var(--hold); }
+  .bt-verdict small { display: block; font-size: 13px; font-weight: 400; color: var(--muted); margin-top: 4px; }
+  .bt-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 12px 0 16px; }
+  .bt-tiles div { background: var(--panel-2); border-radius: 10px; padding: 10px 12px; }
+  .bt-tiles small { display: block; color: var(--muted); font-size: 12px; }
+  .bt-tiles b { font-family: var(--mono); font-size: 20px; }
+  .bt-sub { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .bt-hours { display: grid; grid-template-columns: repeat(24, minmax(0, 1fr)); gap: 3px; align-items: end; height: 150px; }
+  .bt-h { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; min-width: 0; }
+  .bt-h .pc { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+  .bt-h .bar { width: 100%; border-radius: 4px 4px 0 0; background: var(--line); min-height: 2px; }
+  .bt-h .bar.up { background: var(--up); } .bt-h .bar.dn { background: var(--down); }
+  .bt-h .hr { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 3px; }
+  .bt-h .vol { font-size: 10px; height: 14px; }
+  .bt-h.hot .hr { color: var(--btc); font-weight: 700; }
+  @media (max-width: 760px) {
+    .bt-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .bt-hours { grid-template-columns: repeat(12, minmax(0, 1fr)); height: auto; row-gap: 10px; }
+    .bt-h { height: 120px; }
+  }
 
   /* ---------- forecast ---------- */
   .fc { margin-top: 16px; }
@@ -221,6 +543,27 @@
   }
   .tabs button.active { background: var(--line); color: var(--text); }
   #chart { height: 440px; width: 100%; }
+  .ind-tg { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: -4px 0 10px; font-size: 12px; color: var(--muted); }
+  .ind-tg button {
+    font: inherit; font-family: var(--mono); font-size: 12px; cursor: pointer; color: var(--muted);
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 99px; padding: 3px 10px;
+  }
+  .ind-tg button.on { color: var(--text); border-color: var(--btc); background: rgba(247,147,26,.12); }
+  .pa-form { display: flex; gap: 6px; }
+  .pa-form input { flex: 1; min-width: 0; font: inherit; font-family: var(--mono); font-size: 15px; color: var(--text); background: var(--panel-2); border: 1px solid var(--line); border-radius: 9px; padding: 8px 10px; }
+  .pa-form input:focus { outline: none; border-color: var(--btc); }
+  .pa-form button { font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; color: #1a1205; background: var(--btc); border: 0; border-radius: 9px; padding: 0 12px; }
+  .pa-quick { display: flex; flex-wrap: wrap; gap: 5px; margin: 8px 0; }
+  .pa-quick button { font: inherit; font-family: var(--mono); font-size: 11px; cursor: pointer; color: var(--muted); background: var(--panel-2); border: 1px solid var(--line); border-radius: 99px; padding: 3px 9px; }
+  .pa-list { display: flex; flex-direction: column; gap: 5px; }
+  .pa-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; background: var(--panel-2); border-radius: 9px; padding: 7px 10px; font-size: 13px; }
+  .pa-item b { font-family: var(--mono); }
+  .pa-item button { font: inherit; font-size: 12px; color: var(--muted); background: none; border: 0; cursor: pointer; }
+  .subpane { display: none; position: relative; border-top: 1px solid var(--line); margin-top: 6px; padding-top: 4px; }
+  .subpane.on { display: block; }
+  .subpane > div { height: 120px; width: 100%; }
+  .sp-l { position: absolute; left: 6px; top: 6px; z-index: 2; font-family: var(--mono); font-size: 11px; color: var(--muted); pointer-events: none; }
+  .sp-l b { color: var(--text); }
   .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; font-size: 12px; color: var(--muted); }
   .legend i { display: inline-block; width: 14px; height: 2px; vertical-align: middle; margin-right: 6px; }
 
@@ -393,9 +736,131 @@
   </div>
   <div class="toasts" id="toasts"></div>
 
+  <button class="ai-fab" id="aiFab" aria-label="សួរ AI">🤖 <span>សួរ AI</span></button>
+  <section class="ai" id="aiPanel" aria-label="AI chat" hidden>
+    <header class="ai-h">
+      <div><b>🤖 ជំនួយការ AI</b><small id="aiSub">មើលទិន្នន័យ dashboard ឥឡូវ ហើយឆ្លើយជាភាសាខ្មែរ</small></div>
+      <div class="ai-hb"><button id="aiKeyBtn" title="ប្តូរ API key">🔑</button><button id="aiNew" title="ចាប់ផ្តើមថ្មី">🗑</button><button id="aiClose" title="បិទ">✕</button></div>
+    </header>
+    <div class="ai-body" id="aiBody"></div>
+    <div class="ai-setup" id="aiSetup" hidden>
+      <b>🆓 ប្រើ AI ឥតគិតថ្លៃ — យក key មួយពីកន្លែងណាមួយខាងក្រោម (ធ្វើតែម្តង · មិនត្រូវការកាត)</b>
+      <ol class="ai-steps">
+        <li><b>OpenRouter</b> ⭐ — <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">openrouter.ai/keys</a> · sign in ដោយ Google › <b>Create Key</b> (sk-or-…)</li>
+        <li><b>Groq</b> — <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a> · sign in › <b>Create API Key</b> (gsk_…)</li>
+        <li><b>Google Gemini</b> — <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> (AIza… ឬ AQ.… · key AQ. ខ្លះមិនទាន់ដំណើរការ)</li>
+      </ol>
+      <p style="margin:2px 0">បិទភ្ជាប់ key នៅទីនេះ — វាស្គាល់ប្រភេទ key ដោយខ្លួនឯង៖</p>
+      <form id="aiKeyForm" autocomplete="off"><input id="aiKey" type="text" spellcheck="false" autocapitalize="off" placeholder="បិទភ្ជាប់ key នៅទីនេះ (Cmd+V)" autocomplete="off"><button>រក្សាទុក</button></form>
+      <p class="ai-tip">Key រក្សាទុកតែក្នុង browser នេះ ហើយផ្ញើទៅ Google/Anthropic ដោយផ្ទាល់ប៉ុណ្ណោះ។ សេវាឥតគិតថ្លៃមានកំណត់ចំនួនសំណួរក្នុងមួយថ្ងៃ។ ចង់បានចម្លើយខ្មែរល្អបំផុត? ប្រើ Claude key (បង់លុយ ~1 សេន/សំណួរ)។</p>
+    </div>
+    <div class="ai-chips" id="aiChips"></div>
+    <form class="ai-in" id="aiForm" autocomplete="off">
+      <textarea id="aiText" rows="1" placeholder="សួរអ្វីក៏បាន ឧ. ឥឡូវគួរទិញ BTC ទេ?"></textarea>
+      <button id="aiSend" aria-label="ផ្ញើ">➤</button>
+    </form>
+  </section>
+
+  <div class="stick">
+  <nav class="pages" id="pages" aria-label="ទំព័រ">
+    <button data-page="home" class="active">🏠 សង្ខេប</button>
+    <button data-page="scan">🔍 ស្កេនកាក់</button>
+    <button data-page="chart">📈 ក្រាហ្វ</button>
+    <button data-page="forecast">📅 ព្យាករណ៍</button>
+    <button data-page="test">🔬 ភាពត្រឹមត្រូវ</button>
+  </nav>
+  <div class="cbar" id="cbar" aria-label="នាឡិកា candle"></div>
+  </div>
   <div class="banner" id="banner"></div>
+  <div class="page" data-page="home">
+  <section class="entry" id="entryCard">
+    <div class="en-now" id="enNow">
+      <div class="en-label">🚦 ឥឡូវអាចចូលលេងបានទេ?</div>
+      <div class="en-state" id="enState">…</div>
+      <div class="en-sub" id="enSub"></div>
+    </div>
+    <div class="en-next">
+      <div class="en-label">⏰ ពិនិត្យសញ្ញាបន្ទាប់</div>
+      <div class="en-count num" id="enCount">--:--:--</div>
+      <div class="en-sub" id="enAt"></div>
+    </div>
+    <div class="en-sched">
+      <div class="en-label">📅 ម៉ោងដែលអាចចូលលេងបាន (ម៉ោងកម្ពុជា)</div>
+      <div class="en-times" id="enTimes"></div>
+      <div class="en-sub" id="enHow">សញ្ញា 🎯 4 ម៉ោង ប្តូរបានតែពេល candle 4h បិទ — ពិនិត្យនៅម៉ោងទាំងនេះ ហើយចូលភ្លាមពេលមានសញ្ញាទិញ</div>
+      <div class="en-sub" id="en5m"></div>
+    </div>
+  </section>
+  <section class="mood" id="moodCard">
+    <div class="md">
+      <div class="md-l">😨 Fear & Greed (អារម្មណ៍ផ្សារ)</div>
+      <div class="md-gauge" id="fngGauge"><span id="fngVal">--</span></div>
+      <div class="md-v" id="fngTxt">…</div>
+      <div class="md-s" id="fngPrev"></div>
+    </div>
+    <div class="md">
+      <div class="md-l">👑 BTC Dominance</div>
+      <div class="md-big num" id="domVal">--</div>
+      <div class="md-s" id="domTxt"></div>
+    </div>
+    <div class="md">
+      <div class="md-l">🌍 ទំហំផ្សារ Crypto ទាំងមូល 24ម៉ោង</div>
+      <div class="md-big num" id="mcVal">--</div>
+      <div class="md-s" id="mcTxt"></div>
+    </div>
+    <div class="md">
+      <div class="md-l">⚖️ Order book <span id="obCoin"></span> (±1% ពីតម្លៃ)</div>
+      <div class="ob-bar"><i id="obBid"></i></div>
+      <div class="ob-l"><span class="c-BUY" id="obB">ទិញ --</span><span class="c-SELL" id="obA">លក់ --</span></div>
+      <div class="md-s" id="obTxt"></div>
+    </div>
+    <div class="md-note" id="moodNote">ព័ត៌មានបរិបទផ្សារ — មិនមែនជាសញ្ញាទិញ/លក់ដែលបានសាកល្បងទេ</div>
+  </section>
+
+  <section class="hrs" id="hrsCard">
+    <div class="hrs-now" id="hrsNow">
+      <div class="hrs-clock num" id="hrsClock">--:--</div>
+      <div class="hrs-state" id="hrsState">⏰ កំពុងរកម៉ោងល្អ…</div>
+      <div class="hrs-next" id="hrsNext">សាកល្បងលើទិន្នន័យ 90 ថ្ងៃ (~30 វិនាទី)</div>
+    </div>
+    <div class="hrs-body">
+      <div class="hrs-top">
+        <div class="hrs-title">⏰ ម៉ោងល្អសម្រាប់ជួញដូរ <small id="hrsSub">ម៉ោងកម្ពុជា</small></div>
+        <div class="tabs hrs-tabs" id="hrsTabs">
+          <button data-bt="5m">5 នាទី</button><button data-bt="15m">15 នាទី</button>
+          <button data-bt="30m">30 នាទី</button><button data-bt="1h">1 ម៉ោង</button>
+        </div>
+      </div>
+      <div class="hrs-strip" id="hrsStrip"></div>
+      <div class="hrs-legend">
+        <span><i class="g"></i>ម៉ោងល្អ (ត្រូវ ≥50% ហើយល្អ ≥2 ក្នុង 3 ខែ)</span>
+        <span><i class="b"></i>គួរជៀស</span><span><i class="n"></i>ធម្មតា</span>
+        <span>▪▪▪ = ខែទី 1 · 2 · 3</span>
+      </div>
+    </div>
+  </section>
 
   <div class="decide">
+    <section class="verdict WAIT" id="verdict">
+      <div class="v-main">
+        <div class="v-head">
+          <div class="v-label">🎯 សញ្ញាសំខាន់ · 4 ម៉ោង (Swing) <span class="tested">បានសាកល្បង 5 ឆ្នាំ</span></div>
+          <div class="v-action" id="vAction">…</div>
+          <div class="v-en num" id="vEn"></div>
+        </div>
+        <div class="v-meta">
+          <div class="s-clock">Candle 4h បិទក្នុង <b class="num" id="vClock">-:--:--</b></div>
+          <div class="v-conf" id="vConf"></div>
+        </div>
+      </div>
+      <div class="v-body">
+        <div class="v-headline" id="vHeadline">កំពុងទាញទិន្នន័យ 4 ម៉ោង…</div>
+        <ul class="v-reasons" id="vReasons"></ul>
+        <div class="v-plan" id="vPlan"></div>
+        <div class="v-stats" id="vStats"></div>
+      </div>
+    </section>
+
     <section class="verdict scalp WAIT" id="scalp" style="display:none">
       <div class="v-main">
         <div class="v-head">
@@ -406,6 +871,7 @@
         <div class="v-meta">
           <div class="s-clock">Candle បិទក្នុង <b class="num" id="sClock">-:--</b></div>
           <div class="s-trend" id="sTrend"></div>
+          <div class="s-hour" id="sHour"></div>
         </div>
       </div>
       <div class="v-body">
@@ -414,42 +880,39 @@
         <div class="s-why" id="sWhy"></div>
       </div>
     </section>
-
-    <section class="verdict WAIT" id="verdict">
-      <div class="v-main">
-        <div class="v-head">
-          <div class="v-label">🧭 និន្នាការរួម · គ្រប់ timeframe</div>
-          <div class="v-action" id="vAction">…</div>
-          <div class="v-en num" id="vEn"></div>
-        </div>
-        <div class="v-meta">
-          <div class="v-conf" id="vConf"></div>
-        </div>
-      </div>
-      <div class="v-body">
-        <div class="v-headline" id="vHeadline">កំពុងវិភាគគ្រប់ timeframe…</div>
-        <ul class="v-reasons" id="vReasons"></ul>
-        <div class="v-plan" id="vPlan"></div>
-      </div>
-    </section>
   </div>
-  <section class="card fc" id="fcCard">
-    <h2><span>📅 ការព្យាករណ៍ពេលខាងមុខ — ឡើង ឬចុះ?</span><span class="fc-upd num" id="fcUpd"></span></h2>
-    <div class="fc-grid">
-      <div>
-        <div class="fc-sub">ម៉ោងខាងមុខ</div>
-        <div class="fc-list" id="fcHours"><div class="skeleton">កំពុងគណនា…</div></div>
+  <section class="card trade" id="tradeCard">
+    <h2><span>💼 Trade របស់ខ្ញុំ</span><span class="tr-coin" id="trCoin"></span></h2>
+    <div class="tr-grid">
+      <div class="tr-calc">
+        <div class="fc-sub">🧮 គួរទិញប៉ុន្មាន? <span class="tr-hint">តាមសញ្ញា 🎯 4 ម៉ោង</span></div>
+        <div class="tr-inputs">
+          <label>ទុនសរុប ($)<input id="trCap" type="number" inputmode="decimal" min="0" step="10" value="1000"></label>
+          <label>ហ៊ានខាតក្នុង 1 ដង (%)<input id="trRisk" type="number" inputmode="decimal" min="0.1" max="10" step="0.1" value="1"></label>
+        </div>
+        <div class="tr-out" id="trOut"></div>
+        <button class="tr-btn" id="trOpen">✅ ខ្ញុំបានទិញតាមនេះ — ចាប់ផ្តើមតាមដាន</button>
       </div>
-      <div>
-        <div class="fc-sub">7 ថ្ងៃខាងមុខ</div>
-        <div class="fc-cal" id="fcDays"></div>
-      </div>
+      <div class="tr-pos" id="trPos"></div>
     </div>
-    <p class="fc-note" id="fcNote"></p>
+    <div class="tr-hist" id="trHist"></div>
   </section>
+  </div>
 
-  <p class="disclaimer">⚠️ សញ្ញាគណនាដោយកម្មវិធី មិនមែនជាដំបូន្មានហិរញ្ញវត្ថុទេ ហើយអាចខុស។ ចាំឱ្យ candle បិទសិនមុនចូល · កំណត់ Stop-loss ជានិច្ច · "លក់" លើ Spot = លក់កាក់ដែលអ្នកមាន (មិនមែន short) · កុំប្រើលុយលើសពីអ្វីដែលអ្នកអាចបាត់បង់បាន។</p>
+  <div class="page" data-page="scan">
+  <section class="card scan">
+    <h2><span>🔍 ស្កេនកាក់ទាំងអស់ — កាក់ណាមានសញ្ញា 🎯 4 ម៉ោង ឥឡូវ?</span><button class="bt-run" id="scanRun">↻ ស្កេនម្តងទៀត</button></h2>
+    <div class="hist-wrap">
+      <table class="scan-t">
+        <thead><tr><th>កាក់</th><th>តម្លៃ</th><th>24ម៉ោង</th><th>សញ្ញា 4h</th><th>ពិន្ទុ</th><th>ចាប់ពី</th><th>5 ឆ្នាំ (ទិញ)</th><th></th></tr></thead>
+        <tbody id="scanBody"><tr><td colspan="8" class="skeleton">កំពុងស្កេន…</td></tr></tbody>
+      </table>
+    </div>
+    <p class="fc-note" id="scanNote">តម្រៀប៖ សញ្ញាទិញថ្មីៗមុនគេ · "5 ឆ្នាំ (ទិញ)" = ចំណេញមធ្យមម្តងក្រោយថ្លៃសេវា ពេលធ្វើតាមសញ្ញាទិញរបស់កាក់នោះ (បង្ហាញពេលអ្នកបានបើកកាក់នោះម្តង)។ ចុចលើជួរ ដើម្បីមើលកាក់នោះ។</p>
+  </section>
+  </div>
 
+  <div class="page" data-page="chart">
   <div class="grid">
     <div class="col">
       <section class="card">
@@ -463,7 +926,14 @@
             <button data-tf="1d">1D</button>
           </div>
         </h2>
+        <div class="ind-tg" id="indTg">
+          <span>Indicators:</span>
+          <button data-i="vol">Volume</button><button data-i="ema200">EMA200</button>
+          <button data-i="bb">Bollinger</button><button data-i="rsi">RSI</button><button data-i="macd">MACD</button>
+        </div>
         <div id="chart"></div>
+        <div class="subpane" id="rsiPane"><span class="sp-l">RSI 14 <b id="rsiNow"></b></span><div id="rsiChart"></div></div>
+        <div class="subpane" id="macdPane"><span class="sp-l">MACD 12/26/9 <b id="macdNow"></b></span><div id="macdChart"></div></div>
         <div class="legend">
           <span><i style="background:#5aa9ff"></i>EMA20</span>
           <span><i style="background:#b48cff"></i>EMA50</span>
@@ -483,19 +953,19 @@
         </section>
       </div>
 
-      <section class="card">
-        <h2>ប្រវត្តិសញ្ញា — ត្រូវ ឬខុស? <span id="histSummary" class="hist-sum"></span></h2>
-        <div class="hist-wrap">
-          <table class="hist">
-            <thead><tr><th>ពេល</th><th>សញ្ញា</th><th>តម្លៃពេលនោះ</th><th>1 ម៉ោងក្រោយ</th><th>ប្រែប្រួល</th><th>លទ្ធផល</th></tr></thead>
-            <tbody id="histBody"><tr><td colspan="6" class="skeleton">មិនទាន់មានប្រវត្តិ — server កត់ទុករៀងរាល់ 5 នាទី</td></tr></tbody>
-          </table>
-        </div>
-        <p class="plan-note" id="histNote"></p>
-      </section>
     </div>
 
     <div class="col">
+      <section class="card pa" id="paCard">
+        <h2><span>🔔 ប្រាប់ខ្ញុំពេលតម្លៃដល់</span><span class="tr-coin" id="paCoin"></span></h2>
+        <form class="pa-form" id="paForm" autocomplete="off">
+          <input id="paPrice" type="number" inputmode="decimal" step="any" placeholder="តម្លៃ ឧ. 82000">
+          <button type="submit">➕ បន្ថែម</button>
+        </form>
+        <div class="pa-quick" id="paQuick"></div>
+        <div class="pa-list" id="paList"></div>
+      </section>
+
       <section class="card signal HOLD" id="signalCard">
         <h2>សញ្ញា <span class="num" id="sigTf">1h</span></h2>
         <div class="sig-word" id="sigWord">—</div>
@@ -521,9 +991,60 @@
     </div>
   </div>
 
+  </div>
+
+  <div class="page" data-page="forecast">
+  <section class="card fc" id="fcCard">
+    <h2><span>📅 ការព្យាករណ៍ពេលខាងមុខ — ឡើង ឬចុះ?</span><span class="fc-upd num" id="fcUpd"></span></h2>
+    <div class="fc-grid">
+      <div>
+        <div class="fc-sub">ម៉ោងខាងមុខ</div>
+        <div class="fc-list" id="fcHours"><div class="skeleton">កំពុងគណនា…</div></div>
+      </div>
+      <div>
+        <div class="fc-sub">7 ថ្ងៃខាងមុខ</div>
+        <div class="fc-cal" id="fcDays"></div>
+      </div>
+    </div>
+    <p class="fc-note" id="fcNote"></p>
+  </section>
+
+  </div>
+
+  <div class="page" data-page="test">
+  <section class="card eq" id="eqCard">
+    <h2><span>📈 បើធ្វើតាមសញ្ញា 🎯 4 ម៉ោង រាល់ដង — លុយ $1,000 ក្លាយជាប៉ុន្មាន?</span></h2>
+    <div class="eq-tiles" id="eqTiles"></div>
+    <div id="eqChart"></div>
+    <div class="legend eq-legend"><span><i style="background:var(--up)"></i>ធ្វើតាមសញ្ញា — ទិញតែប៉ុណ្ណោះ (Spot, ក្រោយថ្លៃសេវា)</span><span><i style="background:#8a94a3"></i>ទិញទុកមិនលក់</span></div>
+    <p class="fc-note" id="eqNote"></p>
+  </section>
+
+  <section class="card bt" id="btCard">
+    <h2><span id="btTitle">🔬 ពិនិត្យភាពត្រឹមត្រូវ — បើធ្វើតាមសញ្ញា 5 នាទី ក្នុង 90 ថ្ងៃចុងក្រោយ</span>
+      <button class="bt-run" id="btRun">▶ សាកល្បងម្តងទៀត</button></h2>
+    <div class="bt-verdict" id="btVerdict">កំពុងសាកល្បងលើទិន្នន័យពិតពី Binance… (ប្រហែល 30 វិនាទី)</div>
+    <div class="bt-tiles" id="btTiles"></div>
+    <div class="bt-sub">តាមម៉ោង (ម៉ោងកម្ពុជា) — កម្ពស់ = ភាគរយត្រូវ · ពណ៌ = ម៉ោងល្អ / គួរជៀស · ⚡ = ម៉ោងដែលតម្លៃប្រែប្រួលខ្លាំង</div>
+    <div class="bt-hours" id="btHours"></div>
+    <p class="fc-note" id="btNote"></p>
+  </section>
+
+
+  <section class="card">
+        <h2>📋 ប្រវត្តិសញ្ញាដែលកត់ទុកលើកុំព្យូទ័រ — ត្រូវ ឬខុស? <span id="histSummary" class="hist-sum"></span></h2>
+        <div class="hist-wrap">
+          <table class="hist">
+            <thead><tr><th>ពេល</th><th>សញ្ញា</th><th>តម្លៃពេលនោះ</th><th>1 ម៉ោងក្រោយ</th><th>ប្រែប្រួល</th><th>លទ្ធផល</th></tr></thead>
+            <tbody id="histBody"><tr><td colspan="6" class="skeleton">មិនទាន់មានប្រវត្តិ — server កត់ទុករៀងរាល់ 5 នាទី</td></tr></tbody>
+          </table>
+        </div>
+        <p class="plan-note" id="histNote"></p>
+  </section>
+  </div>
+
   <footer>
-    ទិន្នន័យពី Binance · ធ្វើបច្ចុប្បន្នភាពដោយស្វ័យប្រវត្តិ ·
-    ⚠️ នេះជាការវិភាគបច្ចេកទេសដោយកម្មវិធី មិនមែនជាដំបូន្មានហិរញ្ញវត្ថុទេ។ គ្មាននរណាទាយតម្លៃបានប្រាកដទេ។
+    ទិន្នន័យពី Binance · ធ្វើបច្ចុប្បន្នភាពដោយស្វ័យប្រវត្តិ
   </footer>
 </div>
 
@@ -608,7 +1129,92 @@ function drawChart(f) {
     price: s.price, color: "#2ecc8f", lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: "S" + (i + 1),
   })));
   if (lastChartTf !== tf) { fitBars(); lastChartTf = tf; }
+  if (indKey !== symbol + tf) { indData = null; paintIndicators(); }
+  loadIndicators();
 }
+
+/* ---------------- chart indicators (Volume, EMA200, Bollinger, RSI, MACD) ---------------- */
+let IND = { vol: true, ema200: false, bb: false, rsi: false, macd: false };
+try { const x = JSON.parse(localStorage.getItem("ind")); if (x) IND = { ...IND, ...x }; } catch (e) {}
+const subOpts = {
+  layout: { background: { color: "transparent" }, textColor: "#8a94a3", fontFamily: "JetBrains Mono" },
+  grid: { vertLines: { color: "#1a1f26" }, horzLines: { color: "#1a1f26" } },
+  rightPriceScale: { borderColor: "#232a33", minimumWidth: 70 }, timeScale: { visible: false, borderColor: "#232a33" },
+  handleScroll: false, handleScale: false, crosshair: { mode: 0 }, autoSize: true,
+  layout: { background: { color: "transparent" }, textColor: "#8a94a3", fontFamily: "JetBrains Mono", attributionLogo: false },
+};
+chart.applyOptions({ rightPriceScale: { minimumWidth: 70 } });
+const volS = chart.addHistogramSeries({ priceScaleId: "vol", priceFormat: { type: "volume" }, lastValueVisible: false, priceLineVisible: false });
+chart.priceScale("vol").applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
+const e200S = chart.addLineSeries({ color: "#f2b54a", lineWidth: 2, priceLineVisible: false, lastValueVisible: false });
+const bbU = chart.addLineSeries({ color: "rgba(138,148,163,.7)", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
+const bbM = chart.addLineSeries({ color: "rgba(138,148,163,.35)", lineWidth: 1, lineStyle: 2, priceLineVisible: false, lastValueVisible: false });
+const bbL = chart.addLineSeries({ color: "rgba(138,148,163,.7)", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
+const rsiC = LightweightCharts.createChart($("rsiChart"), subOpts);
+const rsiS = rsiC.addLineSeries({ color: "#b48cff", lineWidth: 1.5, priceLineVisible: false });
+[70, 30].forEach(v => rsiS.createPriceLine({ price: v, color: v === 70 ? "#ff5d6c" : "#2ecc8f", lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: "" }));
+const macdC = LightweightCharts.createChart($("macdChart"), subOpts);
+const histS = macdC.addHistogramSeries({ priceLineVisible: false, lastValueVisible: false });
+const macdS = macdC.addLineSeries({ color: "#5aa9ff", lineWidth: 1.5, priceLineVisible: false, lastValueVisible: false });
+const sigS = macdC.addLineSeries({ color: "#f2b54a", lineWidth: 1.2, priceLineVisible: false, lastValueVisible: false });
+// keep the indicator panes scrolled together with the price chart
+chart.timeScale().subscribeVisibleLogicalRangeChange(r => { if (r) { rsiC.timeScale().setVisibleLogicalRange(r); macdC.timeScale().setVisibleLogicalRange(r); } });
+
+let indKey = "", indAt = 0, indData = null;
+async function loadIndicators(force = false) {
+  const key = symbol + tf;
+  if (!force && key === indKey && Date.now() - indAt < 60000) return;
+  const want = Object.values(IND).some(Boolean);
+  if (!want) return;
+  try {
+    const d = await LT.series(symbol, tf, shown.length || 200);
+    if (symbol + tf !== key) return;
+    indKey = key; indAt = Date.now(); indData = d;
+    paintIndicators();
+  } catch (e) {}
+}
+function paintIndicators() {
+  const d = indData || [], L = x => x.time + TZ;
+  volS.setData(IND.vol ? d.map(x => ({ time: L(x), value: x.vol, color: x.up ? "rgba(46,204,143,.35)" : "rgba(255,93,108,.35)" })) : []);
+  e200S.setData(IND.ema200 ? d.map(x => ({ time: L(x), value: x.ema200 })) : []);
+  bbU.setData(IND.bb ? d.map(x => ({ time: L(x), value: x.bbU })) : []);
+  bbM.setData(IND.bb ? d.map(x => ({ time: L(x), value: x.bbM })) : []);
+  bbL.setData(IND.bb ? d.map(x => ({ time: L(x), value: x.bbL })) : []);
+  $("rsiPane").classList.toggle("on", IND.rsi);
+  $("macdPane").classList.toggle("on", IND.macd);
+  if (IND.rsi) {
+    rsiS.setData(d.map(x => ({ time: L(x), value: Math.round(x.rsi * 10) / 10 })));
+    const r = d.length ? d[d.length - 1].rsi : null;
+    $("rsiNow").textContent = r == null ? "" : r.toFixed(1) + (r > 70 ? " · Overbought" : r < 30 ? " · Oversold" : "");
+    $("rsiNow").style.color = r > 70 ? "var(--down)" : r < 30 ? "var(--up)" : "var(--text)";
+  }
+  if (IND.macd) {
+    histS.setData(d.map(x => ({ time: L(x), value: x.hist, color: x.hist >= 0 ? "rgba(46,204,143,.6)" : "rgba(255,93,108,.6)" })));
+    macdS.setData(d.map(x => ({ time: L(x), value: x.macd })));
+    sigS.setData(d.map(x => ({ time: L(x), value: x.sig })));
+    const h = d.length ? d[d.length - 1].hist : 0;
+    $("macdNow").textContent = h >= 0 ? "· ចលនាឡើង" : "· ចលនាចុះ";
+    $("macdNow").style.color = h >= 0 ? "var(--up)" : "var(--down)";
+  }
+  syncPanes();
+  setTimeout(syncPanes, 80); setTimeout(syncPanes, 400);    // again once a just-shown pane has its real width
+}
+function syncPanes() {
+  const r = chart.timeScale().getVisibleLogicalRange();
+  if (r) { rsiC.timeScale().setVisibleLogicalRange(r); macdC.timeScale().setVisibleLogicalRange(r); }
+}
+new ResizeObserver(syncPanes).observe($("rsiChart"));
+new ResizeObserver(syncPanes).observe($("macdChart"));
+function paintIndButtons() { document.querySelectorAll("#indTg button").forEach(b => b.classList.toggle("on", !!IND[b.dataset.i])); }
+$("indTg").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  IND[b.dataset.i] = !IND[b.dataset.i];
+  try { localStorage.setItem("ind", JSON.stringify(IND)); } catch (x) {}
+  paintIndButtons();
+  if (indData && indKey === symbol + tf) paintIndicators(); else loadIndicators(true);
+});
+paintIndButtons();
+setInterval(() => { if (document.querySelector('.page[data-page="chart"]').classList.contains("on")) loadIndicators(); }, 15000);
 
 // show the most recent ~120 candles across the full width.
 // (computed from the real width, so it still works if the chart was drawn before layout finished)
@@ -696,6 +1302,342 @@ function tickClock() {
 }
 setInterval(tickClock, 1000);
 
+/* ---------------- 🎯 swing signal (4h, tested) ---------------- */
+let swing = null, swingBusy = false, swingStats = null;
+const SW_TTL = 12 * 3600 * 1000;
+
+async function pollSwing() {
+  if (swingBusy) return;
+  swingBusy = true;
+  const asked = symbol;
+  try {
+    const w = await LT.swingNow(asked);
+    if (asked === symbol) { swing = w; renderSwing(); }
+  } catch (e) {
+    if (asked === symbol && !swing) $("vHeadline").textContent = e.message === "NOTFOUND" ? "រកមិនឃើញកាក់នេះ" : "មិនអាចទាញទិន្នន័យ 4 ម៉ោង — នឹងសាកម្តងទៀត";
+  } finally { swingBusy = false; }
+}
+
+async function loadSwingStats() {
+  const asked = symbol, key = "sw5y2:" + asked;
+  let hit = null;
+  try { hit = JSON.parse(localStorage.getItem(key)); } catch (e) {}
+  if (hit && Date.now() - hit.at < SW_TTL) { swingStats = hit.s; renderSwing(); drawEquity(); return; }
+  $("vStats").textContent = "📊 កំពុងសាកល្បងសញ្ញានេះលើទិន្នន័យ 5 ឆ្នាំ…";
+  try {
+    const st = await LT.swingTest(asked);
+    try { localStorage.setItem(key, JSON.stringify({ at: Date.now(), s: st })); } catch (e) {}
+    if (asked === symbol) { swingStats = st; renderSwing(); drawEquity(); }
+  } catch (e) { if (asked === symbol) $("vStats").textContent = "📊 មិនអាចសាកល្បងបាន (ទិន្នន័យតិចពេក ឬគ្មាន internet)"; }
+}
+
+function renderSwing() {
+  const w = swing;
+  if (!w) return;
+  if (prevOverall && w.action !== prevOverall) {
+    const name = { BUY: "ទិញ", SELL: "លក់", WAIT: "រង់ចាំ" };
+    notify(w.action === "WAIT" ? "HOLD" : w.action, `🎯 សញ្ញា 4 ម៉ោងប្តូរ: ${name[prevOverall]} → ${name[w.action]} · ${fmt(w.price, 0)}`);
+  }
+  prevOverall = w.action;
+  setTimeout(renderTrade, 0);
+  setTimeout(renderEntry, 0);
+  const card = $("verdict");
+  card.className = "verdict " + w.action;
+  $("vAction").textContent = { BUY: "ទិញ", SELL: "លក់", WAIT: "រង់ចាំ" }[w.action];
+  $("vEn").textContent = `${w.action}  ·  4h ${w.score > 0 ? "+" : ""}${w.score}`;
+  const ago = Math.max(0, Math.round((Date.now() / 1000 - w.since) / 3600));
+  const moved = (w.price / w.sincePrice - 1) * 100;
+  const agoTxt = ago < 1 ? "ទើបតែចាប់ផ្តើម" : ago < 48 ? `${ago} ម៉ោងមុន` : `${Math.round(ago / 24)} ថ្ងៃមុន`;
+  const p2 = x => (x > 0 ? "+" : "") + x.toFixed(2) + "%";
+
+  const lines = [];
+  if (w.action === "BUY") {
+    $("vHeadline").textContent = "4 ម៉ោងចង្អុលឡើង — ផែនការទិញ (កាន់ទុករហូតដល់ 7 ថ្ងៃ)";
+    lines.push(`🕒 សញ្ញាទិញចាប់ផ្តើម ${agoTxt} នៅ ${fmt(w.sincePrice, 0)} (ឥឡូវ ${p2(moved)})`);
+    if (moved > 0 && w.price - w.sincePrice > 1.5 * w.atr) lines.push(`តម្លៃឡើងច្រើនហើយតាំងពីសញ្ញាចាប់ផ្តើម — ល្អជាងរង់ចាំស្រកមកជិត ${fmt(w.sincePrice + 0.5 * w.atr, 0)}`);
+  } else if (w.action === "SELL") {
+    $("vHeadline").textContent = "4 ម៉ោងចង្អុលចុះ — លក់កាក់ដែលមាន ឬកុំទាន់ទិញ";
+    lines.push(`🕒 សញ្ញាលក់ចាប់ផ្តើម ${agoTxt} នៅ ${fmt(w.sincePrice, 0)} (ឥឡូវ ${p2(moved)})`);
+    lines.push("💡 លើ Spot: \"លក់\" = លក់កាក់ដែលអ្នកកំពុងកាន់ ឬនៅចាំសិន មិនមែនជាការ short ទេ");
+  } else {
+    $("vHeadline").textContent = "មិនទាន់មានសញ្ញា 4 ម៉ោង — រង់ចាំ";
+    lines.push(`⚖️ ពិន្ទុ 4 ម៉ោង ${w.score > 0 ? "+" : ""}${w.score} · ទិញពេលពិន្ទុ ≥ +30 · លក់ពេល ≤ -30 (ពិនិត្យរៀងរាល់ពេល candle 4h បិទ)`);
+    lines.push(`🕒 ស្ថានភាពនេះចាប់ពី ${agoTxt}`);
+  }
+  $("vReasons").innerHTML = lines.map(x => `<li>${x}</li>`).join("") +
+    `<li style="color:var(--muted);font-size:13px">${w.reasons.slice(0, 4).join(" · ")}</li>`;
+
+  const plan = $("vPlan");
+  if (w.action === "BUY") {
+    plan.style.gridTemplateColumns = "";
+    plan.innerHTML = `
+      <div><small>ទិញនៅប្រហែល</small><b>${fmt(w.buy.entry, 0)}</b></div>
+      <div><small>Stop-loss (3×ATR)</small><b class="c-SELL">${fmt(w.buy.stop, 0)}</b></div>
+      <div><small>គោលដៅ (3R)</small><b class="c-BUY">${fmt(w.buy.tp, 0)}</b></div>
+      <div><small>កាន់ទុកយូរបំផុត</small><b>7 ថ្ងៃ</b></div>`;
+  } else if (w.action === "SELL") {
+    plan.style.gridTemplateColumns = "";
+    plan.innerHTML = `
+      <div><small>លក់នៅប្រហែល</small><b>${fmt(w.sell.entry, 0)}</b></div>
+      <div><small>សញ្ញាខុស បើឡើងលើ</small><b class="c-SELL">${fmt(w.sell.stop, 0)}</b></div>
+      <div><small>តម្លៃអាចធ្លាក់ដល់</small><b class="c-BUY">${fmt(w.sell.tp, 0)}</b></div>
+      <div><small>រយៈពេល</small><b>≤ 7 ថ្ងៃ</b></div>`;
+  } else {
+    plan.style.gridTemplateColumns = "repeat(2, minmax(0, 1fr))";
+    plan.innerHTML = `
+      <div><small>ពិន្ទុ 4 ម៉ោងឥឡូវ</small><b class="c-HOLD">${w.score > 0 ? "+" : ""}${w.score}</b></div>
+      <div><small>ការប្រែប្រួល 4 ម៉ោង (ATR)</small><b>${fmt(w.atr, 0)}</b></div>`;
+  }
+
+  const st = swingStats;
+  if (st && st.all.n) {
+    const c = x => x >= 0 ? "good" : "bad";
+    const yrs = Math.round((st.to - st.from) / 31536000 * 10) / 10;
+    $("vStats").innerHTML =
+      `📊 សាកល្បង ${yrs} ឆ្នាំលើ ${coinLabel()}: <b>${st.all.n}</b> ដង · ត្រូវ <b>${Math.round(st.all.win * 100)}%</b> · ` +
+      `មធ្យមម្តង <b class="${c(st.all.avg)}">${p2(st.all.avg)}</b> ក្រោយថ្លៃសេវា · ` +
+      `ទិញតែប៉ុណ្ណោះ <b class="${c(st.buy.avg)}">${p2(st.buy.avg)}</b> (${st.buy.n} ដង) · ` +
+      `ទិន្នន័យថ្មីបំផុត 1/3 <b class="${c(st.oos.avg)}">${p2(st.oos.avg)}</b>` +
+      (st.buy.avg < 0 ? `<br><span class="bad">សញ្ញានេះមិនដំណើរការល្អលើ ${coinLabel()} ទេ — ប្រើដោយប្រុងប្រយ័ត្ន</span>` : "");
+  }
+}
+
+/* ---------------- 🔔 custom price alerts (saved in this browser) ---------------- */
+let PA = {};
+try { PA = JSON.parse(localStorage.getItem("priceAlerts")) || {}; } catch (e) {}
+const savePA = () => { try { localStorage.setItem("priceAlerts", JSON.stringify(PA)); } catch (e) {} };
+let paLines = [];
+function addAlert(price) {
+  const now = livePrice ?? (payload && (payload.frames["5m"] || payload.frames["1h"]).price);
+  if (!(price > 0) || !now) return;
+  (PA[symbol] = PA[symbol] || []).push({ price, dir: price >= now ? "up" : "down", at: Date.now() });
+  savePA(); renderAlerts();
+  toast("HOLD", `🔔 នឹងប្រាប់ពេល ${coinLabel()} ${price >= now ? "ឡើងដល់" : "ធ្លាក់ដល់"} ${fmt(price)}`);
+}
+function renderAlerts() {
+  $("paCoin").textContent = coinLabel();
+  const list = PA[symbol] || [], now = livePrice;
+  $("paList").innerHTML = list.length ? list.map((a, i) => {
+    const d = now ? (a.price / now - 1) * 100 : 0;
+    return `<div class="pa-item"><span>${a.dir === "up" ? "📈 ឡើងដល់" : "📉 ធ្លាក់ដល់"} <b>${fmt(a.price)}</b> <small style="color:var(--muted)">${d > 0 ? "+" : ""}${d.toFixed(2)}%</small></span><button data-del="${i}">✕</button></div>`;
+  }).join("") : `<div style="font-size:12px;color:var(--muted)">មិនទាន់មាន — វាយតម្លៃ ឬចុចប៊ូតុងខាងលើ</div>`;
+  const f = payload && payload.frames[tf];
+  const q = [];
+  if (now) q.push(["+1%", now * 1.01], ["-1%", now * 0.99], ["+3%", now * 1.03], ["-3%", now * 0.97]);
+  if (f) q.push(["R1", f.resistances[0].price], ["S1", f.supports[0].price]);
+  $("paQuick").innerHTML = q.map(([l, p]) => `<button data-p="${p}">${l} ${fmt(p, 0)}</button>`).join("");
+  // lines on the chart
+  paLines.forEach(l => candles.removePriceLine(l));
+  paLines = list.map(a => candles.createPriceLine({ price: a.price, color: "#f7931a", lineWidth: 1, lineStyle: 1, axisLabelVisible: true, title: "🔔" }));
+}
+function checkAlerts(price) {
+  const list = PA[symbol];
+  if (!list || !list.length) return;
+  const hit = list.filter(a => a.dir === "up" ? price >= a.price : price <= a.price);
+  if (!hit.length) return;
+  PA[symbol] = list.filter(a => !hit.includes(a)); savePA();
+  hit.forEach(a => {
+    const msg = `🔔 ${coinLabel()} ${a.dir === "up" ? "ឡើងដល់" : "ធ្លាក់ដល់"} ${fmt(a.price)} (ឥឡូវ ${fmt(price)})`;
+    toast(a.dir === "up" ? "BUY" : "SELL", msg);
+    beep(a.dir === "up" ? "BUY" : "SELL");
+    if ("Notification" in window && Notification.permission === "granted") { try { new Notification("ស្កេន", { body: msg }); } catch (e) {} }
+  });
+  renderAlerts();
+}
+$("paForm").addEventListener("submit", e => { e.preventDefault(); addAlert(+$("paPrice").value); $("paPrice").value = ""; });
+$("paQuick").addEventListener("click", e => { const b = e.target.closest("button"); if (b) addAlert(+b.dataset.p); });
+$("paList").addEventListener("click", e => { const b = e.target.closest("button[data-del]"); if (b) { PA[symbol].splice(+b.dataset.del, 1); savePA(); renderAlerts(); } });
+setInterval(renderAlerts, 5000);
+
+/* ---------------- 🔍 scanner ---------------- */
+let scanBusy = false, scanAt = 0;
+async function runScan(force = false) {
+  if (scanBusy || (!force && Date.now() - scanAt < 5 * 60000)) return;
+  scanBusy = true; $("scanRun").disabled = true;
+  try {
+    const list = presets.map(p => p.symbol);
+    const tick = await getJSON(`https://data-api.binance.vision/api/v3/ticker/24hr?symbols=${encodeURIComponent(JSON.stringify(list))}`).catch(() => []);
+    const T = Object.fromEntries((tick || []).map(t => [t.symbol, t]));
+    const got = await Promise.allSettled(list.map(sym => LT.swingNow(sym)));
+    const rows = list.map((sym, i) => {
+      const w = got[i].status === "fulfilled" ? got[i].value : null;
+      let st = null; try { const h = JSON.parse(localStorage.getItem("sw5y2:" + sym)); st = h && h.s; } catch (e) {}
+      return { sym, w, t: T[sym], st };
+    });
+    const rank = r => !r.w ? 9 : r.w.action === "BUY" ? (r.w.sinceBars <= 2 ? 0 : 1) : r.w.action === "WAIT" ? 2 : 3;
+    rows.sort((a, b) => rank(a) - rank(b) || (b.w ? b.w.score : -999) - (a.w ? a.w.score : -999));
+    $("scanBody").innerHTML = rows.map(r => {
+      const c = coinInfo(r.sym), w = r.w, ch = r.t ? +r.t.priceChangePercent : null;
+      if (!w) return `<tr data-s="${r.sym}"><td><span class="coinc"><i style="background:${c.color}">${c.icon}</i>${c.label}</span></td><td colspan="7" class="skeleton">មិនអាចទាញ</td></tr>`;
+      const ago = Math.round((Date.now() / 1000 - w.since) / 3600);
+      const fresh = w.action === "BUY" && w.sinceBars <= 2;
+      const km = { BUY: "ទិញ", SELL: "លក់", WAIT: "រង់ចាំ" }[w.action];
+      const bt = r.st ? `<span class="${r.st.buy.avg >= 0 ? "c-BUY" : "c-SELL"}">${r.st.buy.avg > 0 ? "+" : ""}${r.st.buy.avg.toFixed(2)}%</span>` : `<span style="color:var(--muted)">—</span>`;
+      return `<tr data-s="${r.sym}">
+        <td><span class="coinc"><i style="background:${c.color}">${c.icon}</i>${c.label}</span></td>
+        <td class="num">${fmt(w.price)}</td>
+        <td class="num ${ch == null ? "" : ch >= 0 ? "c-BUY" : "c-SELL"}">${ch == null ? "—" : (ch > 0 ? "+" : "") + ch.toFixed(2) + "%"}</td>
+        <td><span class="pill ${w.action} ${fresh ? "fresh" : ""}">${km}</span></td>
+        <td class="num">${w.score > 0 ? "+" : ""}${w.score}</td>
+        <td>${ago < 1 ? "ទើបតែ" : ago < 48 ? ago + " ម៉ោង" : Math.round(ago / 24) + " ថ្ងៃ"}</td>
+        <td class="num">${bt}</td>
+        <td><button class="go">មើល ›</button></td></tr>`;
+    }).join("");
+    const buys = rows.filter(r => r.w && r.w.action === "BUY").map(r => coinInfo(r.sym).label);
+    $("scanNote").innerHTML = (buys.length ? `🎯 មានសញ្ញាទិញ: <b class="c-BUY">${buys.join(", ")}</b> · ` : "🎯 ពេលនេះគ្មានកាក់ណាមានសញ្ញាទិញ 4 ម៉ោងទេ · ") +
+      `ស្កេនចុងក្រោយ ${hhmm(Date.now())} · ស្កេនឡើងវិញរៀងរាល់ 5 នាទី។ "5 ឆ្នាំ (ទិញ)" = ចំណេញមធ្យមម្តងក្រោយថ្លៃសេវា (បង្ហាញពេលអ្នកបានបើកកាក់នោះម្តង)។ ចុចលើជួរ ដើម្បីមើលកាក់នោះ។`;
+    scanAt = Date.now();
+    fillScanStats(list);
+  } finally { scanBusy = false; $("scanRun").disabled = false; }
+}
+// test any coin that has no 5-year result yet (one at a time, cached 12h), then refresh the table
+let fillBusy = false;
+async function fillScanStats(list) {
+  if (fillBusy) return; fillBusy = true;
+  try {
+    for (const sym of list) {
+      let ok = false;
+      try { const h = JSON.parse(localStorage.getItem("sw5y2:" + sym)); ok = h && Date.now() - h.at < SW_TTL; } catch (e) {}
+      if (ok) continue;
+      try {
+        const st = await LT.swingTest(sym);
+        try { localStorage.setItem("sw5y2:" + sym, JSON.stringify({ at: Date.now(), s: st })); } catch (e) {}
+        scanAt = 0; scanBusy = false; await runScan(true);
+      } catch (e) {}
+    }
+  } finally { fillBusy = false; }
+}
+$("scanBody").addEventListener("click", e => { const tr = e.target.closest("tr[data-s]"); if (tr) { switchCoin(tr.dataset.s); showPage("home"); } });
+$("scanRun").addEventListener("click", () => runScan(true));
+setInterval(() => { if (document.querySelector('.page[data-page="scan"]').classList.contains("on")) runScan(); }, 30000);
+
+/* ---------------- 🌡 market mood ---------------- */
+const FNG_KM = { "Extreme Fear": "ភ័យខ្លាចខ្លាំង", "Fear": "ភ័យខ្លាច", "Neutral": "អព្យាក្រឹត", "Greed": "លោភលន់", "Extreme Greed": "លោភលន់ខ្លាំង" };
+const getJSON = async (u, ms = 10000) => { const c = new AbortController(); const t = setTimeout(() => c.abort(), ms); try { const r = await fetch(u, { signal: c.signal }); if (!r.ok) throw new Error(r.status); return await r.json(); } finally { clearTimeout(t); } };
+
+async function pollMood() {
+  try {
+    const f = await getJSON("https://api.alternative.me/fng/?limit=2");
+    const [now, prev] = f.data, v = +now.value;
+    $("fngGauge").style.setProperty("--v", v);
+    $("fngVal").textContent = v;
+    $("fngTxt").textContent = FNG_KM[now.value_classification] || now.value_classification;
+    $("fngTxt").style.color = v <= 25 ? "var(--down)" : v <= 45 ? "var(--hold)" : v >= 75 ? "var(--up)" : v >= 55 ? "#9bd16a" : "var(--text)";
+    $("fngPrev").textContent = prev ? `ម្សិលមិញ ${prev.value} (${FNG_KM[prev.value_classification] || prev.value_classification})` : "";
+    moodNote(v);
+  } catch (e) { $("fngTxt").textContent = "មិនអាចទាញ"; }
+  try {
+    const g = (await getJSON("https://api.coingecko.com/api/v3/global")).data;
+    const dom = g.market_cap_percentage.btc, mc = g.market_cap_change_percentage_24h_usd, tot = g.total_market_cap.usd;
+    $("domVal").textContent = dom.toFixed(1) + "%";
+    $("domTxt").textContent = dom >= 55 ? "BTC ខ្លាំង — លុយនៅក្នុង BTC ច្រើន" : dom <= 45 ? "Altcoin កំពុងទាក់ទាញលុយ" : "តុល្យភាព BTC / Altcoin";
+    $("mcVal").textContent = (mc > 0 ? "+" : "") + mc.toFixed(2) + "%";
+    $("mcVal").style.color = mc >= 0 ? "var(--up)" : "var(--down)";
+    $("mcTxt").textContent = `សរុប $${(tot / 1e12).toFixed(2)} ពាន់ពាន់លាន (trillion)`;
+  } catch (e) { $("domTxt").textContent = "មិនអាចទាញ"; }
+}
+function moodNote(v) {
+  $("moodNote").textContent = (v <= 25 ? "😨 មនុស្សភ័យខ្លាចខ្លាំង — ក្នុងប្រវត្តិ ពេលនេះច្រើនតែនៅជិតបាតតម្លៃ (តែមិនប្រាកដ)។ "
+    : v >= 75 ? "🤑 មនុស្សលោភលន់ខ្លាំង — ពេលនេះច្រើនតែមានហានិភ័យធ្លាក់ខ្លាំង។ " : "")
+    + "ព័ត៌មានបរិបទផ្សារ — មិនមែនជាសញ្ញាទិញ/លក់ដែលបានសាកល្បងទេ";
+}
+
+async function pollDepth() {
+  const asked = symbol;
+  try {
+    const d = await getJSON(`https://data-api.binance.vision/api/v3/depth?symbol=${asked}&limit=1000`);
+    if (asked !== symbol) return;
+    const mid = (+d.bids[0][0] + +d.asks[0][0]) / 2;
+    const bid = d.bids.filter(x => +x[0] >= mid * 0.99).reduce((a, x) => a + x[0] * x[1], 0);
+    const ask = d.asks.filter(x => +x[0] <= mid * 1.01).reduce((a, x) => a + x[0] * x[1], 0);
+    const share = bid / (bid + ask || 1);
+    const m = x => x >= 1e6 ? "$" + (x / 1e6).toFixed(1) + "M" : "$" + Math.round(x / 1e3) + "K";
+    $("obCoin").textContent = coinLabel();
+    $("obBid").style.width = (share * 100).toFixed(1) + "%";
+    $("obB").textContent = `ទិញ ${m(bid)} · ${Math.round(share * 100)}%`;
+    $("obA").textContent = `លក់ ${m(ask)} · ${Math.round((1 - share) * 100)}%`;
+    $("obTxt").textContent = share >= 0.6 ? "អ្នកទិញរង់ចាំច្រើនជាង — មានទ្រនាប់ (support) ខាងក្រោម"
+      : share <= 0.4 ? "អ្នកលក់រង់ចាំច្រើនជាង — មានរបាំង (resistance) ខាងលើ" : "អ្នកទិញ និងអ្នកលក់ ប្រហាក់ប្រហែលគ្នា";
+  } catch (e) { $("obTxt").textContent = "មិនអាចទាញ order book"; }
+}
+pollMood(); setInterval(pollMood, 5 * 60000);
+setInterval(pollDepth, 20000);
+
+/* ---------------- 🚦 can I enter now? + daily entry times ---------------- */
+function renderEntry() {
+  const w = swing, card = $("entryCard");
+  const H4 = 4 * 3600 * 1000;
+  if (!w) { $("enState").textContent = "កំពុងទាញសញ្ញា…"; return; }
+  // the 4h signal can only change when a 4h candle closes
+  let next = w.nextClose; while (next < Date.now()) next += H4;
+  const t2 = d => `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+  const nd = new Date(next);
+  const ms = next - Date.now(), sec = Math.max(0, Math.floor(ms / 1000));
+  $("enCount").textContent = `${Math.floor(sec / 3600)}:${String(Math.floor(sec / 60) % 60).padStart(2, "0")}:${String(sec % 60).padStart(2, "0")}`;
+  $("enAt").textContent = `នៅម៉ោង ${t2(nd)} ${nd.getDate() !== new Date().getDate() ? "(ស្អែក)" : ""} — candle 4h បិទ សញ្ញាអាចប្តូរ`;
+
+  // can I enter now?
+  const fresh = w.sinceBars <= 2;                                  // signal started within the last ~8 hours
+  const moved = w.price - w.sincePrice;
+  let cls, state, sub;
+  if (w.action === "BUY" && fresh && moved <= 1.5 * w.atr) {
+    cls = "go"; state = "✅ អាចចូលទិញបានឥឡូវ";
+    sub = `សញ្ញាទិញថ្មីៗ · ទិញប្រហែល ${fmt(w.buy.entry, 0)} · Stop ${fmt(w.buy.stop, 0)} · គោលដៅ ${fmt(w.buy.tp, 0)} — មើល 💼 ខាងក្រោម ដើម្បីដឹងថាគួរទិញប៉ុន្មាន`;
+  } else if (w.action === "BUY") {
+    cls = "late"; state = "សញ្ញាទិញ តែយឺតហើយ";
+    sub = moved > 1.5 * w.atr
+      ? `តម្លៃឡើងច្រើនហើយតាំងពីសញ្ញាចាប់ផ្តើម — ល្អជាងរង់ចាំស្រកមកជិត ${fmt(w.sincePrice + 0.5 * w.atr, 0)}`
+      : `សញ្ញាចាប់ផ្តើមតាំងពី ${Math.round(w.sinceBars * 4)} ម៉ោងមុន — ចូលបាន តែប្រើ Stop ${fmt(w.buy.stop, 0)} ជានិច្ច`;
+  } else if (w.action === "SELL") {
+    cls = "stop"; state = "⛔ កុំទាន់ទិញ";
+    sub = `សញ្ញា 4 ម៉ោងកំពុង "លក់" (ពិន្ទុ ${w.score}) — បើកាន់ ${coinLabel()} គួរលក់ · រង់ចាំសញ្ញាទិញ`;
+  } else {
+    cls = "wait"; state = "⏳ មិនទាន់ដល់ពេល";
+    sub = `ពិន្ទុ 4 ម៉ោង ${w.score > 0 ? "+" : ""}${w.score} — ត្រូវការ ≥ +30 ទើបទិញ`;
+  }
+  card.className = "entry " + cls;
+  $("enState").textContent = state;
+  $("enSub").textContent = sub;
+
+  // the next six 4h closes = the times worth checking
+  const s5 = btCached(symbol, "5m"), hotH = new Set();
+  if (s5 && s5.s.hours) s5.s.hours.forEach(h => { if (h.cls === "good") hotH.add(h.h); });
+  const times = Array.from({ length: 6 }, (_, k) => new Date(next + k * H4)).sort((a, b) => a.getHours() - b.getHours());
+  $("enTimes").innerHTML = times.map(d => {
+    const isNext = d.getTime() === next, tomorrow = d.getDate() !== new Date().getDate();
+    return `<div class="en-t ${isNext ? "next" : ""} ${hotH.has(d.getHours()) ? "hot" : ""}">
+      <b>${t2(d)}</b><small>${isNext ? "បន្ទាប់" : tomorrow ? "ស្អែក" : "ថ្ងៃនេះ"}</small></div>`;
+  }).join("");
+  const goodTxt = [...hotH].sort((a, b) => a - b).map(h => `${h}:00`).join(", ");
+  $("en5m").innerHTML = goodTxt
+    ? `⚡ សម្រាប់ជួញដូរ 5 នាទី ម៉ោងដែលត្រូវច្រើនជាងគេ: <b>${goodTxt}</b> (ប៉ុន្តែនៅតែខាតក្រោយថ្លៃសេវា)`
+    : "";
+}
+setInterval(renderEntry, 1000);
+
+function tickSwingClock() {
+  if (!swing) return;
+  let ms = swing.nextClose - Date.now();
+  if (ms < 0) { pollSwing(); ms = 0; }
+  const t = Math.floor(ms / 1000);
+  $("vClock").textContent = `${Math.floor(t / 3600)}:${String(Math.floor(t / 60) % 60).padStart(2, "0")}:${String(t % 60).padStart(2, "0")}`;
+}
+setInterval(tickSwingClock, 1000);
+setInterval(pollSwing, 60000);
+
+// show the 5-minute test result in the 5-minute card when we have it
+function renderScalpWarn() {
+  return;
+  const h = btCached(symbol, "5m");
+  if (h && h.s && h.s.n) {
+    const net = h.s.net;
+    $("sWarn").innerHTML = net < 0
+      ? `សាកល្បង ${h.s.days || 90} ថ្ងៃ: សញ្ញា 5 នាទីត្រូវ ${Math.round(h.s.win * 100)}% ហើយ <b>ខាត ${net.toFixed(2)}% ម្តង</b> ក្រោយថ្លៃសេវា — សម្រាប់មើលចលនាខ្លីៗតែប៉ុណ្ណោះ`
+      : `✅ សាកល្បង ${h.s.days || 90} ថ្ងៃ: ចំណេញ +${net.toFixed(2)}% ម្តង ក្រោយថ្លៃសេវា`;
+  }
+}
+setInterval(renderScalpWarn, 15000);
+
 /* ---------------- verdict (main answer) ---------------- */
 const V_KM = { BUY: "ទិញ", SELL: "លក់", WAIT: "រង់ចាំ" };
 const V_EN = { BUY: "BUY", SELL: "SELL", WAIT: "WAIT" };
@@ -744,7 +1686,6 @@ function render() {
   const price = livePrice ?? f.price;
 
   renderScalp();
-  renderVerdict();
   drawChart(f);
 
   // signal
@@ -780,7 +1721,7 @@ function render() {
       <div><small>Risk : Reward</small><b>1 : ${p.rr ?? "—"}</b></div>
       <div><small>ATR (ការប្រែប្រួល)</small><b>${fmt(f.indicators.atr, 0)}</b></div>`;
     $("planNote").textContent = (p.rr != null && p.rr < 1.5)
-      ? "⚠️ Risk:Reward ទាប (< 1.5) — ចំណេញមិនសមនឹងហានិភ័យ គួររង់ចាំឱកាសល្អជាងនេះ។"
+      ? "Risk:Reward ទាប (< 1.5) — ចំណេញមិនសមនឹងហានិភ័យ គួររង់ចាំឱកាសល្អជាងនេះ។"
       : (isBuy ? "ប្រសិនបើតម្លៃធ្លាក់ក្រោម Stop-loss សញ្ញានេះខុស — គួរកាត់ខាត។"
                : "ប្រសិនបើតម្លៃឡើងលើ Stop-loss សញ្ញានេះខុស — គួរកាត់ខាត។");
   }
@@ -940,10 +1881,10 @@ const LT = (() => {
       ? "⚖️ timeframe ធំ (4 ម៉ោង / 1 ថ្ងៃ) ប្រឆាំងនឹងទិសដៅ — គ្រោះថ្នាក់ពេកក្នុងការចូល"
       : `⚖️ សញ្ញាមិនទាន់ខ្លាំងគ្រប់គ្រាន់ (ពិន្ទុរួម ${combined > 0 ? "+" : ""}${combined}, ត្រូវការ ±30)`);
     const f = F["1h"] || Object.values(F)[0], rsi = f.indicators.rsi;
-    if (action === "BUY" && rsi > 70) { reasons.push(`⚠️ RSI ${rsi.toFixed(0)} ខ្ពស់ពេក — អាចធ្លាក់មកវិញបន្តិចមុនឡើងបន្ត`); conf = conf === "ខ្ពស់" ? "មធ្យម" : "ទាប"; }
-    if (action === "SELL" && rsi < 30) { reasons.push(`⚠️ RSI ${rsi.toFixed(0)} ទាបពេក — អាចងើបវិញបន្តិចមុនធ្លាក់បន្ត`); conf = conf === "ខ្ពស់" ? "មធ្យម" : "ទាប"; }
+    if (action === "BUY" && rsi > 70) { reasons.push(`RSI ${rsi.toFixed(0)} ខ្ពស់ពេក — អាចធ្លាក់មកវិញបន្តិចមុនឡើងបន្ត`); conf = conf === "ខ្ពស់" ? "មធ្យម" : "ទាប"; }
+    if (action === "SELL" && rsi < 30) { reasons.push(`RSI ${rsi.toFixed(0)} ទាបពេក — អាចងើបវិញបន្តិចមុនធ្លាក់បន្ត`); conf = conf === "ខ្ពស់" ? "មធ្យម" : "ទាប"; }
     const p = plan(action === "WAIT" ? "HOLD" : action, f.price, f.indicators.atr, f.supports, f.resistances);
-    if (action !== "WAIT" && p.rr != null && p.rr < 1.2) { reasons.push(`⚠️ Risk:Reward ត្រឹម 1:${p.rr} — ចំណេញតិចបើធៀបនឹងហានិភ័យ`); if (conf === "ខ្ពស់") conf = "មធ្យម"; }
+    if (action !== "WAIT" && p.rr != null && p.rr < 1.2) { reasons.push(`Risk:Reward ត្រឹម 1:${p.rr} — ចំណេញតិចបើធៀបនឹងហានិភ័យ`); if (conf === "ខ្ពស់") conf = "មធ្យម"; }
     const headline = { BUY: "សញ្ញាបច្ចេកទេសភាគច្រើនចង្អុលឡើង", SELL: "សញ្ញាបច្ចេកទេសភាគច្រើនចង្អុលចុះ", WAIT: "មិនទាន់មានឱកាសច្បាស់ — ល្អបំផុតគឺរង់ចាំ" }[action];
     return { action, score: combined, confidence: conf, headline, reasons, agree, base_tf: "1h", plan: p };
   }
@@ -992,7 +1933,7 @@ const LT = (() => {
      For one timeframe: score every past candle, keep those in the same bucket as now
      (BUY ≥ +30 / SELL ≤ -30 / HOLD), and measure the price h candles later.
      P(up) = share that ended higher; range = 10th–90th percentile of those moves. */
-  const STEP = { "5m": 300, "15m": 900, "1h": 3600, "4h": 14400, "1d": 86400 };
+  const STEP = { "5m": 300, "15m": 900, "30m": 1800, "1h": 3600, "4h": 14400, "1d": 86400 };
   const HORIZONS = [
     { key: "15m", tf: "5m", h: 3 }, { key: "30m", tf: "5m", h: 6 }, { key: "1h", tf: "15m", h: 4 },
     { key: "2h", tf: "15m", h: 8 }, { key: "4h", tf: "1h", h: 4 }, { key: "12h", tf: "1h", h: 12 },
@@ -1045,8 +1986,362 @@ const LT = (() => {
     };
   }
 
-  return { analyzeAll, forecast };
+  /* ---- backtest of the 5-minute plan, split by hour of day ----
+     Replays the last `days` days: at every closed 5m candle, decide BUY/SELL/WAIT exactly like
+     the live panel (5m score + 15m/1h trend filter), then follow the trade for up to 60 min:
+     stop hit first → loss, target 1 hit → win (+1.5R), otherwise exit at the 60-min close.
+     If stop and target fall in the same candle we count a loss (worst case).
+     Fees: 0.1% per side (Binance spot without BNB discount). */
+  async function klinesRange(sym, tf, startMs) {
+    const out = [];
+    let from = startMs;
+    for (let page = 0; page < 40; page++) {
+      const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 15000);
+      let rows;
+      try {
+        const r = await fetch(`https://data-api.binance.vision/api/v3/klines?symbol=${sym}&interval=${tf}&startTime=${from}&limit=1000`, { signal: ctl.signal });
+        if (r.status === 400) throw new Error("NOTFOUND");
+        rows = await r.json();
+      } finally { clearTimeout(t); }
+      if (!rows.length) break;
+      rows.forEach(k => out.push({ time: Math.floor(k[0] / 1000), open: +k[1], high: +k[2], low: +k[3], close: +k[4], volume: +k[5] }));
+      if (rows.length < 1000) break;
+      from = rows[rows.length - 1][0] + 1;
+    }
+    return out;
+  }
+
+  function scoresOf(c) {
+    const I = indicators(c), s = new Array(c.length).fill(null), a = new Array(c.length).fill(null);
+    for (let i = 200; i < c.length; i++) { const r = I.at(i); s[i] = score(r)[0]; a[i] = r; }
+    return { s, a };
+  }
+
+  // score of the last candle of `big` that had CLOSED by time t (seconds)
+  function aligner(big, step) {
+    let j = 0;
+    return t => { while (j + 1 < big.c.length && big.c[j + 1].time + step <= t) j++; return big.c[j].time + step <= t ? big.s[j] : null; };
+  }
+
+  // opts.tf = the trading timeframe; opts.filters = the two bigger timeframes used as the trend filter
+  async function backtest(sym, days = 30, fee = 0.001, opts = {}) {
+    const tf = opts.tf || "5m", [fa, fb] = opts.filters || ["15m", "1h"], H = opts.hold || 12;
+    const warm = 200, now = Date.now();
+    const [c5, c15, c1h] = await Promise.all([
+      klinesRange(sym, tf, now - (days * 86400 + warm * STEP[tf]) * 1000),
+      klinesRange(sym, fa, now - (days * 86400 + warm * STEP[fa]) * 1000),
+      klinesRange(sym, fb, now - (days * 86400 + warm * STEP[fb]) * 1000),
+    ]);
+    const S5 = scoresOf(c5), S15 = scoresOf(c15), S1h = scoresOf(c1h);
+    const t15 = aligner({ c: c15, s: S15.s }, STEP[fa]), t1h = aligner({ c: c1h, s: S1h.s }, STEP[fb]);
+    const hours = Array.from({ length: 24 }, (_, h) => ({ h, n: 0, win: 0, loss: 0, R: 0, Rnet: 0, move: 0, moveN: 0 }));
+    const all = { n: 0, win: 0, loss: 0, R: 0, Rnet: 0, buy: 0, sell: 0, riskPct: 0 };
+    const tz = -new Date().getTimezoneOffset() * 60;
+    let busyUntil = -1;                             // one trade at a time, like a real person
+    const trades = [];
+    for (let i = 300; i < c5.length - H - 1; i++) {
+      const close = c5[i].time + STEP[tf];          // when this candle closed
+      const hr = new Date((c5[i + 1].time + tz) * 1000).getUTCHours();
+      hours[hr].move += Math.abs(c5[i + 1].close / c5[i + 1].open - 1); hours[hr].moveN++;
+      if (i <= busyUntil) continue;
+      const sc = S5.s[i], a = S5.a[i];
+      const ts15 = t15(close), ts1h = t1h(close);
+      if (sc == null || ts15 == null || ts1h == null) continue;
+      const ts = Math.round(0.4 * ts15 + 0.6 * ts1h);
+      const trend = ts >= 20 ? "UP" : ts <= -20 ? "DOWN" : "FLAT";
+      const action = sc >= 30 && trend !== "DOWN" ? "BUY" : sc <= -30 && trend !== "UP" ? "SELL" : null;
+      if (!action) continue;
+      // same entry / stop / target as the live 5-minute panel (entry = next candle's open)
+      const entry = c5[i + 1].open, atr = a.atr;
+      const [S, R] = levels(c5.slice(i - 299, i + 1), a.close, atr);
+      let stop, tp, risk;
+      if (action === "BUY") { stop = Math.max(Math.min(entry - 1.2 * atr, S[0].price - 0.3 * atr), entry - 2.5 * atr); risk = entry - stop; tp = entry + 1.5 * risk; }
+      else { stop = Math.min(Math.max(entry + 1.2 * atr, R[0].price + 0.3 * atr), entry + 2.5 * atr); risk = stop - entry; tp = entry - 1.5 * risk; }
+      if (!(risk > 0)) continue;
+      let r = null, k = i + 1;
+      for (; k <= i + H; k++) {
+        const x = c5[k];
+        const hitStop = action === "BUY" ? x.low <= stop : x.high >= stop;
+        const hitTp = action === "BUY" ? x.high >= tp : x.low <= tp;
+        if (hitStop) { r = -1; break; }
+        if (hitTp) { r = 1.5; break; }
+      }
+      if (r === null) { k = i + H; r = (action === "BUY" ? c5[k].close - entry : entry - c5[k].close) / risk; }
+      const costR = (2 * fee * entry) / risk;
+      const b = hours[new Date((c5[i + 1].time + tz) * 1000).getUTCHours()];
+      for (const o of [b, all]) { o.n++; o.R += r; o.Rnet += r - costR; if (r > 0) o.win++; else o.loss++; }
+      trades.push({ t: c5[i + 1].time, hr: new Date((c5[i + 1].time + tz) * 1000).getUTCHours(), side: action, r, net: r - costR,
+                    pct: r * risk / entry * 100, netPct: (r * risk / entry - 2 * fee) * 100 });
+      all.riskPct += risk / entry; action === "BUY" ? all.buy++ : all.sell++;
+      busyUntil = k;
+    }
+    hours.forEach(h => { h.move = h.moveN ? h.move / h.moveN : 0; });
+    return { sym, days, tf, hold: H, from: c5[300] && c5[300].time, to: c5[c5.length - 1].time, hours, all, fee, trades };
+  }
+
+  /* ---- SWING (4h): the one setup that held up in testing ----
+     Tested on 5 years of 4h candles, 6 coins, with the first 2/3 used to choose the settings and the
+     last 1/3 kept aside to check them: BUY when the 4h score ≥ +30, SELL when ≤ -30,
+     stop = 3 × ATR(4h), target = 3 × the risk (9 × ATR), close after 42 candles (7 days) if neither hit. */
+  const SW = { tf: "4h", stop: 3, tp: 3, hold: 42, years: 5 };
+
+  function simSwing(c, s, a, fee = 0.001) {
+    const T = []; let busy = -1;
+    for (let i = 210; i < c.length - 2; i++) {
+      if (i <= busy || s[i] == null) continue;
+      const side = s[i] >= 30 ? "BUY" : s[i] <= -30 ? "SELL" : null;
+      if (!side) continue;
+      const e = c[i + 1].open, risk = SW.stop * a[i].atr;
+      if (!(risk > 0)) continue;
+      const stop = side === "BUY" ? e - risk : e + risk, tp = side === "BUY" ? e + SW.tp * risk : e - SW.tp * risk;
+      const last = Math.min(i + SW.hold, c.length - 1);
+      let r = null, k = i + 1;
+      for (; k <= last; k++) {
+        const x = c[k];
+        if (side === "BUY" ? x.low <= stop : x.high >= stop) { r = -1; break; }
+        if (side === "BUY" ? x.high >= tp : x.low <= tp) { r = SW.tp; break; }
+      }
+      if (r === null) { if (last < i + SW.hold) break; k = last; r = (side === "BUY" ? c[k].close - e : e - c[k].close) / risk; }
+      const pct = r * risk / e * 100;
+      T.push({ t: c[i].time, tx: c[k].time, side, r, pct, net: pct - 2 * fee * 100 });
+      busy = k;
+    }
+    return T;
+  }
+
+  async function swingTest(sym) {
+    const c = await klinesRange(sym, SW.tf, Date.now() - SW.years * 365 * 86400000);
+    if (c.length < 400) throw new Error("NODATA");
+    const S = scoresOf(c), T = simSwing(c, S.s, S.a), cut = c[Math.floor(c.length * 2 / 3)].time;
+    const st = xs => { const n = xs.length; return n ? { n, win: xs.filter(t => t.r > 0).length / n, avg: xs.reduce((x, t) => x + t.net, 0) / n, total: xs.reduce((x, t) => x + t.net, 0) } : { n: 0, win: 0, avg: 0, total: 0 }; };
+    return { sym, from: c[0].time, to: c[c.length - 1].time, all: st(T), buy: st(T.filter(t => t.side === "BUY")),
+             sell: st(T.filter(t => t.side === "SELL")), oos: st(T.filter(t => t.t >= cut)),
+             buyHold: (c[c.length - 1].close / c[210].close - 1) * 100,
+             start: c[210].time,
+             curve: T.map(t => [t.tx, Math.round(t.net * 1000) / 1000, t.side === "BUY" ? 1 : 0]),
+             daily: c.filter((x, i) => i >= 210 && (i - 210) % 6 === 0).map(x => [x.time, x.close]) };
+  }
+
+  async function swingNow(sym) {
+    const c = await klines(sym, SW.tf, 500);
+    const S = scoresOf(c), last = c.length - 2;                    // last CLOSED 4h candle
+    const b = x => x >= 30 ? "BUY" : x <= -30 ? "SELL" : "WAIT";
+    const action = b(S.s[last]);
+    let k = last; while (k - 1 >= 200 && b(S.s[k - 1]) === action) k--;
+    const price = c[c.length - 1].close, atr = S.a[last].atr, risk = SW.stop * atr;
+    const step = STEP[SW.tf];
+    return {
+      action, score: S.s[last], price, atr,
+      since: c[k].time + step, sincePrice: c[k].close, sinceBars: last - k + 1,
+      nextClose: (c[c.length - 1].time + step) * 1000,
+      buy: { entry: px(price), stop: px(price - risk), tp: px(price + SW.tp * risk) },
+      sell: { entry: px(price), stop: px(price + risk), tp: px(price - SW.tp * risk) },
+      reasons: score(S.a[last])[1],
+    };
+  }
+
+  // full indicator series for the chart panes (last `keep` candles)
+  async function series(sym, tf, keep = 200) {
+    const c = await klines(sym, tf, 500), cl = c.map(x => x.close), n = c.length;
+    const e200 = ema(cl, 200), e12 = ema(cl, 12), e26 = ema(cl, 26);
+    const macd = e12.map((x, i) => x - e26[i]), sig = ema(macd, 9);
+    const d = cl.map((x, i) => i ? x - cl[i - 1] : 0);
+    const g = wilder(d.map((x, i) => i ? Math.max(x, 0) : 0), 14), l = wilder(d.map((x, i) => i ? Math.max(-x, 0) : 0), 14);
+    const out = [];
+    for (let i = Math.max(0, n - keep); i < n; i++) {
+      const w = cl.slice(Math.max(0, i - 19), i + 1), m = w.reduce((a, b) => a + b, 0) / w.length;
+      const sd = Math.sqrt(w.reduce((a, b) => a + (b - m) ** 2, 0) / Math.max(1, w.length - 1));
+      out.push({ time: c[i].time, up: c[i].close >= c[i].open, vol: c[i].volume, ema200: e200[i],
+                 bbU: m + 2 * sd, bbM: m, bbL: m - 2 * sd, rsi: 100 - 100 / (1 + g[i] / l[i]),
+                 macd: macd[i], sig: sig[i], hist: macd[i] - sig[i] });
+    }
+    return out;
+  }
+
+  return { analyzeAll, forecast, backtest, swingTest, swingNow, SW, series, lab: { klinesRange, scoresOf, indicators, score, levels, STEP } };
 })();
+
+/* ---------------- accuracy check + best hours (one 90-day backtest feeds both) ---------------- */
+const BT_TTL = 6 * 3600 * 1000;      // re-test at most every 6 hours per coin + timeframe
+// trading timeframe → trend filter, how long a trade may stay open, how much history to test
+const BT_CFG = {
+  "5m":  { f: ["15m", "1h"], hold: 12, days: 90,  label: "5 នាទី",  holdKm: "60 នាទី" },
+  "15m": { f: ["1h", "4h"],  hold: 16, days: 90,  label: "15 នាទី", holdKm: "4 ម៉ោង" },
+  "30m": { f: ["1h", "4h"],  hold: 12, days: 180, label: "30 នាទី", holdKm: "6 ម៉ោង" },
+  "1h":  { f: ["4h", "1d"],  hold: 24, days: 365, label: "1 ម៉ោង",  holdKm: "24 ម៉ោង" },
+};
+let btTf = "5m";
+try { const t = localStorage.getItem("btTf"); if (BT_CFG[t]) btTf = t; } catch (e) {}
+let BT_DAYS = BT_CFG[btTf].days;
+const btMem = {};
+let btBusy = false, hrsSummary = null;
+
+// reduce the raw backtest (thousands of trades) to the numbers the page shows
+function summarize(b) {
+  const T = b.trades, n = T.length, sum = (a, f) => a.reduce((x, t) => x + f(t), 0);
+  const span = (b.to - b.from) / 3, seg = t => Math.min(2, Math.floor((t - b.from) / span));
+  const maxMove = Math.max(...b.hours.map(h => h.move));
+  const hours = Array.from({ length: 24 }, (_, h) => {
+    const xs = T.filter(t => t.hr === h), k = xs.length;
+    const months = [0, 1, 2].map(m => { const ys = xs.filter(t => seg(t.t) === m); return ys.length >= 3 ? ys.filter(t => t.r > 0).length / ys.length : null; });
+    const win = k ? xs.filter(t => t.r > 0).length / k : 0;
+    const goodMonths = months.filter(x => x != null && x >= 0.5).length, badMonths = months.filter(x => x != null && x <= 0.4).length;
+    const cls = k >= 10 && win >= 0.5 && goodMonths >= 2 ? "good" : k >= 10 && win <= 0.36 && badMonths >= 2 ? "bad" : "normal";
+    return { h, n: k, win, months, cls, gross: k ? sum(xs, t => t.pct) / k : 0, hot: b.hours[h].move >= maxMove * 0.75, move: b.hours[h].move };
+  });
+  // consistency of hour-to-hour results between the 3 months (average pairwise correlation)
+  const corr = (a, c) => { const ok = a.map((x, i) => x != null && c[i] != null); const A = a.filter((_, i) => ok[i]), C = c.filter((_, i) => ok[i]);
+    const ma = A.reduce((x, y) => x + y, 0) / A.length, mc = C.reduce((x, y) => x + y, 0) / C.length; let nu = 0, da = 0, dc = 0;
+    A.forEach((x, i) => { nu += (x - ma) * (C[i] - mc); da += (x - ma) ** 2; dc += (C[i] - mc) ** 2; }); return da && dc ? nu / Math.sqrt(da * dc) : 0; };
+  const M = [0, 1, 2].map(m => hours.map(h => h.months[m]));
+  const stable = (corr(M[0], M[1]) + corr(M[1], M[2]) + corr(M[0], M[2])) / 3;
+  return { sym: b.sym, tf: b.tf, days: b.days, from: b.from, to: b.to, n, win: n ? T.filter(t => t.r > 0).length / n : 0,
+           gross: n ? sum(T, t => t.pct) / n : 0, net: n ? sum(T, t => t.netPct) / n : 0, hours, stable };
+}
+
+const btBusyKeys = new Set();
+const btKey = (sym, tf) => `bt:${sym}:${tf}`;
+function btCached(sym, tf) {
+  const k = btKey(sym, tf);
+  let hit = btMem[k];
+  if (!hit) { try { hit = JSON.parse(localStorage.getItem(k)); if (hit) btMem[k] = hit; } catch (e) {} }
+  return hit;
+}
+
+async function runBacktest(force = false, tf = btTf) {
+  const asked = symbol, cfg = BT_CFG[tf], key = btKey(asked, tf);
+  const hit = btCached(asked, tf);
+  const shown = () => asked === symbol && tf === btTf;
+  if (!force && hit && Date.now() - hit.at < BT_TTL) { if (shown()) renderBacktest(hit.s); return; }
+  if (btBusyKeys.has(key)) return;
+  btBusyKeys.add(key);
+  if (shown()) {
+    $("btRun").disabled = true;
+    $("btVerdict").className = "bt-verdict";
+    $("btVerdict").textContent = `កំពុងសាកល្បងសញ្ញា ${cfg.label} របស់ ${coinLabel()} លើទិន្នន័យពិត ${cfg.days} ថ្ងៃ… (ប្រហែល 30 វិនាទី)`;
+    if (!hit) { $("hrsState").textContent = "⏰ កំពុងរកម៉ោងល្អ…"; $("hrsNext").textContent = `សាកល្បង ${cfg.label} លើទិន្នន័យ ${cfg.days} ថ្ងៃ (~30 វិនាទី)`; }
+  }
+  try {
+    const S = summarize(await LT.backtest(asked, cfg.days, 0.001, { tf, filters: cfg.f, hold: cfg.hold }));
+    const rec = { at: Date.now(), s: S };
+    btMem[key] = rec;
+    try { localStorage.setItem(key, JSON.stringify(rec)); } catch (e) {}
+    if (shown()) renderBacktest(S);
+    if (tf === "5m" && asked === symbol) renderHoursCard();     // refresh the ⏰ badge in the 5-minute panel
+  } catch (e) {
+    if (shown()) {
+      $("btVerdict").textContent = e.message === "NOTFOUND" ? "រកមិនឃើញកាក់នេះ" : "មិនអាចទាញទិន្នន័យ — ចុច ▶ ដើម្បីសាកម្តងទៀត";
+      $("hrsState").textContent = "⏰ មិនអាចគណនា"; $("hrsNext").textContent = "ចុច ▶ សាកល្បងម្តងទៀត ខាងក្រោម";
+    }
+  } finally {
+    btBusyKeys.delete(key);
+    if (shown()) $("btRun").disabled = false;
+  }
+}
+
+function selectBtTf(tf) {
+  btTf = tf; BT_DAYS = BT_CFG[tf].days;
+  try { localStorage.setItem("btTf", tf); } catch (e) {}
+  document.querySelectorAll("#hrsTabs button").forEach(b => b.classList.toggle("active", b.dataset.bt === tf));
+  hrsSummary = null;
+  $("hrsStrip").innerHTML = ""; $("hrsNow").className = "hrs-now";
+  $("btTiles").innerHTML = ""; $("btHours").innerHTML = ""; $("btNote").innerHTML = "";
+  $("btTitle").textContent = `🔬 ពិនិត្យភាពត្រឹមត្រូវ — បើធ្វើតាមសញ្ញា ${BT_CFG[tf].label} ក្នុង ${BT_CFG[tf].days} ថ្ងៃចុងក្រោយ`;
+  renderHoursCard();
+  runBacktest(false, tf);
+}
+$("hrsTabs").addEventListener("click", e => { const b = e.target.closest("button"); if (b && b.dataset.bt !== btTf) selectBtTf(b.dataset.bt); });
+document.querySelectorAll("#hrsTabs button").forEach(b => b.classList.toggle("active", b.dataset.bt === btTf));
+$("btTitle").textContent = `🔬 ពិនិត្យភាពត្រឹមត្រូវ — បើធ្វើតាមសញ្ញា ${BT_CFG[btTf].label} ក្នុង ${BT_CFG[btTf].days} ថ្ងៃចុងក្រោយ`;
+
+function renderBacktest(S) {
+  const p2 = x => (x > 0 ? "+" : "") + x.toFixed(2) + "%";
+  const pc = x => x == null ? "–" : Math.round(x * 100) + "%";
+  if (S.tf && S.tf !== btTf) return;
+  const cfg = BT_CFG[S.tf || "5m"];
+  if (!S.n) { $("btVerdict").textContent = `មិនមានសញ្ញាទិញ/លក់គ្រប់គ្រាន់ក្នុង ${cfg.days} ថ្ងៃ ដើម្បីវាស់`; return; }
+  hrsSummary = S;
+
+  const v = $("btVerdict");
+  if (S.net > 0.02 && S.win > 0.5) {
+    v.className = "bt-verdict good";
+    v.innerHTML = `✅ ក្នុង ${cfg.days} ថ្ងៃចុងក្រោយ សញ្ញា ${cfg.label} របស់ ${coinLabel()} ចំណេញក្រោយថ្លៃសេវា<small>លទ្ធផលពីមុនមិនធានាអនាគតទេ</small>`;
+  } else if (S.gross > 0) {
+    v.className = "bt-verdict meh";
+    v.innerHTML = `មុនថ្លៃសេវាចំណេញបន្តិច តែ<b>ក្រោយថ្លៃសេវា Binance ខាត</b><small>ចំណេញម្តងៗតូចជាងថ្លៃសេវា 0.2% (ទិញ + លក់) — ការជួញដូរញឹកញាប់ស៊ីលុយអស់</small>`;
+  } else {
+    v.className = "bt-verdict bad";
+    v.innerHTML = `❌ បើធ្វើតាមសញ្ញា ${cfg.label} រាល់ដង ក្នុង ${cfg.days} ថ្ងៃចុងក្រោយ <b>នឹងខាត</b> — ទាំងមុន និងក្រោយថ្លៃសេវា<small>សញ្ញាត្រូវ ${Math.round(S.win * 100)}% ហើយថ្លៃសេវាធ្វើឱ្យខាតបន្ថែម</small>`;
+  }
+  $("btTiles").innerHTML = `
+    <div><small>ចំនួនដងដែលមានសញ្ញា</small><b>${S.n}</b></div>
+    <div><small>ត្រូវ (ដល់គោលដៅមុន Stop)</small><b class="${S.win >= 0.5 ? "c-BUY" : "c-SELL"}">${Math.round(S.win * 100)}%</b></div>
+    <div><small>មធ្យមម្តង មុនថ្លៃសេវា</small><b class="${S.gross >= 0 ? "c-BUY" : "c-SELL"}">${p2(S.gross)}</b></div>
+    <div><small>មធ្យមម្តង ក្រោយថ្លៃសេវា</small><b class="${S.net >= 0 ? "c-BUY" : "c-SELL"}">${p2(S.net)}</b></div>`;
+
+  $("btHours").innerHTML = S.hours.map(h => `
+    <div class="bt-h ${h.hot ? "hot" : ""}" title="${String(h.h).padStart(2, "0")}:00 · ${h.n} ដង · ត្រូវ ${pc(h.win)} (ខែ: ${h.months.map(pc).join(" · ")}) · មុនថ្លៃសេវា ${p2(h.gross)} · ក្រោយថ្លៃសេវា ${p2(h.gross - 0.2)}">
+      <span class="pc">${h.n ? Math.round(h.win * 100) : ""}</span>
+      <div class="bar ${h.cls === "good" ? "up" : h.cls === "bad" ? "dn" : ""}" style="height:${Math.max(2, h.win * 100)}%"></div>
+      <span class="vol">${h.hot ? "⚡" : ""}</span><span class="hr">${h.h}</span></div>`).join("");
+
+  const hot = S.hours.filter(h => h.hot).map(h => h.h);
+  const best = S.hours.filter(h => h.cls === "good").sort((a, b) => b.win - a.win);
+  $("btNote").innerHTML =
+    (S.stable < 0.3
+      ? `<b>ម៉ោងល្អ/អាក្រក់ មិនសូវស្ថិតស្ថេរ</b> — លទ្ធផលតាមម៉ោងរវាង 3 ខែ ស្រដៀងគ្នាតិចតួច (ទំនាក់ទំនង ${S.stable.toFixed(2)})។ ម៉ោងដែលមានពណ៌បៃតងគឺជាម៉ោងដែលល្អយ៉ាងហោច 2 ក្នុង 3 ខែ តែនៅតែអាចជាសំណាង។ `
+      : `លទ្ធផលតាមម៉ោងស្រដៀងគ្នារវាង 3 ខែ (ទំនាក់ទំនង ${S.stable.toFixed(2)})។ `) +
+    (best.length ? `ទោះម៉ោងល្អបំផុត (${best[0].h}:00) ក៏ចំណេញមធ្យម ${p2(best[0].gross)} មុនថ្លៃសេវា ធៀបនឹងថ្លៃសេវា 0.2%។ ` : "") +
+    (hot.length ? `⚡ តម្លៃប្រែប្រួលខ្លាំងបំផុតនៅម៉ោង <b>${Math.min(...hot)}:00–${Math.max(...hot) + 1}:00</b> (ពេលផ្សារអាមេរិកបើក)។ ` : "") +
+    `វិធីសាកល្បង៖ រាល់ពេលសញ្ញា ${cfg.label} ប្រាប់ ទិញ/លក់ (តាមរបៀបដូចផ្ទាំង ⚡) ចូលនៅតម្លៃ candle បន្ទាប់ ប្រើ Stop និងគោលដៅ 1 ហើយចេញក្រោយ ${cfg.holdKm} បើមិនដល់។ ថ្លៃសេវា 0.1% ពេលទិញ + 0.1% ពេលលក់។ ទិន្នន័យ ${new Date(S.from * 1000).toLocaleDateString()} – ${new Date(S.to * 1000).toLocaleDateString()}។`;
+
+  renderHoursCard();
+}
+
+// the "best hours" card at the top: 24-hour strip + is right now a good hour?
+function renderHoursCard() {
+  const S = hrsSummary;
+  const now = new Date(), h = now.getHours();
+  $("hrsClock").textContent = `${String(h).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+  // ⏰ badge in the 5-minute panel always uses the 5-minute test
+  const s5 = btCached(symbol, "5m");
+  if (s5 && s5.s.hours) {
+    const c5 = s5.s.hours[h].cls;
+    $("sHour").className = "s-hour " + c5;
+    $("sHour").textContent = c5 === "good" ? "⏰ ម៉ោងល្អ" : c5 === "bad" ? "⏰ ម៉ោងគួរជៀស" : "⏰ ម៉ោងធម្មតា";
+  }
+  if (!S) return;
+  const pc = x => x == null ? "–" : Math.round(x * 100) + "%";
+  $("hrsSub").textContent = `${coinLabel()} · សញ្ញា ${BT_CFG[btTf].label} · ${BT_CFG[btTf].days} ថ្ងៃ · ${S.n} ដង · សរុបត្រូវ ${Math.round(S.win * 100)}%`;
+  $("hrsStrip").innerHTML = S.hours.map(x => `
+    <div class="hc ${x.cls} ${x.h === h ? "now" : ""}" title="${String(x.h).padStart(2, "0")}:00–${String((x.h + 1) % 24).padStart(2, "0")}:00 · ត្រូវ ${pc(x.win)} · ខែ 1·2·3: ${x.months.map(pc).join(" · ")} · ${x.n} ដង${x.hot ? " · ⚡ ប្រែប្រួលខ្លាំង" : ""}">
+      <span class="h">${x.h}</span><span class="w">${x.n ? Math.round(x.win * 100) : "–"}</span>
+      <span class="m">${x.months.map(m => `<i class="${m == null ? "" : m >= 0.5 ? "g" : m <= 0.4 ? "b" : ""}"></i>`).join("")}</span>
+    </div>`).join("");
+
+  const cur = S.hours[h];
+  const box = $("hrsNow");
+  box.className = "hrs-now " + cur.cls;
+  $("hrsState").textContent = cur.cls === "good" ? `✅ ឥឡូវជាម៉ោងល្អ (ត្រូវ ${pc(cur.win)})`
+    : cur.cls === "bad" ? `⛔ ឥឡូវគួរជៀស (ត្រូវ ${pc(cur.win)})` : `➖ ម៉ោងធម្មតា (ត្រូវ ${pc(cur.win)})`;
+  // next good hour
+  let next = null;
+  for (let k = 1; k <= 24; k++) { const x = S.hours[(h + k) % 24]; if (x.cls === "good") { next = { x, k }; break; } }
+  if (cur.cls === "good") {
+    const left = 60 - now.getMinutes();
+    let end = (h + 1) % 24; while (S.hours[end].cls === "good" && end !== h) end = (end + 1) % 24;
+    $("hrsNext").textContent = `ម៉ោងល្អនៅសល់ ${end === (h + 1) % 24 ? left + " នាទី" : `រហូតដល់ ${end}:00`}`;
+  } else if (next) {
+    const mins = (next.k - 1) * 60 + (60 - now.getMinutes());
+    $("hrsNext").textContent = `ម៉ោងល្អបន្ទាប់: ${next.x.h}:00 (ក្នុង ${mins >= 60 ? Math.floor(mins / 60) + " ម៉ោង " : ""}${mins % 60} នាទី)`;
+  } else {
+    $("hrsNext").textContent = "មិនមានម៉ោងណាល្អជាប់គ្នាគ្រប់ខែទេ សម្រាប់កាក់នេះ";
+  }
+  // badge inside the 5-minute panel
+
+}
+setInterval(renderHoursCard, 30000);
+$("btRun").addEventListener("click", () => runBacktest(true));
 
 /* ---------------- forecast panel ---------------- */
 const WD = ["អាទិត្យ", "ច័ន្ទ", "អង្គារ", "ពុធ", "ព្រហ", "សុក្រ", "សៅរ៍"];
@@ -1127,8 +2422,8 @@ async function pollBrowser(asked) {
     if (asked !== symbol) return;
     $("banner").style.display = "block";
     $("banner").textContent = e.message === "NOTFOUND"
-      ? `⚠️ រកមិនឃើញកាក់ ${asked} នៅលើ Binance — សូមពិនិត្យឈ្មោះកាក់ (ឧ. ADA, LINK, AVAX)`
-      : "⚠️ មិនអាចទាញទិន្នន័យពី Binance — សូមពិនិត្យ internet។ នឹងសាកម្តងទៀតដោយខ្លួនឯង។";
+      ? `រកមិនឃើញកាក់ ${asked} នៅលើ Binance — សូមពិនិត្យឈ្មោះកាក់ (ឧ. ADA, LINK, AVAX)`
+      : "មិនអាចទាញទិន្នន័យពី Binance — សូមពិនិត្យ internet។ នឹងសាកម្តងទៀតដោយខ្លួនឯង។";
     $("dot").className = "dot err";
   }
 }
@@ -1157,8 +2452,8 @@ async function poll() {
     if (j.error) {
       $("banner").style.display = "block";
       $("banner").textContent = j.error.startsWith("រកមិនឃើញ") || j.error.startsWith("ឈ្មោះកាក់")
-        ? "⚠️ " + j.error + " — សូមពិនិត្យឈ្មោះកាក់ (ឧ. ADA, LINK, AVAX)"
-        : "⚠️ មិនអាចទាញទិន្នន័យពី Binance: " + j.error + " — server នឹងសាកម្តងទៀតដោយខ្លួនឯង។";
+        ? "" + j.error + " — សូមពិនិត្យឈ្មោះកាក់ (ឧ. ADA, LINK, AVAX)"
+        : "មិនអាចទាញទិន្នន័យពី Binance: " + j.error + " — server នឹងសាកម្តងទៀតដោយខ្លួនឯង។";
       $("dot").className = "dot err";
     } else {
       $("banner").style.display = "none";
@@ -1180,7 +2475,7 @@ function tickStatus() {
   const s = Math.max(0, Math.round((Date.now() - lastUpdated) / 1000));
   const ago = s < 90 ? `${s} វិនាទីមុន` : `${Math.round(s / 60)} នាទីមុន`;
   const stale = s > refreshSeconds * 4;
-  $("statusText").textContent = (stale ? "⚠️ ទិន្នន័យចាស់ · " : "ស្វ័យប្រវត្តិ · ") + "វិភាគ " + ago + (browserMode ? " · browser" : "");
+  $("statusText").textContent = (stale ? "ទិន្នន័យចាស់ · " : "ស្វ័យប្រវត្តិ · ") + "វិភាគ " + ago + (browserMode ? " · browser" : "");
   if (stale) $("dot").className = "dot err";
 }
 
@@ -1209,6 +2504,7 @@ function connectLive() {
         el.classList.add(c > livePrice ? "flash-up" : "flash-down");
       }
       livePrice = c;
+      checkAlerts(c);
       el.textContent = fmt(c);
       document.title = `${fmt(c, 0)} · ${coinLabel()} ស្កេន`;
       const ch = (c - o) / o * 100;
@@ -1298,13 +2594,6 @@ function checkSignalChange() {
     }
     prevScalp = a;
   }
-  const o = payload.verdict ? payload.verdict.action : payload.overall.signal;
-  if (prevOverall && o !== prevOverall) {
-    const name = { BUY: "ទិញ", SELL: "លក់", WAIT: "រង់ចាំ", HOLD: "រង់ចាំ" };
-    const kind = o === "WAIT" ? "HOLD" : o;
-    notify(kind, `សេចក្តីសម្រេចប្តូរ: ${name[prevOverall]} → ${name[o]} (${o}) · ${fmt(livePrice ?? payload.frames["1h"].price, 0)}`);
-  }
-  prevOverall = o;
 }
 
 let zone = null;  // "above" R1, "below" S1, or "inside"
@@ -1406,6 +2695,13 @@ function switchCoin(sym) {
   pollHistory();
   $("fcHours").innerHTML = `<div class="skeleton">កំពុងគណនា…</div>`; $("fcDays").innerHTML = "";
   pollForecast();
+  swing = null; swingStats = null; $("vStats").textContent = ""; $("vAction").textContent = "…"; $("vReasons").innerHTML = ""; $("vPlan").innerHTML = "";
+  pollSwing(); setTimeout(loadSwingStats, 1500); pollDepth();
+  $("btTiles").innerHTML = ""; $("btHours").innerHTML = ""; $("btNote").innerHTML = "";
+  hrsSummary = null; $("hrsStrip").innerHTML = ""; $("hrsNow").className = "hrs-now"; $("sHour").textContent = "";
+  $("hrsState").textContent = "⏰ កំពុងរកម៉ោងល្អ…"; $("hrsNext").textContent = "";
+  setTimeout(() => runBacktest(), 3000);
+  setTimeout(() => { if (btTf !== "5m") runBacktest(false, "5m"); }, 35000);   // for the ⏰ badge
 }
 
 function setChartPrecision() {
@@ -1448,8 +2744,512 @@ async function checkVersion() {
 checkVersion();
 setInterval(checkVersion, 15000);
 
+/* ---------------- 📈 equity curve of the 4h signal ---------------- */
+let eqChart = null, eqLine = null, eqHold = null;
+function drawEquity() {
+  const st = swingStats;
+  if (!document.querySelector('.page[data-page="test"]').classList.contains("on")) return;   // draw when visible
+  if (!st || !st.curve) { $("eqTiles").innerHTML = `<div style="grid-column:1/-1"><small>កំពុងសាកល្បង 5 ឆ្នាំ…</small></div>`; return; }
+  if (!eqChart) {
+    eqChart = LightweightCharts.createChart($("eqChart"), {
+      layout: { background: { color: "transparent" }, textColor: "#8a94a3", fontFamily: "JetBrains Mono" },
+      grid: { vertLines: { color: "#1a1f26" }, horzLines: { color: "#1a1f26" } },
+      rightPriceScale: { borderColor: "#232a33" }, timeScale: { borderColor: "#232a33" },
+      handleScroll: { mouseWheel: false, pressedMouseMove: true, horzTouchDrag: true, vertTouchDrag: false },
+      handleScale: { mouseWheel: false, pinch: true, axisPressedMouseMove: true },
+      crosshair: { mode: 0 }, autoSize: true,
+    });
+    eqHold = eqChart.addLineSeries({ color: "#8a94a3", lineWidth: 1.5, priceLineVisible: false });
+    eqLine = eqChart.addLineSeries({ color: "#2ecc8f", lineWidth: 2.5, priceLineVisible: false });
+  }
+  // compounding: the whole $1,000 goes into each trade (fees included)
+  let eq = 1000, peak = 1000, dd = 0;
+  const pts = [{ time: st.start, value: 1000 }];
+  for (const [t, net, isBuy] of st.curve) {
+    if (!isBuy) continue;                       // Spot: on a SELL signal you just hold cash
+    eq *= 1 + net / 100; peak = Math.max(peak, eq); dd = Math.min(dd, eq / peak - 1);
+    if (t > pts[pts.length - 1].time) pts.push({ time: t, value: Math.round(eq * 100) / 100 });
+  }
+  const p0 = st.daily[0][1];
+  const hold = st.daily.map(([t, c]) => ({ time: t, value: Math.round(1000 * c / p0 * 100) / 100 }));
+  let hpeak = 0, hdd = 0; hold.forEach(x => { hpeak = Math.max(hpeak, x.value); hdd = Math.min(hdd, x.value / hpeak - 1); });
+  eqLine.setData(pts); eqHold.setData(hold); eqChart.timeScale().fitContent();
+  const holdEnd = hold[hold.length - 1].value;
+  const u = x => "$" + Math.round(x).toLocaleString("en-US");
+  $("eqTiles").innerHTML = `
+    <div><small>ធ្វើតាមសញ្ញា 🎯</small><b class="${eq >= 1000 ? "c-BUY" : "c-SELL"}">${u(eq)}</b></div>
+    <div><small>ទិញទុកមិនលក់</small><b class="${holdEnd >= 1000 ? "c-BUY" : "c-SELL"}">${u(holdEnd)}</b></div>
+    <div><small>ធ្លាក់ខ្លាំងបំផុត (សញ្ញា)</small><b class="c-SELL">${(dd * 100).toFixed(0)}%</b></div>
+    <div><small>ធ្លាក់ខ្លាំងបំផុត (ទិញទុក)</small><b class="c-SELL">${(hdd * 100).toFixed(0)}%</b></div>`;
+  const yrs = ((st.to - st.start) / 31536000).toFixed(1);
+  $("eqNote").innerHTML = `${coinLabel()} · ${yrs} ឆ្នាំ · ${st.all.n} trade (ទិញ ${st.buy.n} · លក់/short ${st.sell.n}) · ត្រូវ ${Math.round(st.all.win * 100)}%។ ` +
+    `ខ្សែពណ៌បៃតង៖ ទិញពេលសញ្ញាទិញ ដាក់លុយទាំងអស់ ហើយលក់ពេលដល់គោលដៅ Stop ឬ 7 ថ្ងៃ។ ពេលសញ្ញាលក់ ទុកលុយជាសាច់ប្រាក់ (Spot)។ ` +
+    `"ធ្លាក់ខ្លាំងបំផុត" = ពេលដែលលុយធ្លាក់ពីកំពូលខ្លាំងបំផុត — ត្រូវត្រៀមចិត្តទ្រាំ។ អតីតកាលមិនធានាអនាគតទេ។`;
+}
+
+/* ---------------- 💼 my trade: position size + tracker (saved in this browser) ---------------- */
+const FEE = 0.001;                              // Binance spot, per side
+const TR_KEY = "myTrades";
+let TR = { open: {}, closed: [] };
+try { const x = JSON.parse(localStorage.getItem(TR_KEY)); if (x && x.open) TR = x; } catch (e) {}
+const saveTR = () => { try { localStorage.setItem(TR_KEY, JSON.stringify(TR)); } catch (e) {} };
+try { const c = localStorage.getItem("trCap"), r = localStorage.getItem("trRisk"); if (c) $("trCap").value = c; if (r) $("trRisk").value = r; } catch (e) {}
+const qtyFmt = q => q >= 100 ? q.toFixed(1) : q >= 1 ? q.toFixed(4) : Number(q.toPrecision(4)).toString();
+const usd = (x, sign) => (sign && x > 0 ? "+" : x < 0 ? "-" : "") + "$" + Math.abs(x).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+let delArmed = false;
+
+// what the calculator suggests right now
+function tradePlan() {
+  const w = swing;
+  if (!w) return null;
+  const cap = Math.max(0, +$("trCap").value || 0), riskPct = Math.min(10, Math.max(0.1, +$("trRisk").value || 1));
+  const auto = w.action === "BUY";
+  const entry = livePrice ?? w.price;
+  const stop = auto ? w.buy.stop : entry - LT.SW.stop * w.atr;
+  const tp = auto ? w.buy.tp : entry + LT.SW.stop * LT.SW.tp * w.atr;
+  const perUnit = entry - stop;
+  let qty = perUnit > 0 ? (cap * riskPct / 100) / perUnit : 0, capped = false;
+  if (qty * entry > cap) { qty = cap / entry; capped = true; }
+  const fees = q => q * entry * FEE;
+  return { auto, entry, stop, tp, qty, cost: qty * entry, capped, cap, riskPct,
+           lossAtStop: qty * (stop - entry) - fees(qty) - qty * stop * FEE,
+           gainAtTp: qty * (tp - entry) - fees(qty) - qty * tp * FEE };
+}
+
+function renderTrade() {
+  $("trCoin").textContent = coinLabel();
+  const P = tradePlan(), w = swing;
+  // ---- calculator
+  if (!P) { $("trOut").innerHTML = `<div class="wide">កំពុងទាញសញ្ញា 4 ម៉ោង…</div>`; }
+  else {
+    const head = P.auto ? `<div class="wide">🎯 សញ្ញា 4 ម៉ោង: <b class="c-BUY">ទិញ</b> — បើទិញឥឡូវ៖</div>`
+      : w.action === "SELL" ? `<div class="wide">🎯 សញ្ញា 4 ម៉ោង: <b class="c-SELL">លក់</b> — មិនគួរទិញថ្មីទេ។ បើអ្នកកាន់ ${coinLabel()} សញ្ញាប្រាប់ឱ្យលក់។ គណនាខាងក្រោមគ្រាន់តែជាឧទាហរណ៍៖</div>`
+      : `<div class="wide">🎯 សញ្ញា 4 ម៉ោង: <b class="c-HOLD">រង់ចាំ</b> — មិនទាន់ដល់ពេលទិញ។ គណនាខាងក្រោមគ្រាន់តែជាឧទាហរណ៍៖</div>`;
+    $("trOut").innerHTML = head + `
+      <div><small>ទិញចំនួន</small><b>${qtyFmt(P.qty)} ${coinLabel() === "មាស" ? "PAXG" : coinLabel()}</b></div>
+      <div><small>ប្រើលុយ</small><b>${usd(P.cost)}</b> <small>${P.cap ? Math.round(P.cost / P.cap * 100) : 0}% នៃទុន</small></div>
+      <div><small>បើដល់ Stop ${fmt(P.stop, 0)}</small><b class="c-SELL">${usd(P.lossAtStop, true)}</b></div>
+      <div><small>បើដល់គោលដៅ ${fmt(P.tp, 0)}</small><b class="c-BUY">${usd(P.gainAtTp, true)}</b></div>
+      <div class="wide">${P.capped ? "ℹ️ Stop នៅជិត ដូច្នេះប្រើទុនទាំងអស់ — ខាតពិតនឹងតិចជាង " + P.riskPct + "% · " : ""}គិតថ្លៃសេវា 0.1% ពេលទិញ និងលក់ · កាន់ទុកយូរបំផុត 7 ថ្ងៃ</div>`;
+  }
+  const open = TR.open[symbol];
+  $("trOpen").style.display = open ? "none" : "";
+  $("trOpen").textContent = P && P.auto ? "✅ ខ្ញុំបានទិញតាមនេះ — ចាប់ផ្តើមតាមដាន" : "➕ កត់ trade ដែលខ្ញុំបានទិញដោយខ្លួនឯង";
+  $("trOpen").disabled = !P || !(P.qty > 0);
+
+  // ---- open position
+  const others = Object.keys(TR.open).filter(k => k !== symbol);
+  const otherTxt = others.length ? `<div style="font-size:12px;color:var(--muted)">Trade បើកផ្សេងទៀត: ${others.map(k => `<a href="#" data-s="${k}" class="tr-go" style="color:var(--btc)">${coinInfo(k).label}</a>`).join(", ")}</div>` : "";
+  if (!open) {
+    $("trPos").innerHTML = `<div class="tr-empty">📭 មិនមាន trade ${coinLabel()} កំពុងបើកទេ<br><small style="color:var(--muted)">ពេលអ្នកទិញ សូមចុចប៊ូតុងពណ៌បៃតង ដើម្បីឱ្យវាតាមដាន ចំណេញ/ខាត ហើយប្រាប់ពេលត្រូវលក់</small></div>${otherTxt}`;
+  } else {
+    const px = livePrice ?? open.entry;
+    const pnl = (px - open.entry) * open.qty - open.entry * open.qty * FEE - px * open.qty * FEE;
+    const pct = pnl / (open.entry * open.qty) * 100;
+    const days = (Date.now() - open.at) / 86400000;
+    let st, cls;
+    if (px <= open.stop) { st = "🛑 ដល់ Stop-loss — លក់ចេញឥឡូវ ដើម្បីកុំឱ្យខាតបន្ថែម"; cls = "loss"; }
+    else if (px >= open.tp) { st = "🎯 ដល់គោលដៅ — លក់យកចំណេញ!"; cls = "win"; }
+    else if (days >= 7) { st = "⏱ ដល់ 7 ថ្ងៃហើយ — លក់ចេញតាមផែនការ"; cls = "time"; }
+    else if (w && w.action === "SELL") { st = "📉 សញ្ញា 4 ម៉ោងប្តូរទៅ \"លក់\" — គួរពិចារណាលក់"; cls = "time"; }
+    else { st = "✅ កាន់ទុក — រង់ចាំគោលដៅ ឬ Stop"; cls = ""; }
+    if (cls && open.notified !== cls) {
+      open.notified = cls; saveTR();
+      notify(cls === "win" ? "BUY" : cls === "loss" ? "SELL" : "HOLD", `💼 ${coinLabel()}: ${st} (${fmt(px, 0)})`);
+    }
+    const pos = Math.max(0, Math.min(100, (px - open.stop) / (open.tp - open.stop) * 100));
+    $("trPos").innerHTML = `
+      <div class="tr-pnl"><b class="${pnl >= 0 ? "c-BUY" : "c-SELL"}">${usd(pnl, true)}</b><span class="${pnl >= 0 ? "c-BUY" : "c-SELL"}">${pct > 0 ? "+" : ""}${pct.toFixed(2)}%</span></div>
+      <div class="tr-status ${cls}">${st}</div>
+      <div><div class="tr-track"><i style="left:${pos}%"></i></div>
+        <div class="tr-track-l"><span>🛑 ${fmt(open.stop, 0)}</span><span>ឥឡូវ ${fmt(px, 0)}</span><span>🎯 ${fmt(open.tp, 0)}</span></div></div>
+      <div class="tr-meta">
+        <div><small>ទិញនៅ</small><b>${fmt(open.entry, 0)}</b></div>
+        <div><small>ចំនួន</small><b>${qtyFmt(open.qty)}</b></div>
+        <div><small>រយៈពេល</small><b>${days < 1 ? Math.round(days * 24) + " ម៉ោង" : days.toFixed(1) + " ថ្ងៃ"} / 7</b></div>
+      </div>
+      <div class="tr-actions">
+        <button class="sell" id="trClose">💰 ខ្ញុំបានលក់ហើយ (${fmt(px, 0)})</button>
+        <button id="trDel">${delArmed ? "ចុចម្តងទៀត ដើម្បីលុប" : "🗑 លុបចោល"}</button>
+      </div>${otherTxt}`;
+  }
+
+  // ---- closed trades
+  if (TR.closed.length) {
+    const total = TR.closed.reduce((x, t) => x + t.pnl, 0);
+    const wins = TR.closed.filter(t => t.pnl > 0).length;
+    $("trHist").innerHTML = `
+      <div class="sum"><span>📒 Trade ដែលបានបិទ: ${TR.closed.length} · ចំណេញ ${wins} · ខាត ${TR.closed.length - wins}</span>
+        <span>សរុប <b class="${total >= 0 ? "c-BUY" : "c-SELL"}">${usd(total, true)}</b> <button id="trClear">លុបប្រវត្តិ</button></span></div>
+      <div class="hist-wrap"><table><thead><tr><th>កាក់</th><th>ថ្ងៃ</th><th>ទិញ</th><th>លក់</th><th>ចំណេញ/ខាត</th><th>%</th></tr></thead><tbody>
+      ${TR.closed.slice().reverse().slice(0, 20).map(t => `<tr><td>${t.label}</td><td>${new Date(t.closedAt).toLocaleDateString()}</td>
+        <td>${fmt(t.entry, 0)}</td><td>${fmt(t.exit, 0)}</td><td class="${t.pnl >= 0 ? "c-BUY" : "c-SELL"}">${usd(t.pnl, true)}</td>
+        <td class="${t.pnl >= 0 ? "c-BUY" : "c-SELL"}">${t.pct > 0 ? "+" : ""}${t.pct.toFixed(2)}%</td></tr>`).join("")}
+      </tbody></table></div>`;
+  } else $("trHist").innerHTML = "";
+}
+
+$("trCap").addEventListener("input", () => { try { localStorage.setItem("trCap", $("trCap").value); } catch (e) {} renderTrade(); });
+$("trRisk").addEventListener("input", () => { try { localStorage.setItem("trRisk", $("trRisk").value); } catch (e) {} renderTrade(); });
+$("trOpen").addEventListener("click", () => {
+  const P = tradePlan();
+  if (!P || !(P.qty > 0)) return;
+  TR.open[symbol] = { sym: symbol, label: coinLabel(), entry: P.entry, qty: P.qty, stop: P.stop, tp: P.tp, at: Date.now(), auto: P.auto };
+  saveTR(); renderTrade();
+  toast("BUY", `💼 ចាប់ផ្តើមតាមដាន ${coinLabel()}: ${qtyFmt(P.qty)} នៅ ${fmt(P.entry, 0)}`);
+});
+$("tradeCard").addEventListener("click", e => {
+  const go = e.target.closest(".tr-go");
+  if (go) { e.preventDefault(); switchCoin(go.dataset.s); return; }
+  if (e.target.id === "trClose") {
+    const o = TR.open[symbol]; if (!o) return;
+    const exit = livePrice ?? o.entry;
+    const pnl = (exit - o.entry) * o.qty - o.entry * o.qty * FEE - exit * o.qty * FEE;
+    TR.closed.push({ label: o.label, sym: o.sym, entry: o.entry, exit, qty: o.qty, at: o.at, closedAt: Date.now(), pnl, pct: pnl / (o.entry * o.qty) * 100 });
+    delete TR.open[symbol]; saveTR(); renderTrade();
+    toast(pnl >= 0 ? "BUY" : "SELL", `💼 បិទ ${o.label}: ${usd(pnl, true)}`);
+  }
+  if (e.target.id === "trDel") {
+    if (!delArmed) { delArmed = true; renderTrade(); setTimeout(() => { delArmed = false; renderTrade(); }, 4000); return; }
+    delArmed = false; delete TR.open[symbol]; saveTR(); renderTrade();
+  }
+  if (e.target.id === "trClear") { TR.closed = []; saveTR(); renderTrade(); }
+});
+setInterval(renderTrade, 2000);
+
+/* ---------------- installable app ---------------- */
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+}
+
+/* ---------------- 🕯️ candle clocks: when does the next candle start? ---------------- */
+const CK_TF = [["5m", 300], ["15m", 900], ["1h", 3600], ["4h", 14400], ["1d", 86400]];
+const CK_KM = { "5m": "5 នាទី", "15m": "15 នាទី", "1h": "1 ម៉ោង", "4h": "4 ម៉ោង", "1d": "1 ថ្ងៃ" };
+let CK_ON = { "5m": true, "15m": false, "1h": false, "4h": true, "1d": false };
+try { const x = JSON.parse(localStorage.getItem("ckOn")); if (x) CK_ON = { ...CK_ON, ...x }; } catch (e) {}
+const ckNext = {}, ckFlash = {};
+
+$("cbar").innerHTML = `<span class="cl-t">🕯️ Candle ថ្មីក្នុង</span>` + CK_TF.map(([tf]) => `
+  <div class="ck" id="ck-${tf}" title="Candle ${CK_KM[tf]} — ចុច 🔔 ដើម្បីបើក/បិទការជូនដំណឹងពេលមាន candle ថ្មី">
+    <span class="tf">${tf === "1d" ? "1D" : tf}</span><span class="left">--:--</span><span class="res"></span>
+    <button class="bell ${CK_ON[tf] ? "on" : ""}" data-tf="${tf}" aria-label="ជូនដំណឹង ${CK_KM[tf]}">🔔</button><i class="bar"></i></div>`).join("");
+$("cbar").addEventListener("click", e => {
+  const b = e.target.closest(".bell"); if (!b) return;
+  CK_ON[b.dataset.tf] = !CK_ON[b.dataset.tf];
+  b.classList.toggle("on", CK_ON[b.dataset.tf]);
+  try { localStorage.setItem("ckOn", JSON.stringify(CK_ON)); } catch (x) {}
+  toast("HOLD", `🕯️ ${CK_ON[b.dataset.tf] ? "នឹងប្រាប់" : "ឈប់ប្រាប់"} ពេលមាន candle ${CK_KM[b.dataset.tf]} ថ្មី`);
+});
+
+// a candle just closed: show how it closed, refresh the data that depends on it
+async function onCandleClose(tf, step) {
+  const el = $("ck-" + tf), asked = symbol;
+  let txt = "", dir = "";
+  try {
+    const k = await getJSON(`https://data-api.binance.vision/api/v3/klines?symbol=${asked}&interval=${tf}&limit=2`);
+    const prev = k[0], o = +prev[1], c = +prev[4], ch = (c / o - 1) * 100;
+    dir = c >= o ? "up" : "dn";
+    txt = `${ch >= 0 ? "▲" : "▼"}${Math.abs(ch).toFixed(2)}%`;
+    el.querySelector(".res").textContent = txt;
+    el.querySelector(".res").style.color = dir === "up" ? "var(--up)" : "var(--down)";
+    if (CK_ON[tf] && asked === symbol) {
+      const msg = `🕯️ Candle ${CK_KM[tf]} ថ្មីចាប់ផ្តើម · ${coinLabel()} candle មុនបិទ ${dir === "up" ? "ឡើង" : "ចុះ"} ${txt} នៅ ${fmt(c)}`;
+      notify(dir === "up" ? "BUY" : "SELL", msg);
+    }
+  } catch (e) {
+    if (CK_ON[tf]) notify("HOLD", `🕯️ Candle ${CK_KM[tf]} ថ្មីចាប់ផ្តើម`);
+  }
+  el.classList.remove("up", "dn"); if (dir) el.classList.add(dir);
+  el.classList.add("new"); ckFlash[tf] = Date.now();
+  // fresh numbers for the panels that use this timeframe
+  if (tf === "5m" || tf === "15m" || tf === "1h") poll();
+  if (tf === "4h" || tf === "1d") pollSwing();
+}
+
+function tickCandles() {
+  const now = Date.now() / 1000;
+  for (const [tf, step] of CK_TF) {
+    const next = Math.ceil(now / step) * step, left = Math.max(0, next - now);
+    if (ckNext[tf] && next > ckNext[tf]) onCandleClose(tf, step);
+    ckNext[tf] = next;
+    const el = $("ck-" + tf);
+    const h = Math.floor(left / 3600), m = Math.floor(left / 60) % 60, sec = Math.floor(left % 60);
+    el.querySelector(".left").textContent = h ? `${h}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}` : `${m}:${String(sec).padStart(2, "0")}`;
+    el.querySelector(".bar").style.width = ((1 - left / step) * 100).toFixed(2) + "%";
+    el.classList.toggle("soon", left <= Math.min(60, step * 0.1));
+    if (ckFlash[tf] && Date.now() - ckFlash[tf] > 20000) { el.classList.remove("new"); ckFlash[tf] = 0; }
+  }
+}
+tickCandles();
+setInterval(tickCandles, 1000);
+
+/* ---------------- 🤖 AI chat ---------------- */
+const AI_SYSTEM = `អ្នកជាជំនួយការជួញដូរ crypto ក្នុង dashboard "ស្កេន"។ ឆ្លើយជាភាសាខ្មែរ ខ្លី ច្បាស់ ងាយយល់ (ប្រើពាក្យអង់គ្លេសសម្រាប់ពាក្យបច្ចេកទេស ដូចជា RSI, Stop-loss)។
+ប្រើទិន្នន័យ dashboard ដែលផ្តល់ឱ្យ (តម្លៃ សញ្ញា កម្រិតតម្លៃ) ពេលឆ្លើយ ហើយនិយាយលេខឱ្យច្បាស់។
+ការពិតដែលបានសាកល្បង: សញ្ញា 🎯 4 ម៉ោង (ពិន្ទុ ≥ +30 ទិញ, Stop 3×ATR, គោលដៅ 3R, កាន់ ≤ 7 ថ្ងៃ) ចំណេញបន្តិចក្រោយថ្លៃសេវាលើទិន្នន័យ 5 ឆ្នាំ (ត្រូវប្រហែល 47%, ធ្លាប់ធ្លាក់ -48%)។ សញ្ញា 5 នាទី 15 នាទី 1 ម៉ោង ខាតក្រោយថ្លៃសេវាក្នុងការសាកល្បង។ Fear & Greed, Order book, RSI, MACD គ្រាន់តែជាព័ត៌មានបរិបទ។
+ច្បាប់: កុំសន្យាចំណេញ ឬនិយាយថាតម្លៃប្រាកដជាឡើង/ចុះ។ ណែនាំឱ្យកំណត់ Stop-loss និងកុំប្រើលុយលើសពីអាចបាត់បង់។ បើគេសួរថាគួរទិញ/លក់ ប្រាប់ពីអ្វីដែលសញ្ញាបង្ហាញ ហេតុផល និងហានិភ័យ ហើយរំលឹកថាអ្នកមិនមែនជាអ្នកប្រឹក្សាហិរញ្ញវត្ថុ។ បើមិនដឹង និយាយថាមិនដឹង។`;
+const AI_MODEL = "claude-sonnet-5-5";
+let aiMsgs = [], aiServer = null, aiBusy = false;
+try { aiMsgs = JSON.parse(sessionStorage.getItem("aiMsgs")) || []; } catch (e) {}
+const aiKey = () => { try { return localStorage.getItem("aiKey") || ""; } catch (e) { return ""; } };
+const gemKey = () => { try { return localStorage.getItem("gemKey") || ""; } catch (e) { return ""; } };
+const freeKey = () => { try { return JSON.parse(localStorage.getItem("freeAI") || "null"); } catch (e) { return null; } };   // {prov, key}
+let gemModel = null, gemAuth = null, freeModel = {};
+const keyProvider = k => k.startsWith("AIza") || k.startsWith("AQ.") ? "gemini" : k.startsWith("sk-or-") ? "openrouter"
+  : k.startsWith("gsk_") ? "groq" : k.startsWith("sk-ant-") ? "claude" : null;
+const PROV_KM = { gemini: "Google Gemini", openrouter: "OpenRouter (ឥតគិតថ្លៃ)", groq: "Groq (ឥតគិតថ្លៃ)", claude: "Claude" };
+
+// free OpenAI-style providers: pick a model the key can use for free
+async function openaiStyle(prov, key, convo, system) {
+  const base = prov === "openrouter" ? "https://openrouter.ai/api/v1" : "https://api.groq.com/openai/v1";
+  const H = { "Content-Type": "application/json", "Authorization": "Bearer " + key };
+  if (!freeModel[prov]) {
+    try {
+      const list = (await fetch(base + "/models", { headers: H }).then(r => r.json())).data || [];
+      const ids = list.map(m => m.id);
+      const pref = prov === "openrouter"
+        ? [...ids.filter(i => /gemma.*:free$/i.test(i)).sort().reverse(),          // Gemma: good with Khmer
+           ...ids.filter(i => i === "openrouter/free"),                              // OpenRouter's own free router
+           ...ids.filter(i => i.endsWith(":free") && /(deepseek|qwen|llama|mistral|gpt-oss|nemotron-3-super)/i.test(i))]
+        : ids.filter(i => /(llama-3\.3-70b|gpt-oss-120b|qwen|llama-4|llama)/i.test(i) && !/(whisper|guard|tts|vision)/i.test(i));
+      freeModel[prov] = pref[0] || (prov === "openrouter" ? ids.find(i => i.endsWith(":free")) : ids[0]);
+    } catch (e) {}
+    if (!freeModel[prov]) freeModel[prov] = prov === "openrouter" ? "openrouter/free" : "llama-3.3-70b-versatile";
+  }
+  const r = await fetch(base + "/chat/completions", {
+    method: "POST", headers: H,
+    body: JSON.stringify({ model: freeModel[prov], max_tokens: 1500, temperature: 0.4,
+      messages: [{ role: "system", content: system }, ...convo.map(m => ({ role: m.role, content: m.content }))] }),
+  });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) {
+    const msg = (j.error && (j.error.message || j.error)) || r.status;
+    if (r.status === 401) throw new Error(`${PROV_KM[prov]} key មិនត្រឹមត្រូវ — ចុច 🔑 ដើម្បីដាក់ម្តងទៀត`);
+    if (r.status === 429) throw new Error(`${PROV_KM[prov]} អស់ចំនួនសំណួរឥតគិតថ្លៃសម្រាប់ពេលនេះ — រង់ចាំបន្តិច`);
+    if (r.status === 404 || r.status === 400) freeModel[prov] = null;   // model gone → pick again next time
+    throw new Error(String(msg));
+  }
+  const text = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
+  if (!text) throw new Error("AI មិនបានឆ្លើយ — សូមសួរម្តងទៀត");
+  return { text, model: freeModel[prov] };
+}
+
+// pick the newest free "Flash" model this key can use (falls back to gemini-2.5-flash)
+async function gemPickModel() {
+  if (gemModel) return gemModel;
+  try {
+    const j = await gemFetch(`https://generativelanguage.googleapis.com/v1beta/models?pageSize=200`, {}).then(r => r.json());
+    const names = (j.models || []).filter(m => (m.supportedGenerationMethods || []).includes("generateContent"))
+      .map(m => m.name.replace("models/", ""))
+      .filter(n => /^gemini-[\d.]+-flash$/.test(n));
+    const ver = n => parseFloat(n.split("-")[1]);
+    names.sort((a, b) => ver(b) - ver(a));
+    gemModel = names[0] || "gemini-2.5-flash";
+  } catch (e) { gemModel = "gemini-2.5-flash"; }
+  return gemModel;
+}
+
+// Google now issues "AQ." auth keys as well as the older "AIza" keys; send the key the way that works
+async function gemFetch(url, opt) {
+  const tryOne = how => fetch(how === "query" ? url + (url.includes("?") ? "&" : "?") + "key=" + encodeURIComponent(gemKey()) : url,
+    { ...opt, headers: { ...(opt.headers || {}), ...(how === "header" ? { "x-goog-api-key": gemKey() } : {}) } });
+  if (gemAuth) return tryOne(gemAuth);
+  let r = await tryOne("header");
+  if (r.status === 400 || r.status === 401 || r.status === 403) {
+    const r2 = await tryOne("query");
+    if (r2.ok) { gemAuth = "query"; return r2; }
+    return r;
+  }
+  if (r.ok) gemAuth = "header";
+  return r;
+}
+
+async function gemAsk(convo, system) {
+  const model = await gemPickModel();
+  const r = await gemFetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: system }] },
+      contents: convo.map(m => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] })),
+      generationConfig: { maxOutputTokens: 1500, temperature: 0.4 },
+    }),
+  });
+  const j = await r.json();
+  if (!r.ok) {
+    const msg = (j.error && j.error.message) || r.status;
+    if (/ACCESS_TOKEN_TYPE_UNSUPPORTED|API key not valid|API_KEY_INVALID|UNAUTHENTICATED/i.test(JSON.stringify(j)) || r.status === 401 || r.status === 403) {
+      throw new Error(gemKey().startsWith("AQ.")
+        ? "Google key ប្រភេទថ្មី (AQ.) មិនទាន់ដំណើរការជាមួយ Gemini API សម្រាប់គណនីរបស់អ្នកទេ (បញ្ហាពី Google)។ សូមប្រើ AI ឥតគិតថ្លៃផ្សេងទៀត៖ ចុច 🔑 ហើយមើល OpenRouter ឬ Groq។"
+        : "Gemini key មិនត្រឹមត្រូវ — ចុច 🔑 ដើម្បីដាក់ម្តងទៀត");
+    }
+    if (r.status === 429) throw new Error("Gemini ឥតគិតថ្លៃ អស់ចំនួនសំណួរសម្រាប់ពេលនេះ — សូមរង់ចាំបន្តិច រួចសាកម្តងទៀត");
+    if (r.status === 404) { gemModel = "gemini-2.5-flash"; }
+    throw new Error(msg);
+  }
+  const c = j.candidates && j.candidates[0];
+  const text = c && c.content && (c.content.parts || []).map(p => p.text || "").join("");
+  if (!text) throw new Error("Gemini មិនបានឆ្លើយ — សូមសួរម្តងទៀត");
+  return { text, model };
+}
+
+// everything the dashboard knows right now, as plain text for the AI
+function aiContext() {
+  const L = [], c = coinLabel(), w = swing;
+  L.push(`ពេលនេះ: ${new Date().toLocaleString()} (ម៉ោងកម្ពុជា)`);
+  L.push(`កាក់: ${c} (${symbol}) · តម្លៃ ${fmt(livePrice ?? (w && w.price))} · 24ម៉ោង ${$("chg").textContent}`);
+  if (w) {
+    L.push(`🎯 សញ្ញា 4 ម៉ោង: ${w.action} ពិន្ទុ ${w.score} · ចាប់ផ្តើម ${Math.round((Date.now() / 1000 - w.since) / 3600)} ម៉ោងមុន នៅ ${fmt(w.sincePrice)} · ATR(4h) ${fmt(w.atr)}`);
+    if (w.action === "BUY") L.push(`ផែនការទិញ: ចូល ${fmt(w.buy.entry)} · Stop ${fmt(w.buy.stop)} · គោលដៅ ${fmt(w.buy.tp)} · កាន់ ≤ 7 ថ្ងៃ`);
+    if (w.action === "SELL") L.push(`សញ្ញាខុសបើឡើងលើ ${fmt(w.sell.stop)} · អាចធ្លាក់ដល់ ${fmt(w.sell.tp)}`);
+    L.push(`ហេតុផល 4h: ${w.reasons.join("; ")}`);
+  }
+  if (swingStats) L.push(`សាកល្បង 5 ឆ្នាំលើ ${c}: ${swingStats.all.n} ដង ត្រូវ ${Math.round(swingStats.all.win * 100)}% មធ្យម ${swingStats.all.avg.toFixed(2)}%/ដង · ទិញតែប៉ុណ្ណោះ ${swingStats.buy.avg.toFixed(2)}%/ដង`);
+  if (payload && payload.scalp) { const s = payload.scalp; L.push(`⚡ សញ្ញា 5 នាទី: ${s.action} ពិន្ទុ ${s.score} · និន្នាការ 15m+1h ${s.trend}`); }
+  if (payload && payload.frames) {
+    for (const tf of ["5m", "15m", "1h", "4h", "1d"]) {
+      const f = payload.frames[tf]; if (!f) continue;
+      L.push(`[${tf}] ${f.signal} ${f.score} · RSI ${f.indicators.rsi} · S1 ${fmt(f.supports[0].price)} S2 ${fmt(f.supports[1].price)} · R1 ${fmt(f.resistances[0].price)} R2 ${fmt(f.resistances[1].price)} · EMA200 ${fmt(f.indicators.ema200)}`);
+    }
+  }
+  L.push(`Fear & Greed: ${$("fngVal").textContent} ${$("fngTxt").textContent} · BTC Dominance ${$("domVal").textContent} · ផ្សារ 24ម៉ោង ${$("mcVal").textContent} · Order book: ${$("obB").textContent} / ${$("obA").textContent}`);
+  if (hrsSummary) L.push(`ម៉ោងល្អ (${BT_CFG[btTf].label}): ${hrsSummary.hours.filter(h => h.cls === "good").map(h => h.h + ":00").join(", ") || "គ្មាន"} · គួរជៀស: ${hrsSummary.hours.filter(h => h.cls === "bad").map(h => h.h + ":00").join(", ") || "គ្មាន"}`);
+  L.push(`ម៉ោងពិនិត្យសញ្ញា 4h (candle បិទ): 03:00, 07:00, 11:00, 15:00, 19:00, 23:00`);
+  const o = TR.open[symbol];
+  if (o) L.push(`💼 Trade បើក: ទិញ ${qtyFmt(o.qty)} នៅ ${fmt(o.entry)} · Stop ${fmt(o.stop)} · គោលដៅ ${fmt(o.tp)} · បើក ${((Date.now() - o.at) / 86400000).toFixed(1)} ថ្ងៃមុន`);
+  L.push(`ទុនក្នុង calculator: $${$("trCap").value} · ហ៊ានខាត ${$("trRisk").value}%/ដង`);
+  return L.join("\n");
+}
+
+const esc = t => t.replace(/[&<>]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[ch]));
+const md = t => esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/^#{1,4}\s*(.+)$/gm, "<b>$1</b>").replace(/^\s*[-*]\s+/gm, "• ");
+
+function aiRender() {
+  const b = $("aiBody");
+  b.innerHTML = (aiMsgs.length ? "" : `<div class="ai-hello">សួរអំពី ${coinLabel()} ឬការជួញដូរ — AI មើលសញ្ញា តម្លៃ និង trade របស់អ្នកនៅលើ dashboard ឥឡូវ</div>`) +
+    aiMsgs.map(m => `<div class="ai-m ${m.role === "user" ? "u" : m.role === "error" ? "e" : "a"}">${m.role === "user" ? esc(m.content) : md(m.content)}</div>`).join("") +
+    (aiBusy ? `<div class="ai-m a typing">កំពុងគិត</div>` : "");
+  b.scrollTop = b.scrollHeight;
+  const c = coinLabel();
+  const qs = [`ឥឡូវគួរទិញ ${c} ទេ?`, `ពន្យល់សញ្ញា 4 ម៉ោងឥឡូវ`, `គួរកំណត់ Stop-loss នៅណា?`, `ពេលណាគួរចូល?`, `RSI និង MACD ឥឡូវប្រាប់អ្វី?`, `បើខ្ញុំមាន $500 គួរធ្វើយ៉ាងណា?`];
+  $("aiChips").innerHTML = qs.map(q => `<button type="button">${q}</button>`).join("");
+  try { sessionStorage.setItem("aiMsgs", JSON.stringify(aiMsgs.filter(m => m.role !== "error").slice(-30))); } catch (e) {}
+}
+
+async function aiStatus() {
+  if (aiServer !== null) return aiServer;
+  if (HOSTED) return (aiServer = false);
+  try { aiServer = (await fetch("/api/chat/status").then(r => r.json())).server; } catch (e) { aiServer = false; }
+  return aiServer;
+}
+async function aiNeedsKey() { return !(await aiStatus()) && !aiKey() && !gemKey() && !freeKey(); }
+
+async function aiSend(text) {
+  text = text.trim();
+  if (!text || aiBusy) return;
+  if (await aiNeedsKey()) { $("aiSetup").hidden = false; $("aiKey").focus(); return; }
+  aiMsgs = aiMsgs.filter(m => m.role !== "error");
+  aiMsgs.push({ role: "user", content: text });
+  aiBusy = true; $("aiSend").disabled = true; aiRender();
+  const convo = aiMsgs.filter(m => m.role === "user" || m.role === "assistant").slice(-20);
+  const context = aiContext();
+  try {
+    let reply;
+    const fk = freeKey();
+    if (!(await aiStatus()) && fk && fk.prov !== "gemini") {
+      const g = await openaiStyle(fk.prov, fk.key, convo, AI_SYSTEM + "\n\nទិន្នន័យ dashboard ឥឡូវ:\n" + context);
+      reply = g.text;
+      $("aiSub").textContent = `🆓 ${PROV_KM[fk.prov]} (${g.model}) · មើលទិន្នន័យ dashboard ឥឡូវ`;
+    } else if (!(await aiStatus()) && gemKey()) {
+      const g = await gemAsk(convo, AI_SYSTEM + "\n\nទិន្នន័យ dashboard ឥឡូវ:\n" + context);
+      reply = g.text;
+      $("aiSub").textContent = `🆓 Google Gemini (${g.model}) · មើលទិន្នន័យ dashboard ឥឡូវ`;
+    } else if (await aiStatus()) {
+      const r = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages: convo, context }) });
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.error === "no_key" ? "Server មិនមាន API key" : j.error || r.status);
+      reply = j.reply;
+    } else {
+      const r = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-api-key": aiKey(), "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+        body: JSON.stringify({ model: AI_MODEL, max_tokens: 1200, system: AI_SYSTEM + "\n\nទិន្នន័យ dashboard ឥឡូវ:\n" + context, messages: convo }),
+      });
+      const j = await r.json();
+      if (!r.ok) {
+        if (r.status === 401) { try { localStorage.removeItem("aiKey"); } catch (e) {} throw new Error("API key មិនត្រឹមត្រូវ — សូមដាក់ម្តងទៀត"); }
+        throw new Error((j.error && j.error.message) || r.status);
+      }
+      reply = j.content.filter(b => b.type === "text").map(b => b.text).join("");
+    }
+    aiMsgs.push({ role: "assistant", content: reply });
+  } catch (e) {
+    aiMsgs.push({ role: "error", content: "" + (e.message || "មានបញ្ហា") });
+    if (await aiNeedsKey()) $("aiSetup").hidden = false;
+  } finally { aiBusy = false; $("aiSend").disabled = false; aiRender(); }
+}
+
+$("aiFab").addEventListener("click", async () => {
+  $("aiPanel").hidden = false; $("aiFab").hidden = true; aiRender();
+  $("aiSetup").hidden = !(await aiNeedsKey());
+  $("aiSub").textContent = (await aiStatus()) ? "Claude (key នៅលើ Mac) · មើលទិន្នន័យ dashboard ឥឡូវ"
+    : freeKey() ? `🆓 ${PROV_KM[freeKey().prov]} · មើលទិន្នន័យ dashboard ឥឡូវ`
+    : gemKey() ? "🆓 Google Gemini · មើលទិន្នន័យ dashboard ឥឡូវ" : aiKey() ? "Claude · មើលទិន្នន័យ dashboard ឥឡូវ" : "ដាក់ key ឥតគិតថ្លៃ ខាងក្រោម ដើម្បីចាប់ផ្តើម";
+  setTimeout(() => $("aiText").focus(), 50);
+});
+$("aiClose").addEventListener("click", () => { $("aiPanel").hidden = true; $("aiFab").hidden = false; });
+$("aiNew").addEventListener("click", () => { aiMsgs = []; aiRender(); });
+$("aiKeyBtn").addEventListener("click", () => { $("aiSetup").hidden = !$("aiSetup").hidden; if (!$("aiSetup").hidden) $("aiKey").focus(); });
+$("aiChips").addEventListener("click", e => { const b = e.target.closest("button"); if (b) aiSend(b.textContent); });
+$("aiForm").addEventListener("submit", e => { e.preventDefault(); const t = $("aiText").value; $("aiText").value = ""; $("aiText").style.height = ""; aiSend(t); });
+$("aiText").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); $("aiForm").requestSubmit(); } });
+$("aiText").addEventListener("input", e => { e.target.style.height = "auto"; e.target.style.height = Math.min(120, e.target.scrollHeight) + "px"; });
+$("aiKeyForm").addEventListener("submit", e => {
+  e.preventDefault();
+  // find the key even if extra text, quotes, spaces or invisible characters were copied with it
+  const raw = $("aiKey").value.replace(/[\u200B-\u200D\uFEFF\u00A0]/g, "");
+  const m = raw.match(/(AIza[\w-]{20,}|AQ\.[\w.\-]{20,}|sk-or-[\w-]{10,}|gsk_\w{10,}|sk-ant-[\w-]{10,})/);
+  const k = m ? m[1] : raw.replace(/\s|["'`]/g, ""), prov = keyProvider(k);
+  if (!prov) {
+    const seen = raw.trim() ? `"${raw.trim().slice(0, 6)}…" (${raw.trim().length} តួ)` : "ប្រអប់ទទេ";
+    toast("SELL", `មិនស្គាល់ key នេះ — បានទទួល ${seen}។ សូមចុច "Copy key" ក្នុង AI Studio ម្តងទៀត រួចបិទភ្ជាប់ (Cmd+V)។ Gemini: AIza…/AQ.… · OpenRouter: sk-or-… · Groq: gsk_…`);
+    return;
+  }
+  try {
+    // the newest key you save becomes the one the chat uses
+    localStorage.removeItem("gemKey"); localStorage.removeItem("freeAI");
+    if (prov === "gemini") { localStorage.setItem("gemKey", k); gemModel = null; gemAuth = null; }
+    else if (prov === "claude") localStorage.setItem("aiKey", k);
+    else { localStorage.setItem("freeAI", JSON.stringify({ prov, key: k })); freeModel[prov] = null; }
+    if (prov !== "claude") localStorage.removeItem("aiKey");
+  } catch (x) {}
+  $("aiSub").textContent = `${PROV_KM[prov]} · មើលទិន្នន័យ dashboard ឥឡូវ`;
+  $("aiKey").value = ""; $("aiSetup").hidden = true;
+  toast("BUY", `🔑 បានរក្សាទុក key ${PROV_KM[prov]} — សួរបានហើយ`);
+});
+
+/* ---------------- page tabs ---------------- */
+function showPage(name) {
+  if (!document.querySelector(`.page[data-page="${name}"]`)) name = "home";
+  document.querySelectorAll(".page").forEach(p => p.classList.toggle("on", p.dataset.page === name));
+  document.querySelectorAll("#pages button").forEach(b => b.classList.toggle("active", b.dataset.page === name));
+  try { localStorage.setItem("page", name); } catch (e) {}
+  if (name === "chart") setTimeout(() => { lastW = 0; fitBars(); }, 30);      // chart was hidden → re-measure
+  if (name === "test") setTimeout(drawEquity, 30);
+  if (name === "scan") runScan();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+$("pages").addEventListener("click", e => { const b = e.target.closest("button"); if (b) showPage(b.dataset.page); });
+{ let start = "home"; try { start = localStorage.getItem("page") || "home"; } catch (e) {} showPage(start); }
+
 paintCoin();
+pollDepth();
+renderHoursCard();
+pollSwing();
+setTimeout(loadSwingStats, 2000);
 pollForecast();
+setTimeout(() => runBacktest(), 4000);   // after the live data has loaded
+setTimeout(() => { if (btTf !== "5m") runBacktest(false, "5m"); }, 35000);   // for the ⏰ badge
 poll();
 setInterval(poll, 10000);
 pollHistory();

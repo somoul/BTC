@@ -19,6 +19,13 @@ from datetime import datetime
 
 from flask import Flask, jsonify, request, send_from_directory
 
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
+except ImportError:
+    pass
+
 from analysis import analyze_all
 
 DEFAULT_SYMBOL = os.environ.get("BTC_SYMBOL", "BTCUSDT").upper()
@@ -142,6 +149,59 @@ def get_symbol():
 @app.route("/")
 def index():
     return send_from_directory(HERE, "index.html")
+
+
+# ---------------------------------------------------------------- 🤖 AI chat
+CHAT_MODEL = os.environ.get("BTC_BOT_MODEL", "claude-sonnet-5-5")
+CHAT_SYSTEM = """អ្នកជាជំនួយការជួញដូរ crypto ក្នុង dashboard "ស្កេន"។ ឆ្លើយជាភាសាខ្មែរ ខ្លី ច្បាស់ ងាយយល់ (ប្រើពាក្យអង់គ្លេសសម្រាប់ពាក្យបច្ចេកទេស ដូចជា RSI, Stop-loss)។
+ប្រើទិន្នន័យ dashboard ដែលផ្តល់ឱ្យ (តម្លៃ សញ្ញា កម្រិតតម្លៃ) ពេលឆ្លើយ ហើយនិយាយលេខឱ្យច្បាស់។
+ការពិតដែលបានសាកល្បង: សញ្ញា 🎯 4 ម៉ោង (ពិន្ទុ ≥ +30 ទិញ, Stop 3×ATR, គោលដៅ 3R, កាន់ ≤ 7 ថ្ងៃ) ចំណេញបន្តិចក្រោយថ្លៃសេវាលើទិន្នន័យ 5 ឆ្នាំ (ត្រូវប្រហែល 47%, ធ្លាប់ធ្លាក់ -48%)។ សញ្ញា 5 នាទី 15 នាទី 1 ម៉ោង ខាតក្រោយថ្លៃសេវាក្នុងការសាកល្បង។ Fear & Greed, Order book, RSI, MACD គ្រាន់តែជាព័ត៌មានបរិបទ។
+ច្បាប់: កុំសន្យាចំណេញ ឬនិយាយថាតម្លៃប្រាកដជាឡើង/ចុះ។ ណែនាំឱ្យកំណត់ Stop-loss និងកុំប្រើលុយលើសពីអាចបាត់បង់។ បើគេសួរថាគួរទិញ/លក់ ប្រាប់ពីអ្វីដែលសញ្ញាបង្ហាញ ហេតុផល និងហានិភ័យ ហើយរំលឹកថាអ្នកមិនមែនជាអ្នកប្រឹក្សាហិរញ្ញវត្ថុ។ បើមិនដឹង និយាយថាមិនដឹង។"""
+
+
+@app.route("/api/chat/status")
+def api_chat_status():
+    return jsonify({"server": bool(os.environ.get("ANTHROPIC_API_KEY")), "model": CHAT_MODEL})
+
+
+@app.route("/api/chat", methods=["POST"])
+def api_chat():
+    if not os.environ.get("ANTHROPIC_API_KEY"):
+        return jsonify({"error": "no_key"}), 400
+    body = request.get_json(silent=True) or {}
+    msgs = []
+    for m in (body.get("messages") or [])[-20:]:
+        if m.get("role") in ("user", "assistant") and isinstance(m.get("content"), str) and m["content"].strip():
+            msgs.append({"role": m["role"], "content": m["content"][:4000]})
+    if not msgs or msgs[-1]["role"] != "user":
+        return jsonify({"error": "bad_request"}), 400
+    context = str(body.get("context") or "")[:12000]
+    try:
+        import anthropic
+
+        client = anthropic.Anthropic()
+        resp = client.messages.create(
+            model=CHAT_MODEL, max_tokens=1200,
+            system=CHAT_SYSTEM + "\n\nទិន្នន័យ dashboard ឥឡូវ:\n" + context,
+            messages=msgs,
+        )
+        return jsonify({"reply": "".join(b.text for b in resp.content if b.type == "text")})
+    except Exception as e:  # show a short reason in the chat
+        return jsonify({"error": str(e)[:300]}), 502
+
+
+APP_FILES = {"manifest.json", "sw.js", "icon-180.png", "icon-192.png", "icon-512.png", "icon-maskable-512.png"}
+
+
+@app.route("/<name>")
+def app_file(name):
+    """files that make the dashboard installable as a phone app"""
+    if name not in APP_FILES:
+        return ("Not found", 404)
+    resp = send_from_directory(HERE, name)
+    if name == "sw.js":
+        resp.headers["Cache-Control"] = "no-cache"
+    return resp
 
 
 @app.route("/api/symbols")
