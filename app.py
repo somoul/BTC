@@ -193,6 +193,115 @@ def api_chat():
 APP_FILES = {"manifest.json", "sw.js", "icon-180.png", "icon-192.png", "icon-512.png", "icon-maskable-512.png"}
 
 
+# ---------------------------------------------------------------- 📰 news + economic calendar (fetched here: no CORS)
+NEWS_FEEDS = [
+    ("CoinDesk", "https://www.coindesk.com/arc/outboundfeeds/rss/"),
+    ("Cointelegraph", "https://cointelegraph.com/rss"),
+    ("Decrypt", "https://decrypt.co/feed"),
+    ("The Block", "https://www.theblock.co/rss.xml"),
+    ("Bitcoin Magazine", "https://bitcoinmagazine.com/.rss/full/"),
+]
+CAL_URL = "https://nfs.faireconomy.media/ff_calendar_thisweek.json"
+_cache = {}
+UA = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36"}
+
+
+def cached(key, ttl, fn):
+    hit = _cache.get(key)
+    if hit and time.time() - hit[0] < ttl:
+        return hit[1]
+    try:
+        val = fn()
+    except Exception:
+        if hit:
+            return hit[1]
+        raise
+    _cache[key] = (time.time(), val)
+    return val
+
+
+def _feed(name, url):
+    import requests
+    import xml.etree.ElementTree as ET
+    from email.utils import parsedate_to_datetime
+
+    r = requests.get(url, headers=UA, timeout=12)
+    r.raise_for_status()
+    root = ET.fromstring(r.content)
+    out = []
+    for it in root.iter("item"):
+        title = (it.findtext("title") or "").strip()
+        link = (it.findtext("link") or "").strip()
+        when = it.findtext("pubDate") or ""
+        try:
+            ts = int(parsedate_to_datetime(when).timestamp())
+        except Exception:
+            continue
+        desc = re.sub(r"<[^>]+>", " ", it.findtext("description") or "")
+        desc = re.sub(r"\s+", " ", desc).strip()[:240]
+        if title and link:
+            out.append({"t": ts, "title": title, "link": link, "src": name, "desc": desc})
+    return out
+
+
+def load_news():
+    from concurrent.futures import ThreadPoolExecutor
+
+    items, ok = [], []
+    with ThreadPoolExecutor(len(NEWS_FEEDS)) as ex:
+        futs = {ex.submit(_feed, n, u): n for n, u in NEWS_FEEDS}
+        for f, n in futs.items():
+            try:
+                items += f.result()
+                ok.append(n)
+            except Exception:
+                pass
+    if not items:
+        raise RuntimeError("no feed reachable")
+    seen, uniq = set(), []
+    for x in sorted(items, key=lambda x: -x["t"]):
+        k = re.sub(r"\W+", "", x["title"].lower())[:60]
+        if k not in seen:
+            seen.add(k)
+            uniq.append(x)
+    return {"items": uniq[:80], "sources": ok, "at": int(time.time())}
+
+
+@app.route("/api/news")
+def api_news():
+    try:
+        return jsonify(cached("news", 180, load_news))
+    except Exception as e:
+        return jsonify({"error": str(e)}), 502
+
+
+def load_calendar():
+    import requests
+    from datetime import datetime as dt
+
+    r = requests.get(CAL_URL, headers=UA, timeout=12)
+    r.raise_for_status()
+    out = []
+    for x in r.json():
+        if x.get("country") != "USD" or x.get("impact") not in ("High", "Medium"):
+            continue
+        try:
+            ts = int(dt.fromisoformat(x["date"]).timestamp())
+        except Exception:
+            continue
+        out.append({"t": ts, "title": x.get("title", ""), "impact": x.get("impact"),
+                    "forecast": x.get("forecast", ""), "previous": x.get("previous", "")})
+    return {"items": out, "at": int(time.time())}
+
+
+@app.route("/api/calendar")
+def api_calendar():
+    try:
+        return jsonify(cached("cal", 1800, load_calendar))
+    except Exception as e:
+        return jsonify({"error": str(e)}), 502
+
+
 @app.route("/<name>")
 def app_file(name):
     """files that make the dashboard installable as a phone app"""
