@@ -9,3 +9,5 @@ charts/*
 _old/
 upload-to-github/
 .DS_Store
+calendar_cache.json
+calendar_cache.json.tmp

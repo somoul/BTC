@@ -576,6 +576,76 @@
   @media (max-width: 760px) { .steps .px { font-size: 16px; } }
 
 
+  .fx-badge { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; margin: 0 0 10px; padding: 9px 12px; border-radius: 10px; font-size: 13px; background: var(--panel-2); border: 1px solid var(--line); cursor: pointer; }
+  .fx-badge.LONG { border-color: rgba(46,204,143,.5); background: rgba(46,204,143,.08); }
+  .fx-badge.SHORT { border-color: rgba(255,93,108,.5); background: rgba(255,93,108,.08); }
+  .fx-badge .a { font-weight: 800; font-size: 15px; }
+  .fx-badge .n { font-family: var(--mono); color: var(--muted); } .fx-badge .n b { color: var(--text); }
+  .fx-badge .go { margin-left: auto; color: var(--muted); font-size: 12px; }
+  .fx-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .fx-head h2 { margin: 0; }
+  .fx-tfs { min-width: 250px; }
+  .fx-tfs button { font-family: var(--mono); font-size: 13px; padding: 7px 10px; white-space: nowrap; }
+  .fx-tfs button i { font-style: normal; margin-left: 4px; }
+  .fx .fut-v { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px 20px; padding: 18px 20px; margin-bottom: 10px; }
+  .fx-act { font-size: 34px; font-weight: 800; line-height: 1.15; letter-spacing: .01em; }
+  .fut-v.go .fx-act { color: var(--up); } .fut-v.go.short .fx-act { color: var(--down); }
+  .fut-v.go.short { border-color: rgba(255,93,108,.5); background: linear-gradient(135deg, rgba(255,93,108,.14), var(--panel-2) 70%); }
+  .fut-v.go:not(.short) { background: linear-gradient(135deg, rgba(46,204,143,.14), var(--panel-2) 70%); }
+  .fut-v.no .fx-act { color: var(--down); } .fut-v.wait .fx-act { color: var(--hold); }
+  .fx-sub { font-size: 14px; color: var(--muted); margin-top: 6px; line-height: 1.55; }
+  .fx-sub b { color: var(--text); }
+  .fx-clock { text-align: right; }
+  .fx-clock small { display: block; font-size: 11px; color: var(--muted); }
+  .fx-clock b { display: block; font-family: var(--mono); font-size: 26px; font-weight: 700; }
+  .fx-nums { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
+  .fx-nums div { background: rgba(0,0,0,.25); border-radius: 10px; padding: 9px 12px; }
+  .fx-nums small { display: block; font-size: 11px; color: var(--muted); }
+  .fx-nums b { font-family: var(--mono); font-size: 17px; }
+  .fx .fut-checks { grid-column: 1 / -1; margin-left: 0; }
+  .fx-d { border-top: 1px solid var(--line); }
+  .fx-d summary { cursor: pointer; list-style: none; padding: 11px 2px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .fx-d summary::-webkit-details-marker { display: none; }
+  .fx-d summary::after { content: "▾"; margin-left: auto; color: var(--muted); transition: transform .2s; }
+  .fx-d[open] summary::after { transform: rotate(180deg); }
+  .fx-d > div { padding-bottom: 14px; }
+  .fx-d .fut-steps { margin-top: 0; padding-top: 0; border-top: 0; }
+  .fx-inputs { padding-bottom: 12px; }
+  @media (max-width: 560px) { .fx .fut-v { grid-template-columns: 1fr; } .fx-clock { text-align: left; } .fx-act { font-size: 28px; } .fx-tfs { width: 100%; } }
+  .fut-tfrow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; font-size: 13px; color: var(--muted); }
+  .fut-tfrow .seg { flex: 1; min-width: 260px; }
+  .fut-tfrow .seg button { font-size: 13px; padding: 7px 4px; }
+  .fut-top { margin-bottom: 16px; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
+  .fut-all small.l2 { display: block; margin-top: 1px; }
+  .fut-all { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .fut-all th { text-align: left; color: var(--muted); font-weight: 500; font-size: 12px; padding: 5px 7px; border-bottom: 1px solid var(--line); }
+  .fut-all td { padding: 7px; border-bottom: 1px solid #1a1f26; font-family: var(--mono); white-space: nowrap; }
+  .fut-all tr[data-tf] { cursor: pointer; }
+  .fut-all tr[data-tf]:hover td { background: var(--panel-2); }
+  .fut-all tr.sel td { background: rgba(247,147,26,.08); }
+  .fut-all tr.sel td:first-child { box-shadow: inset 3px 0 0 var(--btc); }
+  .fut-all small { color: var(--muted); font-size: 10px; }
+  .fut-when-big { font-family: var(--mono); font-size: 30px; font-weight: 700; }
+  .fut-hrs { display: flex; flex-wrap: wrap; gap: 5px; }
+  .fut-hrs span { font-family: var(--mono); font-size: 12px; padding: 4px 8px; border-radius: 7px; background: rgba(0,0,0,.25); }
+  .fut-hrs .g { color: var(--up); background: rgba(46,204,143,.12); } .fut-hrs .b { color: var(--down); background: rgba(255,93,108,.1); }
+  .fut-hrs .now { outline: 2px solid var(--btc); }
+  /* ---------- 🌐 futures market data ---------- */
+  .fm { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .fm > div { background: rgba(0,0,0,.2); border-radius: 9px; padding: 7px 10px; }
+  .fm small { display: block; font-size: 11px; color: var(--muted); }
+  .fm b { font-family: var(--mono); font-size: 14px; }
+  .fm-ls { height: 8px; border-radius: 99px; background: var(--down); overflow: hidden; margin-top: 5px; }
+  .fm-ls i { display: block; height: 100%; background: var(--up); }
+  @media (max-width: 560px) { .fm { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .fh-t { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .fh-t th { text-align: left; color: var(--muted); font-weight: 500; padding: 5px 8px; border-bottom: 1px solid var(--line); }
+  .fh-t td { padding: 6px 8px; border-bottom: 1px solid #1a1f26; font-family: var(--mono); }
+  .fh-sum { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+  .fh-sum div { background: var(--panel-2); border-radius: 10px; padding: 10px 12px; }
+  .fh-sum small { display: block; font-size: 12px; color: var(--muted); }
+  .fh-sum b { font-family: var(--mono); font-size: 20px; }
+  .nw-it h4 small { display: block; font-weight: 400; font-size: 12px; color: var(--muted); margin-top: 3px; }
   /* ---------- 📰 news & economic calendar ---------- */
   .nw-strip { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; cursor: pointer; margin-bottom: 14px; padding: 10px 14px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); font-size: 14px; }
   .nw-strip b.num { font-family: var(--mono); color: var(--btc); }
@@ -1001,25 +1071,35 @@
     </div>
     <div class="tr-hist" id="trHist"></div>
   </section>
-  <section class="card trade" id="futCard">
-    <h2><span>⚡ Futures · Long / Short</span><span class="tr-coin" id="futCoin"></span></h2>
-    <div class="fut-v wait" id="futV"></div>
-    <div class="tr-grid">
-      <div class="tr-calc">
-        <div class="fc-sub">🧮 គណនា Leverage និងតម្លៃ Liquidation <span class="tr-hint">តាមសញ្ញា 🎯 4 ម៉ោង</span></div>
-        <div class="tr-inputs">
-          <label><span>ទុន Futures ($)</span><input id="futCap" type="number" inputmode="decimal" min="0" step="10" value="500"></label>
-          <label>ហ៊ានខាតក្នុង 1 ដង (%)<input id="futRisk" type="number" inputmode="decimal" min="0.1" max="10" step="0.1" value="1"></label>
-          <label class="fut-lev">Leverage
-            <span class="fut-lev-row"><input id="futLev" type="range" min="1" max="20" step="1" value="3"><b id="futLevV">3x</b></span></label>
-          <label class="fut-dir">ទិសដៅ
-            <span class="seg" id="futDir"><button type="button" data-d="auto">តាមសញ្ញា 🎯</button><button type="button" data-d="LONG">Long ⬆</button><button type="button" data-d="SHORT">Short ⬇</button></span></label>
-        </div>
-        <div class="tr-out" id="futOut"></div>
-      </div>
-      <div class="tr-pos" id="futRes"></div>
+  <section class="card trade fx" id="futCard">
+    <div class="fx-head">
+      <h2><span>⚡ Futures · <span id="futCoin"></span></span></h2>
+      <span class="seg fx-tfs" id="futTf"><button type="button" data-tf="5m">5m</button><button type="button" data-tf="15m">15m</button><button type="button" data-tf="30m">30m</button><button type="button" data-tf="1h">1h</button><button type="button" data-tf="4h">4h</button></span>
     </div>
-    <div class="fut-steps" id="futSteps"></div>
+    <div class="fut-v wait" id="futV"><div class="fx-act">…</div></div>
+    <details class="fx-d" data-k="set"><summary id="fxSetSum">⚙️ ទុន · ហ៊ានខាត · Leverage</summary>
+      <div class="tr-inputs fx-inputs">
+        <label><span>ទុន Futures ($)</span><input id="futCap" type="number" inputmode="decimal" min="0" step="10" value="500"></label>
+        <label>ហ៊ានខាតក្នុង 1 ដង (%)<input id="futRisk" type="number" inputmode="decimal" min="0.1" max="10" step="0.1" value="1"></label>
+        <label class="fut-lev">Leverage
+          <span class="fut-lev-row"><input id="futLev" type="range" min="1" max="20" step="1" value="3"><b id="futLevV">3x</b></span></label>
+        <label class="fut-dir">ទិសដៅ
+          <span class="seg" id="futDir"><button type="button" data-d="auto">តាមសញ្ញា 🎯</button><button type="button" data-d="LONG">Long ⬆</button><button type="button" data-d="SHORT">Short ⬇</button></span></label>
+      </div>
+    </details>
+    <details class="fx-d" data-k="steps"><summary>📲 ធ្វើតាមលើ Binance</summary><div class="fut-steps" id="futSteps"></div></details>
+    <details class="fx-d" data-k="tf"><summary>📋 គ្រប់ Timeframe · ⏰ ម៉ោងល្អ</summary>
+      <div class="tr-grid fut-top">
+        <div><div class="hist-wrap"><table class="fut-all" id="futAll"></table></div></div>
+        <div class="tr-pos" id="futWhen"></div>
+      </div>
+    </details>
+    <details class="fx-d" data-k="risk"><summary>🛡 Liquidation · Funding · ការគណនា</summary>
+      <div class="tr-grid">
+        <div class="tr-out" id="futOut"></div>
+        <div class="tr-pos" id="futRes"></div>
+      </div>
+    </details>
   </section>
   </div>
 
@@ -1053,8 +1133,9 @@
         <div class="ind-tg" id="indTg">
           <span>Indicators:</span>
           <button data-i="vol">Volume</button><button data-i="ema200">EMA200</button>
-          <button data-i="bb">Bollinger</button><button data-i="rsi">RSI</button><button data-i="macd">MACD</button>
+          <button data-i="bb">Bollinger</button><button data-i="rsi">RSI</button><button data-i="macd">MACD</button><button data-i="fut">⚡ Futures</button>
         </div>
+        <div class="fx-badge" id="fxBadge" hidden></div>
         <div id="chart"></div>
         <div class="subpane" id="rsiPane"><span class="sp-l">RSI 14 <b id="rsiNow"></b></span><div id="rsiChart"></div></div>
         <div class="subpane" id="macdPane"><span class="sp-l">MACD 12/26/9 <b id="macdNow"></b></span><div id="macdChart"></div></div>
@@ -1063,6 +1144,7 @@
           <span><i style="background:#b48cff"></i>EMA50</span>
           <span><i style="background:var(--down)"></i>Resistance</span>
           <span><i style="background:var(--up)"></i>Support</span>
+          <span id="fxLegend"><i style="background:#f7931a"></i>⚡ ▲ Long ▼ Short (ចូល · លទ្ធផល)</span>
         </div>
       </section>
 
@@ -1169,6 +1251,10 @@
 
   <div class="page" data-page="news">
   <section class="nw-hero" id="nwHero"><div><small>📅 ព្រឹត្តិការណ៍ធំបន្ទាប់</small><h3>កំពុងទាញ…</h3></div></section>
+  <section class="card" id="fhCard" style="margin-bottom:16px">
+    <h2><span id="fhTitle">📊 ពេល Fed សម្រេចការប្រាក់លើកមុនៗ — តម្លៃរំកិលប៉ុន្មាន?</span></h2>
+    <div id="fhBody"><div class="skeleton" style="padding:14px">កំពុងគណនាពីទិន្នន័យ Binance…</div></div>
+  </section>
   <div class="nw-grid">
     <section class="card">
       <h2><span>📅 ប្រតិទិនសេដ្ឋកិច្ច US (ម៉ោងរបស់អ្នក)</span></h2>
@@ -1177,7 +1263,7 @@
     </section>
     <section class="card">
       <h2><span>📰 ព័ត៌មាន Crypto ថ្មីៗ</span><span class="tr-coin" id="nwAt"></span></h2>
-      <div class="nw-flt" id="nwFlt"><button data-f="all" class="on">ទាំងអស់</button><button data-f="big">🔥 ធំៗ</button><button data-f="coin" id="nwFltCoin">កាក់នេះ</button></div>
+      <div class="nw-flt" id="nwFlt"><button data-f="all" class="on">ទាំងអស់</button><button data-f="big">🔥 ធំៗ</button><button data-f="coin" id="nwFltCoin">កាក់នេះ</button><button data-lang="1" id="nwLang" style="margin-left:auto">🇰🇭 ខ្មែរ</button></div>
       <div id="nwList"><div class="skeleton" style="padding:20px">កំពុងទាញព័ត៌មាន…</div></div>
     </section>
   </div>
@@ -1269,12 +1355,13 @@ function drawChart(f) {
     price: s.price, color: "#2ecc8f", lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: "S" + (i + 1),
   })));
   if (lastChartTf !== tf) { fitBars(); lastChartTf = tf; }
+  try { if (fxMarks.length) candles.setMarkers(fxMarks.filter(m => shown.some(x => x.time === m.time))); paintFutChart(); } catch (e) {}
   if (indKey !== symbol + tf) { indData = null; paintIndicators(); }
   loadIndicators();
 }
 
 /* ---------------- chart indicators (Volume, EMA200, Bollinger, RSI, MACD) ---------------- */
-let IND = { vol: true, ema200: false, bb: false, rsi: false, macd: false };
+let IND = { vol: true, ema200: false, bb: false, rsi: false, macd: false, fut: true };
 try { const x = JSON.parse(localStorage.getItem("ind")); if (x) IND = { ...IND, ...x }; } catch (e) {}
 const subOpts = {
   layout: { background: { color: "transparent" }, textColor: "#8a94a3", fontFamily: "JetBrains Mono" },
@@ -1352,6 +1439,7 @@ $("indTg").addEventListener("click", e => {
   try { localStorage.setItem("ind", JSON.stringify(IND)); } catch (x) {}
   paintIndButtons();
   if (indData && indKey === symbol + tf) paintIndicators(); else loadIndicators(true);
+  if (b.dataset.i === "fut") { fxKey = ""; fxMarkKey = ""; paintFutChart(); }
 });
 paintIndButtons();
 setInterval(() => { if (document.querySelector('.page[data-page="chart"]').classList.contains("on")) loadIndicators(); }, 15000);
@@ -2307,7 +2395,59 @@ const LT = (() => {
     return out;
   }
 
-  return { analyzeAll, forecast, backtest, swingTest, swingNow, SW, series, lab: { klinesRange, scoresOf, indicators, score, levels, STEP } };
+  /* ---- FUTURES on any timeframe: same rule as the 4h swing (score ±30, stop 3×ATR, target 3R, close after 42 candles),
+     Long and Short tested separately with the futures fee (0.05% per side). Last 1/3 of the data = "new data" check. */
+  const FT = { hold: 42, fee: 0.0005, days: { "5m": 90, "15m": 180, "30m": 365, "1h": 730, "4h": 1825 } };
+  function simFut(c, s, a) {
+    const T = []; let busy = -1;
+    for (let i = 210; i < c.length - 2; i++) {
+      if (i <= busy || s[i] == null) continue;
+      const side = s[i] >= 30 ? "LONG" : s[i] <= -30 ? "SHORT" : null;
+      if (!side) continue;
+      const e = c[i + 1].open, risk = SW.stop * a[i].atr, L = side === "LONG";
+      if (!(risk > 0)) continue;
+      const stop = L ? e - risk : e + risk, tp = L ? e + SW.tp * risk : e - SW.tp * risk;
+      const last = Math.min(i + FT.hold, c.length - 1);
+      let r = null, k = i + 1;
+      for (; k <= last; k++) {
+        const x = c[k];
+        if (L ? x.low <= stop : x.high >= stop) { r = -1; break; }
+        if (L ? x.high >= tp : x.low <= tp) { r = SW.tp; break; }
+      }
+      if (r === null) { if (last < i + FT.hold) break; k = last; r = (L ? c[k].close - e : e - c[k].close) / risk; }
+      T.push({ t: c[i + 1].time, side, r, net: r * risk / e * 100 - 2 * FT.fee * 100 });
+      busy = k;
+    }
+    return T;
+  }
+  async function futTest(sym, tf) {
+    const c = await klinesRange(sym, tf, Date.now() - (FT.days[tf] * 86400 + 210 * STEP[tf]) * 1000);
+    if (c.length < 600) throw new Error("NODATA");
+    const S = scoresOf(c), T = simFut(c, S.s, S.a), cut = c[Math.floor(c.length * 2 / 3)].time;
+    const st = xs => { const n = xs.length; return { n, win: n ? xs.filter(t => t.r > 0).length / n : 0, avg: n ? xs.reduce((a, t) => a + t.net, 0) / n : 0 }; };
+    const hrs = side => { const h = Array.from({ length: 24 }, () => [0, 0]); T.filter(t => t.side === side).forEach(t => { const x = h[new Date(t.t * 1000).getHours()]; x[0]++; x[1] += t.net; }); return h.map(([n, s]) => [n, n ? Math.round(s / n * 1000) / 1000 : 0]); };
+    const side = sd => T.filter(t => t.side === sd);
+    return { tf, from: c[0].time, to: c[c.length - 1].time,
+             LONG: st(side("LONG")), SHORT: st(side("SHORT")),
+             LONGoos: st(side("LONG").filter(t => t.t >= cut)), SHORToos: st(side("SHORT").filter(t => t.t >= cut)),
+             hrs: { LONG: hrs("LONG"), SHORT: hrs("SHORT") } };
+  }
+  async function futNow(sym, tf) {
+    const c = await klines(sym, tf, 500);
+    const S = scoresOf(c), last = c.length - 2;
+    const b = x => x >= 30 ? "BUY" : x <= -30 ? "SELL" : "WAIT";
+    const action = b(S.s[last]);
+    let k = last; while (k - 1 >= 200 && b(S.s[k - 1]) === action) k--;
+    return { tf, action, score: S.s[last], price: c[c.length - 1].close, atr: S.a[last].atr,
+             since: c[k].time + STEP[tf], sinceBars: last - k + 1, nextClose: (c[c.length - 1].time + STEP[tf]) * 1000 };
+  }
+
+  async function futMarks(sym, tf) {
+    const c = await klines(sym, tf, 500), S = scoresOf(c);
+    return simFut(c, S.s, S.a);
+  }
+
+  return { analyzeAll, forecast, backtest, swingTest, swingNow, futTest, futNow, futMarks, FT, SW, series, lab: { klinesRange, scoresOf, indicators, score, levels, STEP } };
 })();
 
 /* ---------------- accuracy check + best hours (one 90-day backtest feeds both) ---------------- */
@@ -2826,6 +2966,8 @@ function switchCoin(sym) {
   symbol = sym;
   try { localStorage.setItem("coin", sym); } catch (e) {}
   history.replaceState(null, "", "?s=" + sym);
+  if (typeof pollFM === "function") { FM = null; setTimeout(pollFM, 0); setTimeout(pollFutNow, 0); setTimeout(loadFutTests, 1500); }
+  if (document.querySelector('.page[data-page="news"]').classList.contains("on")) setTimeout(loadFedHistory, 0);
   // forget everything about the previous coin
   payload = null; livePrice = null; lastUpdated = null;
   prevOverall = null; prevScalp = null; zone = null; scalpNextClose = null;
@@ -3086,8 +3228,65 @@ try {
   if (["auto", "LONG", "SHORT"].includes(g("futDir"))) futDir = g("futDir");
 } catch (e) {}
 
-function futPlan() {
-  const w = swing;
+const FT_TFS = ["5m", "15m", "30m", "1h", "4h"];
+const TF_KM = { "5m": "5 នាទី", "15m": "15 នាទី", "30m": "30 នាទី", "1h": "1 ម៉ោង", "4h": "4 ម៉ោង" };
+let futTf = "4h", FTN = {}, FTS = {}, ftSym = "";
+try { if (FT_TFS.includes(localStorage.getItem("futTf"))) futTf = localStorage.getItem("futTf"); } catch (e) {}
+const durTxt = sec => sec < 86400 ? `${+(sec / 3600).toFixed(1)} ម៉ោង` : `${+(sec / 86400).toFixed(1)} ថ្ងៃ`;
+const holdSec = tf => LT.FT.hold * LT.lab.STEP[tf];
+const ftReset = () => { if (ftSym !== symbol) { ftSym = symbol; FTN = {}; FTS = {}; } };
+
+async function pollFutNow() {
+  ftReset();
+  const asked = symbol;
+  const got = await Promise.allSettled(FT_TFS.map(tf => LT.futNow(asked, tf)));
+  if (asked !== symbol) return;
+  got.forEach((g, i) => { if (g.status === "fulfilled") FTN[FT_TFS[i]] = g.value; });
+  renderFut();
+}
+let ftBusy = false;
+async function loadFutTests() {
+  if (ftBusy) return; ftBusy = true;
+  const asked = symbol;
+  try {
+    for (const tf of [futTf, ...FT_TFS.filter(x => x !== futTf)]) {
+      if (asked !== symbol) break;
+      const key = `ft2:${asked}:${tf}`;
+      let hit = null; try { hit = JSON.parse(localStorage.getItem(key)); } catch (e) {}
+      if (hit && Date.now() - hit.at < 12 * 3600e3) { FTS[tf] = hit.s; continue; }
+      try {
+        const st = await LT.futTest(asked, tf);
+        try { localStorage.setItem(key, JSON.stringify({ at: Date.now(), s: st })); } catch (e) {}
+        if (asked === symbol) FTS[tf] = st;
+      } catch (e) { if (asked === symbol) FTS[tf] = { err: true }; }
+      renderFut();
+    }
+  } finally { ftBusy = false; renderFut(); if (asked !== symbol) loadFutTests(); }
+}
+
+// grade one timeframe: is there a signal now, and did that side make money (all data AND the newest 1/3)?
+function tfGrade(tf) {
+  const w = FTN[tf], st = FTS[tf];
+  const sig = !w ? null : w.action === "BUY" ? "LONG" : w.action === "SELL" ? "SHORT" : null;
+  const res = { tf, w, st, sig, side: null, oos: null, g: "wait" };
+  if (!w) { res.g = "load"; return res; }
+  if (!sig) return res;
+  if (!st) { res.g = "test"; return res; }
+  if (st.err) { res.g = "nodata"; return res; }
+  res.side = st[sig]; res.oos = st[sig + "oos"];
+  res.g = res.side.n < 15 ? "few" : res.side.avg > 0 && res.oos.avg > 0 ? "go" : res.side.avg > 0 || res.oos.avg > 0 ? "weak" : "no";
+  return res;
+}
+// a big scheduled event (Fed, CPI, NFP…) soon?
+function eventSoon(withinSec) {
+  if (typeof EV === "undefined") return null;
+  const now = Date.now() / 1000;
+  return EV.filter(x => x.impact === "High" && x.t > now - 1800 && x.t < now + withinSec).sort((a, b) => a.t - b.t)[0] || null;
+}
+
+function futPlan(T = futTf) {
+  ftReset();
+  const w = FTN[T] || (T === "4h" ? swing : null);
   if (!w) return null;
   const cap = Math.max(0, +$("futCap").value || 0), riskPct = Math.min(10, Math.max(0.1, +$("futRisk").value || 1));
   const lev = Math.min(20, Math.max(1, Math.round(+$("futLev").value || 1)));
@@ -3104,77 +3303,134 @@ function futPlan() {
   const liqDist = Math.abs(liq - entry) / entry;
   const safe = Math.max(1, Math.min(10, Math.floor(1 / (L ? 1 - (1 - 1.5 * sd) * (1 - mmr) : (1 + 1.5 * sd) * (1 + mmr) - 1))));
   const fees = notional * FUT_FEE + qty * stop * FUT_FEE, feesTp = notional * FUT_FEE + qty * tp * FUT_FEE;
-  return { w, sig, dir, L, entry, stop, tp, sd, mmr, lev, cap, riskPct, notional, margin, qty, capped,
+  return { w, tf: T, sig, dir, L, entry, stop, tp, sd, mmr, lev, cap, riskPct, notional, margin, qty, capped,
            liq: liq > 0 ? liq : 0, liqDist, safe,
            loss: -(notional * sd + fees), gain: notional * sd * LT.SW.tp - feesTp,
            level: lev === 1 && L ? "ok" : liqDist <= sd ? "bad" : liqDist < 1.5 * sd ? "warn" : "ok" };
 }
 
 function renderFut() {
-  const P = futPlan();
+  const P = futPlan(), TFK = TF_KM[futTf], p2 = x => (x > 0 ? "+" : "") + x.toFixed(2) + "%";
   $("futLevV").textContent = $("futLev").value + "x";
   $("futCoin").textContent = coinLabel();
   [...$("futDir").children].forEach(b => b.classList.toggle("on", b.dataset.d === futDir));
-  if (!P) { $("futOut").innerHTML = `<div class="wide">កំពុងទាញសញ្ញា 4 ម៉ោង…</div>`; $("futRes").innerHTML = ""; return; }
+  $("fxSetSum").innerHTML = `⚙️ ទុន ${usd(+$("futCap").value || 0)} · ហ៊ានខាត ${$("futRisk").value}% · ${$("futLev").value}x · ${{ auto: "តាមសញ្ញា", LONG: "Long", SHORT: "Short" }[futDir]}`;
+
+  // ---- all timeframes at a glance
+  const G = FT_TFS.map(tfGrade);
+  const best = G.filter(r => r.g === "go").sort((a, b) => b.side.avg - a.side.avg)[0];
+  const cell = (st, oos) => !st ? `<small>…</small>` : st.n ? `<span class="${st.avg >= 0 ? "c-BUY" : "c-SELL"}">${p2(st.avg)}</span>${oos && oos.n ? ` <small class="${oos.avg >= 0 ? "c-BUY" : "c-SELL"}">ថ្មី ${p2(oos.avg)}</small>` : ""}<small class="l2">ត្រូវ ${Math.round(st.win * 100)}% · ${st.n} ដង</small>` : `<small>—</small>`;
+  const gtxt = r => ({ go: `<b class="${r.sig === "LONG" ? "c-BUY" : "c-SELL"}">✅ ${r.sig === "LONG" ? "Long ⬆" : "Short ⬇"}</b>`, weak: `<span class="c-HOLD">🟠 ${r.sig === "LONG" ? "Long" : "Short"} ខ្សោយ</span>`,
+    no: `<span class="c-SELL">❌ កុំ ${r.sig === "LONG" ? "Long" : "Short"}</span>`, few: `<span class="c-HOLD">🟠 ទិន្នន័យតិច</span>`, wait: `<span style="color:var(--muted)">⏸ រង់ចាំ</span>`,
+    test: `<small>កំពុងសាកល្បង…</small>`, load: `<small>…</small>`, nodata: `<small>គ្មានទិន្នន័យ</small>` })[r.g];
+  const chipIc = r => r.g === "go" ? (r.sig === "LONG" ? "🟢" : "🔴") : r.g === "no" ? "❌" : r.g === "weak" || r.g === "few" ? "🟠" : r.g === "wait" ? "⏸" : "…";
+  [...$("futTf").children].forEach(b => { const r = G.find(x => x.tf === b.dataset.tf); b.classList.toggle("on", b.dataset.tf === futTf); b.innerHTML = `${b.dataset.tf}<i>${chipIc(r)}${best && best.tf === r.tf ? "⭐" : ""}</i>`; });
+  $("futAll").innerHTML = `<thead><tr><th>TF</th><th>សញ្ញាឥឡូវ</th><th>Long សាកល្បង</th><th>Short សាកល្បង</th><th>គួរលេង?</th></tr></thead><tbody>` +
+    G.map(r => `<tr data-tf="${r.tf}" class="${r.tf === futTf ? "sel" : ""}"><td>${r.tf}${best && best.tf === r.tf ? " ⭐" : ""}</td>
+      <td>${r.w ? `<span class="pill ${r.w.action}">${{ BUY: "Long", SELL: "Short", WAIT: "រង់ចាំ" }[r.w.action]}</span> <small>${r.w.score > 0 ? "+" : ""}${r.w.score}</small>` : "<small>…</small>"}</td>
+      <td>${r.st && !r.st.err ? cell(r.st.LONG, r.st.LONGoos) : cell(null)}</td><td>${r.st && !r.st.err ? cell(r.st.SHORT, r.st.SHORToos) : cell(null)}</td><td>${gtxt(r)}</td></tr>`).join("") + `</tbody>`;
+
+  if (!P) { $("futOut").innerHTML = `<div class="wide">កំពុងទាញសញ្ញា ${TFK}…</div>`; $("futRes").innerHTML = ""; $("futV").innerHTML = `<div class="fut-v-big">កំពុងទាញ…</div>`; $("futWhen").innerHTML = ""; return; }
+  const me = tfGrade(futTf), D = P.L ? "Long" : "Short", C = coinLabel();
   const name = P.L ? `<b class="c-BUY">Long ⬆</b>` : `<b class="c-SELL">Short ⬇</b>`;
   let head;
-  if (futDir === "auto") head = P.sig ? `🎯 សញ្ញា 4 ម៉ោង: ${name} — បើបើក position ឥឡូវ៖`
-    : `🎯 សញ្ញា 4 ម៉ោង: <b class="c-HOLD">រង់ចាំ</b> — មិនទាន់គួរបើក position ទេ។ គណនាខាងក្រោមជាឧទាហរណ៍ ${name}៖`;
-  else head = P.sig && P.sig !== P.dir ? `អ្នកជ្រើស ${name} ប៉ុន្តែសញ្ញា 4 ម៉ោងចង្អុល <b class="${P.sig === "LONG" ? "c-BUY" : "c-SELL"}">${P.sig === "LONG" ? "Long" : "Short"}</b> — ជាការលេងបញ្ច្រាសសញ្ញា`
+  if (futDir === "auto") head = P.sig ? `🎯 សញ្ញា ${TFK}: ${name} — បើបើក position ឥឡូវ៖`
+    : `🎯 សញ្ញា ${TFK}: <b class="c-HOLD">រង់ចាំ</b> — មិនទាន់គួរបើក position ទេ។ គណនាខាងក្រោមជាឧទាហរណ៍ ${name}៖`;
+  else head = P.sig && P.sig !== P.dir ? `អ្នកជ្រើស ${name} ប៉ុន្តែសញ្ញា ${TFK} ចង្អុល <b class="${P.sig === "LONG" ? "c-BUY" : "c-SELL"}">${P.sig === "LONG" ? "Long" : "Short"}</b> — ជាការលេងបញ្ច្រាសសញ្ញា`
     : `អ្នកជ្រើស ${name}៖`;
-  const unit = coinLabel() === "មាស" ? "PAXG" : coinLabel();
+  const unit = coinLabel() === "មាស" ? "PAXG" : coinLabel(), hold = durTxt(holdSec(futTf));
   $("futOut").innerHTML = `<div class="wide">${head}</div>
     <div><small>ទំហំ position</small><b>${usd(P.notional)}</b> <small>${qtyFmt(P.qty)} ${unit}</small></div>
     <div><small>Margin ដែលត្រូវដាក់</small><b>${usd(P.margin)}</b> <small>${P.cap ? Math.round(P.margin / P.cap * 100) : 0}% នៃទុន</small></div>
-    <div><small>បើដល់ Stop ${fmt(P.stop, 0)}</small><b class="c-SELL">${usd(P.loss, true)}</b></div>
-    <div><small>បើដល់គោលដៅ ${fmt(P.tp, 0)}</small><b class="c-BUY">${usd(P.gain, true)}</b></div>
-    <div class="wide">${P.capped ? `ℹ️ ទុនមិនគ្រប់សម្រាប់ ${P.riskPct}% ជាមួយ ${P.lev}x — ប្រើទុនទាំងអស់ជា margin · ` : ""}ថ្លៃសេវា Futures 0.05% ពេលបើក និងបិទ · មិនទាន់គិត funding fee (រៀងរាល់ 8 ម៉ោង) · កាន់ទុកយូរបំផុត 7 ថ្ងៃ</div>`;
+    <div><small>បើដល់ Stop ${fmt(P.stop)}</small><b class="c-SELL">${usd(P.loss, true)}</b></div>
+    <div><small>បើដល់គោលដៅ ${fmt(P.tp)}</small><b class="c-BUY">${usd(P.gain, true)}</b></div>
+    <div class="wide">${P.capped ? `ℹ️ ទុនមិនគ្រប់សម្រាប់ ${P.riskPct}% ជាមួយ ${P.lev}x — ប្រើទុនទាំងអស់ជា margin · ` : ""}Stop = 3 × ATR(${futTf}) · ថ្លៃសេវា 0.05% ពេលបើក និងបិទ · ${fundTxt(P)} · កាន់ទុកយូរបំផុត ${hold}</div>`;
 
-  // ---- right side: liquidation check
+  // ---- liquidation check
   const st = { ok: ["win", `✅ Stop-loss នឹងបិទ position មុនពេល Liquidation — ${P.lev}x នេះមានសុវត្ថិភាព`],
                warn: ["time", `🟠 Liquidation នៅជិត Stop-loss ពេក — តម្លៃលោតខ្លាំងភ្លាមៗ អាច liquidate បាន។ បន្ថយមក ≤ ${P.safe}x`],
                bad: ["loss", `🛑 Liquidate មុនដល់ Stop-loss! នៅ ${P.lev}x អ្នកនឹងបាត់ margin ទាំងអស់ ${usd(P.margin)}។ បន្ថយមក ≤ ${P.safe}x`] }[P.level];
   const pts = [["liq", "Liquidation", P.liq], ["stop", "Stop", P.stop], ["", "ចូល", P.entry], ["tp", "គោលដៅ", P.tp]].filter(p => p[2] > 0);
   const lo = Math.min(...pts.map(p => p[2])), hi = Math.max(...pts.map(p => p[2])), span = hi - lo || 1;
-  const near = P.liq > 0 && Math.abs(P.liq - P.stop) / span < 0.18;          // labels would overlap → merge them
+  const near = P.liq > 0 && Math.abs(P.liq - P.stop) / span < 0.18;
   const bar = pts.map(p => `<span class="${p[0]}" style="left:${(p[2] - lo) / span * 100}%"><i></i>${near && p[0] === "liq" ? "" : near && p[0] === "stop" ? "Stop · Liq" : p[1]}</span>`).join("");
-  const s5 = swingStats, side = s5 && (P.L ? s5.buy : s5.sell);
-  const p2 = x => (x > 0 ? "+" : "") + x.toFixed(2) + "%";
+  const T = FTS[futTf], side = T && !T.err ? T[P.dir] : null, oos = T && !T.err ? T[P.dir + "oos"] : null;
+  const yrs = T && !T.err ? durTxt(T.to - T.from) : "";
   const test = side && side.n
-    ? `📊 សាកល្បង 5 ឆ្នាំ ${P.L ? "Long" : "Short"} លើ ${coinLabel()}: <b>${side.n}</b> ដង · ត្រូវ <b>${Math.round(side.win * 100)}%</b> · មធ្យមម្តង <b class="${side.avg >= 0 ? "good" : "bad"}">${p2(side.avg)}</b> (តម្លៃ មុនគុណ leverage)` +
-      (side.avg < 0 ? `<br><span class="bad">${P.L ? "Long" : "Short"} តាមសញ្ញានេះ ខាតជាមធ្យមលើ ${coinLabel()} ក្នុងការសាកល្បង — ប្រុងប្រយ័ត្ន</span>` : "")
-    : "📊 កំពុងសាកល្បងលើទិន្នន័យ 5 ឆ្នាំ…";
+    ? `📊 សាកល្បង ${D} លើ ${futTf} ${yrs} ចុងក្រោយ: <b>${side.n}</b> ដង · ត្រូវ <b>${Math.round(side.win * 100)}%</b> · មធ្យមម្តង <b class="${side.avg >= 0 ? "good" : "bad"}">${p2(side.avg)}</b> · ទិន្នន័យថ្មី 1/3 <b class="${oos.avg >= 0 ? "good" : "bad"}">${p2(oos.avg)}</b> (ក្រោយថ្លៃសេវា មុនគុណ leverage)`
+    : T && T.err ? "📊 មិនមានទិន្នន័យគ្រប់គ្រាន់ដើម្បីសាកល្បង" : `📊 កំពុងសាកល្បង ${futTf}…`;
   $("futRes").innerHTML = `
     <div class="tr-status ${st[0]}">${st[1]}</div>
     <div class="tr-meta">
-      <div><small>តម្លៃ Liquidation</small><b class="c-SELL">${P.liq > 0 ? fmt(P.liq, 0) : "គ្មាន"}</b></div>
-      <div><small>ចម្ងាយ Liq / Stop</small><b>${(P.liqDist * 100).toFixed(1)}% / ${(P.sd * 100).toFixed(1)}%</b></div>
+      <div><small>តម្លៃ Liquidation</small><b class="c-SELL">${P.liq > 0 ? fmt(P.liq) : "គ្មាន"}</b></div>
+      <div><small>ចម្ងាយ Liq / Stop</small><b>${(P.liqDist * 100).toFixed(1)}% / ${(P.sd * 100).toFixed(2)}%</b></div>
       <div><small>Leverage អតិបរមា</small><b class="c-BUY">≤ ${P.safe}x</b></div>
     </div>
     <div class="fut-bar">${bar}</div>
-    <div class="fut-note">💡 ពេលអ្នកកំណត់ទំហំតាម "ហ៊ានខាត %" ការខាតពេលដល់ Stop គឺដូចគ្នា ទោះ leverage ប៉ុន្មានក៏ដោយ។ Leverage ខ្ពស់ គ្រាន់តែដាក់ margin តិចជាង ប៉ុន្តែ Liquidation មកជិតជាង។ ដាក់ Stop-loss នៅលើ Binance ពេលបើក position ជានិច្ច · អ្នកថ្មីគួរប្រើ 2x–3x (មិនលើស 10x)។</div>
-    <div class="fut-note">${test}</div>`;
+    <div class="fut-note">💡 ការខាតពេលដល់ Stop គឺដូចគ្នា ទោះ leverage ប៉ុន្មានក៏ដោយ — leverage ខ្ពស់ គ្រាន់តែ margin តិច ប៉ុន្តែ Liquidation មកជិត។ ដាក់ Stop-loss ជានិច្ច · អ្នកថ្មីគួរប្រើ 2x–3x។</div>
+    <div class="fut-note">${test}</div>${fmBox(P)}`;
 
-  // ---- one clear answer: 3 checks
+  // ---- ⏰ when to play
+  const H = T && !T.err ? T.hrs[P.dir] : null, nowH = new Date().getHours();
+  let hrsHtml = "";
+  if (H) {
+    const tot = H.reduce((a, x) => a + x[0], 0), min = Math.max(4, Math.round(tot / 60));
+    const ok = H.map((x, h) => ({ h, n: x[0], a: x[1] })).filter(x => x.n >= min);
+    const good = ok.filter(x => x.a > 0).sort((a, b) => b.a - a.a).slice(0, 5), bad = ok.filter(x => x.a < 0).sort((a, b) => a.a - b.a).slice(0, 4);
+    const chip = (x, c) => `<span class="${c} ${x.h === nowH ? "now" : ""}">${String(x.h).padStart(2, "0")}:00 ${p2(x.a)}</span>`;
+    const nowX = ok.find(x => x.h === nowH);
+    hrsHtml = `<div class="fc-sub" style="margin-top:6px">🕐 ម៉ោងល្អសម្រាប់ ${D} ${futTf} (ម៉ោងចូល)</div>
+      <div class="fut-hrs">${good.map(x => chip(x, "g")).join("") || `<small style="color:var(--muted)">គ្មានម៉ោងណាល្អច្បាស់ទេ</small>`}</div>
+      ${bad.length ? `<div class="fc-sub" style="margin-top:6px">⛔ ម៉ោងគួរជៀស</div><div class="fut-hrs">${bad.map(x => chip(x, "b")).join("")}</div>` : ""}
+      <div class="fut-note">ឥឡូវម៉ោង ${String(nowH).padStart(2, "0")}:00 — ${!nowX ? "ទិន្នន័យតិចពេកសម្រាប់ម៉ោងនេះ" : nowX.a > 0 ? `<span class="good">ម៉ោងល្អ (${p2(nowX.a)})</span>` : `<span class="bad">ម៉ោងខ្សោយ (${p2(nowX.a)})</span>`} · ម៉ោងនីមួយៗប្រែប្រួល — ប្រើជាជំនួយ មិនមែនច្បាប់</div>`;
+  }
+  const nc = P.w.nextClose || swing && swing.nextClose;
+  const ev = eventSoon(holdSec(futTf));
+  $("futWhen").innerHTML = `<div class="fc-sub">⏰ ពេលលេង · ${TFK}</div>
+    <div class="fut-note">Candle ${futTf} បន្ទាប់បិទ ម៉ោង <b>${nc ? hhmm(nc) : "—"}</b> — សញ្ញាពិនិត្យរៀងរាល់ពេល candle បិទ</div>
+    <div class="fut-when-big">${nc ? cdTxt(nc - Date.now()) : "—"}</div>
+    <div class="fut-note">${P.sig ? `សញ្ញា ${D} ចាប់ផ្តើម ${P.w.sinceBars} candle មុន (${durTxt(P.w.sinceBars * LT.lab.STEP[futTf])}) ${P.w.sinceBars <= 2 ? "· <span class=\"good\">ទើបចាប់ផ្តើម — ពេលល្អ</span>" : P.w.sinceBars > 12 ? "· <span class=\"bad\">ចាស់ហើយ — ប្រហែលហួសពេល</span>" : ""}` : "គ្មានសញ្ញា — រង់ចាំពិន្ទុ ≥ +30 (Long) ឬ ≤ -30 (Short)"}</div>
+    ${ev ? `<div class="fut-note"><span class="bad">📅 ${evInfo(ev.title).km} ${ev.t * 1000 > Date.now() ? "ក្នុង " + leftTxt(ev.t * 1000 - Date.now()).replace("នៅសល់ ", "") : "ទើបចេញ"}</span> — នៅក្នុងរយៈពេលកាន់ (${hold})</div>` : ""}
+    ${hrsHtml}`;
+
+  // ---- one clear answer: 4 checks
   const cSig = P.sig ? (P.sig === P.dir ? "y" : "n") : "m";
-  const cTest = !side || !side.n ? "m" : side.avg > 0 ? "y" : "n";
+  const cTest = !side || !side.n || (!P.sig && futDir === "auto") ? "m" : side.n < 15 ? "m" : side.avg > 0 && oos.avg > 0 ? "y" : side.avg > 0 || oos.avg > 0 ? "m" : "n";
   const cLev = P.level === "ok" ? "y" : P.level === "warn" ? "m" : "n";
-  const D = P.L ? "Long" : "Short", C = coinLabel();
-  let v, big, why;
-  if (cLev === "n") { v = "no"; big = `🛑 ${P.lev}x ខ្ពស់ពេក`; why = `នឹងត្រូវ Liquidate មុនដល់ Stop-loss — បន្ថយ Leverage មក ≤ ${P.safe}x`; }
-  else if (cSig === "m") { v = "wait"; big = `⏸ រង់ចាំ — កុំទាន់បើក ${C}`; why = `សញ្ញា 4 ម៉ោងមិនទាន់ច្បាស់ (ពិន្ទុ ${P.w.score > 0 ? "+" : ""}${P.w.score}) · Long ពេល ≥ +30 · Short ពេល ≤ -30`; }
-  else if (cSig === "n") { v = "no"; big = `❌ កុំ ${D} ${C}`; why = `សញ្ញា 4 ម៉ោងចង្អុល ${P.sig === "LONG" ? "Long ⬆" : "Short ⬇"} — អ្នកកំពុងលេងបញ្ច្រាស`; }
-  else if (cTest === "n") { v = "no"; big = `❌ មិនណែនាំ ${D} ${C}`; why = `មានសញ្ញា ប៉ុន្តែ ${D} តាមសញ្ញានេះលើ ${C} ខាតជាមធ្យម ${p2(side.avg)} ក្នុងការសាកល្បង 5 ឆ្នាំ — មើលកាក់ផ្សេងក្នុង 🔍 ស្កេនកាក់`; }
-  else if (cTest === "m") { v = "wait"; big = `🟠 ${D} ${C} — កំពុងពិនិត្យ`; why = "កំពុងសាកល្បងលើទិន្នន័យ 5 ឆ្នាំ…"; }
-  else { v = "go"; big = `✅ អាចបើក ${D} ${C} · ${P.lev}x`; why = `ចូល ~${fmt(P.entry, 0)} · Stop ${fmt(P.stop, 0)} · គោលដៅ ${fmt(P.tp, 0)} · ខាតអតិបរមា ${usd(-P.loss)}`; }
-  if (v === "go" && cLev === "m") { v = "wait"; big = `🟠 ${D} ${C} — ប៉ុន្តែបន្ថយ Leverage`; why = `Liquidation នៅជិត Stop ពេក — ប្រើ ≤ ${P.safe}x`; }
+  const evNear = eventSoon(2 * 3600), cEv = evNear ? "n" : ev ? "m" : "y";
+  const alt = best && best.tf !== futTf ? ` · ⭐ <b>${best.tf} ${best.sig === "LONG" ? "Long" : "Short"}</b> ល្អជាង — ចុច ${best.tf} ខាងលើ` : "";
+  let v, act, why;
+  if (cLev === "n") { v = "no"; act = "🛑 Leverage ខ្ពស់ពេក"; why = `${P.lev}x នឹងត្រូវ Liquidate មុនដល់ Stop — បន្ថយមក ≤ ${P.safe}x`; }
+  else if (cSig === "m") { v = "wait"; act = "⏸ រង់ចាំ"; why = `គ្មានសញ្ញា ${futTf} ទេ (ពិន្ទុ ${P.w.score > 0 ? "+" : ""}${P.w.score}) — Long ពេល ≥ +30 · Short ពេល ≤ -30` + alt; }
+  else if (cSig === "n") { v = "no"; act = `❌ កុំ ${D}`; why = `សញ្ញា ${futTf} ចង្អុល ${P.sig === "LONG" ? "Long ⬆" : "Short ⬇"} — អ្នកកំពុងលេងបញ្ច្រាស`; }
+  else if (cEv === "n") { v = "wait"; act = "⏸ រង់ចាំ"; why = `${evInfo(evNear.title).km} ${evNear.t * 1000 > Date.now() ? "ម៉ោង " + hhmm(evNear.t * 1000) : "ទើបចេញ"} — តម្លៃអាចលោតប៉ះ Stop។ ចូលក្រោយ 30–60 នាទី`; }
+  else if (cTest === "n") { v = "no"; act = "❌ កុំលេង"; why = `មានសញ្ញា ${D} ប៉ុន្តែ ${D} លើ ${futTf} ខាតក្នុងការសាកល្បង (${p2(side.avg)}/ដង)` + alt; }
+  else if (cTest === "m" && (!side || !side.n)) { v = "wait"; act = `🟠 ${D}?`; why = `កំពុងសាកល្បង ${futTf}…`; }
+  else if (cTest === "m") { v = "wait"; act = `🟠 ${D} ខ្សោយ`; why = (side.n < 15 ? `សាកល្បងបានតែ ${side.n} ដង` : `ចំណេញតែក្នុងទិន្នន័យមួយផ្នែក (សរុប ${p2(side.avg)} · ថ្មី ${p2(oos.avg)})`) + " — ទំហំតូច ឬរង់ចាំ" + alt; }
+  else { v = "go"; act = P.L ? "🟢 LONG ⬆" : "🔴 SHORT ⬇"; why = `ការសាកល្បង: ត្រូវ <b>${Math.round(side.win * 100)}%</b> · ចំណេញមធ្យម <b class="good">${p2(side.avg)}</b>/ដង (${side.n} ដង)`; }
+  if (v === "go" && cLev === "m") { v = "wait"; act = `🟠 ${D} — បន្ថយ Leverage`; why = `Liquidation ជិត Stop ពេក — ប្រើ ≤ ${P.safe}x`; }
+  if (v === "go" && cEv === "m") why += ` · <span class="bad">📅 ${evInfo(ev.title).km} ក្នុងរយៈពេលកាន់</span>`;
   const ic = { y: "✅", n: "❌", m: "⏳" };
-  $("futV").className = "fut-v " + v;
-  $("futV").innerHTML = `<div><div class="fut-v-big">${big}</div><div class="fut-v-why">${why}</div></div>
+  const showTrade = v === "go" || futDir !== "auto";
+  const nums = showTrade ? `
+      <div><small>ចូល (Market)</small><b>${fmt(P.entry)}</b></div>
+      <div><small>Stop-loss</small><b class="c-SELL">${fmt(P.stop)}</b></div>
+      <div><small>គោលដៅ (TP)</small><b class="c-BUY">${fmt(P.tp)}</b></div>
+      <div><small>ទំហំ · ${P.lev}x</small><b>${Math.round(P.notional)} USDT</b></div>
+      <div><small>ខាត / ចំណេញ</small><b><span class="c-SELL">${usd(P.loss, true)}</span> / <span class="c-BUY">${usd(P.gain, true)}</span></b></div>
+      <div><small>កាន់យូរបំផុត</small><b>${hold}</b></div>`
+    : `
+      <div><small>ពិន្ទុ ${futTf} ឥឡូវ</small><b class="c-HOLD">${P.w.score > 0 ? "+" : ""}${P.w.score}</b></div>
+      <div><small>Long ពេលពិន្ទុ</small><b class="c-BUY">≥ +30</b></div>
+      <div><small>Short ពេលពិន្ទុ</small><b class="c-SELL">≤ -30</b></div>
+      <div ${best ? `data-go="${best.tf}" style="cursor:pointer"` : ""}><small>⭐ ល្អបំផុតឥឡូវ${best ? " — ចុច ›" : ""}</small><b>${best ? `<span class="${best.sig === "LONG" ? "c-BUY" : "c-SELL"}">${best.tf} ${best.sig === "LONG" ? "Long" : "Short"}</span>` : "គ្មាន"}</b></div>`;
+  $("futV").className = "fut-v " + v + (P.L ? "" : " short");
+  $("futV").innerHTML = `<div><div class="fx-act">${act}</div><div class="fx-sub"><b>${C} · ${futTf}${showTrade ? " · " + P.lev + "x" : ""}</b> — ${why}</div></div>
+    <div class="fx-clock"><small>Candle ${futTf} បិទក្នុង</small><b>${nc ? cdTxt(nc - Date.now()) : "—"}</b><small>ម៉ោង ${nc ? hhmm(nc) : "—"}</small></div>
+    <div class="fx-nums">${nums}</div>
     <div class="fut-checks">
-      <span class="${cSig}">${ic[cSig]} ① សញ្ញា 4h</span>
-      <span class="${cTest}">${ic[cTest]} ② សាកល្បង 5 ឆ្នាំ</span>
-      <span class="${cLev}">${ic[cLev]} ③ Leverage</span></div>`;
+      <span class="${cSig}">${ic[cSig]} សញ្ញា</span><span class="${cTest}">${ic[cTest]} សាកល្បង</span>
+      <span class="${cLev}">${ic[cLev]} Leverage</span><span class="${cEv}">${ic[cEv]} ${evNear ? evInfo(evNear.title).km.replace(/^\S+\s/, "") : ev ? evInfo(ev.title).km.replace(/^\S+\s/, "") + " ក្នុងពេលកាន់" : "គ្មានព្រឹត្តិការណ៍ធំ"}</span></div>`;
 
   // ---- exactly what to do on Binance
   const pr = x => String(+x.toFixed(x >= 1000 ? 1 : x >= 10 ? 2 : x >= 1 ? 4 : 5)), cp = x => `<button class="cp" data-cp="${x}">ចម្លង</button>`;
@@ -3184,13 +3440,116 @@ function renderFut() {
     <li>ចុច <b>Market</b> ហើយវាយទំហំ <b>${usdt} USDT</b>${cp(usdt)} <span style="color:var(--muted)">(≈ ${qtyFmt(P.qty)} ${unit} · margin ${usd(P.margin)})</span></li>
     <li>ធីក <b>TP/SL</b>: Take Profit <b class="c-BUY">${pr(P.tp)}</b>${cp(pr(P.tp))} · Stop Loss <b class="c-SELL">${pr(P.stop)}</b>${cp(pr(P.stop))}</li>
     <li>ចុច <b class="${P.L ? "c-BUY" : "c-SELL"}">${P.L ? "Buy / Long" : "Sell / Short"}</b> — រួចពិនិត្យថា Liq. Price លើ Binance ${P.L ? "ទាបជាង" : "ខ្ពស់ជាង"} Stop (${pr(P.stop)})</li>
-    <li>បើមិនទាន់ដល់ TP ឬ SL ក្នុង <b>7 ថ្ងៃ</b> — បិទ position ដោយដៃ</li></ol>`
-    : `<div class="fut-note">📲 ការណែនាំជំហានៗលើ Binance នឹងបង្ហាញនៅទីនេះ ពេលមាន setup ✅ (ឬជ្រើស Long/Short ដោយខ្លួនឯង)</div>`;
+    <li>បើមិនទាន់ដល់ TP ឬ SL ក្នុង <b>${hold}</b> (${LT.FT.hold} candle ${futTf}) — បិទ position ដោយដៃ</li></ol>`
+    : `<div class="fut-note">បង្ហាញពេលមានសញ្ញា 🟢 LONG ឬ 🔴 SHORT (ឬជ្រើស Long/Short ក្នុង ⚙️)</div>`;
 }
+document.querySelectorAll("#futCard details.fx-d").forEach(d => {
+  try { if ((localStorage.getItem("fxOpen") || "").split(",").includes(d.dataset.k)) d.open = true; } catch (e) {}
+  d.addEventListener("toggle", () => { try { localStorage.setItem("fxOpen", [...document.querySelectorAll("#futCard details.fx-d[open]")].map(x => x.dataset.k).join(",")); } catch (e) {} });
+});
+/* ---- ⚡ futures on the price chart: entry / SL / TP / liquidation lines + past signals with their result ---- */
+let fxLines = [], fxKey = "", fxMarkKey = "", fxMarkAt = 0, fxMarks = [], fxRange = null;
+// keep SL and TP inside the visible price range
+candles.applyOptions({ autoscaleInfoProvider: orig => {
+  const r = orig();
+  if (r && r.priceRange && fxRange) { r.priceRange.minValue = Math.min(r.priceRange.minValue, fxRange[0]); r.priceRange.maxValue = Math.max(r.priceRange.maxValue, fxRange[1]); }
+  return r;
+} });
+function paintFutChart() {
+  const on = IND.fut, T = tf === "1d" ? null : tf;
+  const P = on && T ? futPlan(T) : null, g = on && T ? tfGrade(T) : null;
+  const sig = P && P.sig;
+  // lines (only when there is a live signal on this timeframe)
+  const k = sig ? [symbol, T, P.dir, px2(P.entry), px2(P.stop), px2(P.tp), px2(P.liq), P.lev].join("|") : "none";
+  if (k !== fxKey) {
+    fxKey = k;
+    fxLines.forEach(l => candles.removePriceLine(l)); fxLines = [];
+    fxRange = sig ? [Math.min(P.stop, P.tp), Math.max(P.stop, P.tp)] : null;
+    if (sig) {
+      const add = (price, color, title, style = 0, w = 2) => price > 0 && fxLines.push(candles.createPriceLine({ price, color, lineWidth: w, lineStyle: style, axisLabelVisible: true, title }));
+      add(P.entry, "#e6e9ee", "ចូល " + (P.L ? "Long" : "Short"), 2, 1);
+      add(P.stop, "#ff5d6c", "SL");
+      add(P.tp, "#2ecc8f", "TP");
+      add(P.liq, "#b3261e", `Liq ${P.lev}x`, 1, 1);
+    }
+  }
+  // badge above the chart
+  const B = $("fxBadge");
+  B.hidden = !on;
+  if (on) {
+    if (!T) { B.className = "fx-badge"; B.innerHTML = `⚡ Futures មិនមាន 1D — ជ្រើស 5m, 15m, 1h ឬ 4h`; }
+    else if (!g || g.g === "load") { B.className = "fx-badge"; B.innerHTML = `⚡ កំពុងទាញសញ្ញា ${T}…`; }
+    else {
+      const word = !sig ? "⏸ រង់ចាំ" : g.g === "go" ? (P.L ? "🟢 LONG ⬆" : "🔴 SHORT ⬇") : g.g === "no" ? `❌ ${P.L ? "Long" : "Short"} (មិនណែនាំ)` : `🟠 ${P.L ? "Long" : "Short"} ខ្សោយ`;
+      B.className = "fx-badge " + (sig && g.g === "go" ? P.dir : "");
+      B.innerHTML = `<span class="a ${sig ? (P.L ? "c-BUY" : "c-SELL") : "c-HOLD"}">${word}</span><span class="n">${T}</span>` +
+        (sig ? `<span class="n">ចូល <b>${fmt(P.entry)}</b></span><span class="n">SL <b class="c-SELL">${fmt(P.stop)}</b></span><span class="n">TP <b class="c-BUY">${fmt(P.tp)}</b></span><span class="n">Liq ${P.lev}x <b>${fmt(P.liq)}</b></span>`
+             : `<span class="n">ពិន្ទុ <b>${P ? (P.w.score > 0 ? "+" : "") + P.w.score : "—"}</b> · Long ≥ +30 · Short ≤ -30</span>`) +
+        (g.st && !g.st.err && sig ? `<span class="n">សាកល្បង ${g.side ? `<b class="${g.side.avg >= 0 ? "c-BUY" : "c-SELL"}">${(g.side.avg > 0 ? "+" : "") + g.side.avg.toFixed(2)}%</b>/ដង` : "…"}</span>` : "") +
+        `<span class="go">⚡ មើលលម្អិត ›</span>`;
+    }
+  }
+  $("fxLegend").style.display = on && T ? "" : "none";
+  // markers: past signals on the candles shown, with what happened
+  const mk = symbol + "|" + T + "|" + on;
+  if (mk !== fxMarkKey || Date.now() - fxMarkAt > 120000) {
+    fxMarkKey = mk; fxMarkAt = Date.now();
+    if (!on || !T) { fxMarks = []; candles.setMarkers([]); return; }
+    const asked = mk;
+    LT.futMarks(symbol, T).then(tr => {
+      if (asked !== fxMarkKey) return;
+      const have = new Set(shown.map(x => x.time));
+      fxMarks = tr.map(t => ({ time: t.t + TZ, position: t.side === "LONG" ? "belowBar" : "aboveBar",
+        color: t.r > 0 ? "#2ecc8f" : "#ff5d6c", shape: t.side === "LONG" ? "arrowUp" : "arrowDown",
+        text: `${t.side === "LONG" ? "L" : "S"} ${t.net > 0 ? "+" : ""}${t.net.toFixed(1)}%` })).filter(m => have.has(m.time));
+      candles.setMarkers(fxMarks);
+    }).catch(() => {});
+  }
+}
+const px2 = x => x ? Number(x.toPrecision(6)) : 0;
+$("fxBadge").addEventListener("click", () => {
+  if (tf !== "1d" && FT_TFS.includes(tf)) { futTf = tf; try { localStorage.setItem("futTf", futTf); } catch (x) {} }
+  showPage("home"); setTimeout(() => $("futCard").scrollIntoView({ behavior: "smooth", block: "start" }), 50); renderFut();
+});
+$("futV").addEventListener("click", e => { const g = e.target.closest("[data-go]"); if (!g) return; futTf = g.dataset.go; try { localStorage.setItem("futTf", futTf); } catch (x) {} renderFut(); });
+$("futTf").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; futTf = b.dataset.tf; try { localStorage.setItem("futTf", futTf); } catch (x) {} renderFut(); });
+$("futAll").addEventListener("click", e => { const tr = e.target.closest("tr[data-tf]"); if (!tr) return; futTf = tr.dataset.tf; try { localStorage.setItem("futTf", futTf); } catch (x) {} renderFut(); });
 $("futSteps").addEventListener("click", async e => {
   const b = e.target.closest(".cp"); if (!b) return;
   try { await navigator.clipboard.writeText(b.dataset.cp); b.textContent = "✓ បានចម្លង"; setTimeout(() => b.textContent = "ចម្លង", 1500); } catch (x) {}
 });
+// ---- 🌐 live futures market (funding, crowd positioning, open interest) — via the Mac server
+let FM = null, fmSym = "";
+async function pollFM() {
+  if (HOSTED) return;
+  const asked = symbol;
+  try { const r = await fetch("/api/futures?symbol=" + asked); const d = await r.json(); if (asked === symbol) { FM = r.ok ? d : null; fmSym = asked; } }
+  catch (e) { if (asked === symbol) FM = null; }
+}
+const fmOk = () => FM && fmSym === symbol && FM.funding != null;
+function fundTxt(P) {
+  if (!fmOk()) return "មិនទាន់គិត funding fee (រៀងរាល់ 8 ម៉ោង)";
+  const pay = P.notional * FM.funding * (P.L ? 1 : -1);          // + = you pay
+  return `Funding ${pay >= 0 ? "អ្នកបង់" : "អ្នកទទួល"} ≈ ${usd(Math.abs(pay))} រៀងរាល់ ${FM.every || 8} ម៉ោង`;
+}
+function fmBox(P) {
+  if (!fmOk()) return HOSTED ? "" : `<div class="fut-note">🌐 កំពុងទាញ funding rate…</div>`;
+  const f = FM.funding * 100, cm = n => n == null ? "—" : n >= 1e9 ? "$" + (n / 1e9).toFixed(2) + "B" : n >= 1e6 ? "$" + (n / 1e6).toFixed(1) + "M" : "$" + Math.round(n).toLocaleString();
+  const crowd = f >= 0.03 ? `<span class="bad">មនុស្ស Long ច្រើនពេក — ងាយធ្លាក់ដើម្បី liquidate Long</span>`
+    : f <= -0.01 ? `<span class="good">មនុស្ស Short ច្រើនពេក — ងាយលោតឡើង (short squeeze)</span>`
+    : "ធម្មតា (0.01% = កម្រិតមូលដ្ឋាន)";
+  const L = FM.long != null ? Math.round(FM.long * 100) : null, T = FM.top_long != null ? Math.round(FM.top_long * 100) : null;
+  return `<div class="fc-sub" style="margin-top:4px">🌐 ទីផ្សារ Futures ឥឡូវ <span class="tr-hint">${FM.src}</span></div>
+    <div class="fm">
+      <div><small>Funding rate</small><b class="${f > 0.02 ? "c-SELL" : f < 0 ? "c-BUY" : ""}">${f > 0 ? "+" : ""}${f.toFixed(4)}%</b></div>
+      <div><small>Funding បន្ទាប់</small><b>${FM.next ? cdTxt(FM.next * 1000 - Date.now()) : "—"}</b></div>
+      <div><small>Open Interest${FM.oi24 != null ? " (24ម៉)" : ""}</small><b>${cm(FM.oi)}</b>${FM.oi24 != null ? ` <small class="${FM.oi24 >= 0 ? "c-BUY" : "c-SELL"}" style="display:inline">${FM.oi24 > 0 ? "+" : ""}${FM.oi24.toFixed(1)}%</small>` : ""}</div>
+      ${L != null ? `<div style="grid-column:span 2"><small>គណនី Long ${L}% · Short ${100 - L}%${T != null ? ` · អ្នកធំៗ Long ${T}%` : ""}</small><div class="fm-ls"><i style="width:${L}%"></i></div></div>` : ""}
+      ${FM.liq_long != null ? `<div><small>Liquidate 24ម៉ L / S</small><b><span class="c-SELL">${cm(FM.liq_long)}</span> / <span class="c-BUY">${cm(FM.liq_short)}</span></b></div>` : ""}
+    </div>
+    <div class="fut-note">💡 ${crowd}${L != null && T != null && Math.abs(L - T) >= 20 ? ` · អ្នកលេងតូចៗ ${L > T ? "Long" : "Short"} ច្រើន តែអ្នកធំៗ ${T > L ? "Long" : "Short"} — ជាធម្មតាអ្នកធំៗត្រូវជាង` : ""}</div>`;
+}
+pollFM(); setInterval(pollFM, 60000);
 const futSave = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
 ["futCap", "futRisk", "futLev"].forEach(id => $(id).addEventListener("input", () => { futSave(id, $(id).value); renderFut(); }));
 $("futDir").addEventListener("click", e => {
@@ -3198,7 +3557,9 @@ $("futDir").addEventListener("click", e => {
   futDir = b.dataset.d; futSave("futDir", futDir); renderFut();
 });
 renderFut();
-setInterval(renderFut, 2000);
+setInterval(() => { renderFut(); if (document.querySelector('.page[data-page="chart"]').classList.contains("on")) paintFutChart(); }, 2000);
+pollFutNow(); setInterval(pollFutNow, 60000);
+setTimeout(loadFutTests, 4000);
 
 
 /* ---------------- 📰 news + economic calendar ---------------- */
@@ -3242,10 +3603,12 @@ const EV_FIXED = (() => {
   fomc.forEach(([y, m, d, h]) => { L.push({ t: U(y, m, d, h), title: "FOMC Statement", impact: "High" }); L.push({ t: U(y, m, d, h, 30), title: "FOMC Press Conference", impact: "High" }); });
   L.push({ t: U(2026,11,6,13,30), title: "Non-Farm Employment Change", impact: "High" }, { t: U(2026,11,10,13,30), title: "CPI m/m", impact: "High" },
          { t: U(2026,12,4,13,30), title: "Non-Farm Employment Change", impact: "High" }, { t: U(2026,12,10,13,30), title: "CPI m/m", impact: "High" },
-         { t: U(2026,12,15,13,30), title: "PPI m/m", impact: "High" });
+         { t: U(2026,12,15,13,30), title: "PPI m/m", impact: "High" },
+         { t: U(2026,10,30,12,30), title: "Advance GDP q/q", impact: "High" }, { t: U(2026,10,30,12,30), title: "Core PCE Price Index m/m", impact: "High" });
   return L;
 })();
-let EV = EV_FIXED.slice(), NEWS = [], nwFilter = "all", nwSeen = 0;
+let EV = EV_FIXED.slice(), NEWS = [], nwFilter = "all", nwSeen = 0, nwKm = true, nwRetry = 0;
+try { nwKm = localStorage.getItem("nwKm") !== "0"; } catch (e) {}
 try { nwSeen = +localStorage.getItem("nwSeen") || 0; } catch (e) {}
 
 async function pollCalendar() {
@@ -3269,6 +3632,8 @@ async function pollNews() {
     const d = await r.json(), first = !NEWS.length;
     const fresh = d.items.filter(x => x.t > nwSeen && BIG_RE.test(x.title));
     NEWS = d.items;
+    // translations arrive in the background → ask again soon while some are missing
+    if (d.items.slice(0, 25).some(x => !x.km) && nwRetry < 6) { nwRetry++; setTimeout(pollNews, 25000); } else nwRetry = 0;
     $("nwAt").textContent = `${d.sources.length} ប្រភព · ${hhmm(d.at * 1000)}`;
     if (!first && fresh.length) notify("HOLD", "📰 ព័ត៌មានធំ: " + fresh[0].title);
     if (first && !nwSeen) nwSeen = NEWS[0] ? NEWS[0].t : 0;
@@ -3335,12 +3700,56 @@ function renderNews(full = true) {
     return `<a class="nw-it" href="${esc(safe)}" target="_blank" rel="noopener noreferrer">
       <div class="meta"><span class="ago">${agoTxt(now - x.t * 1000)}</span><span>${dayName(x.t * 1000)} ${hhmm(x.t * 1000)}</span><span>· ${esc(x.src)}</span>
         ${x.t > nwSeen ? `<span class="nw-tag new">ថ្មី</span>` : ""}${BIG_RE.test(x.title) ? `<span class="nw-tag big">🔥 ធំ</span>` : ""}${tags}</div>
-      <h4>${esc(x.title)}</h4>${x.desc ? `<p>${esc(x.desc)}</p>` : ""}</a>`;
+      <h4>${nwKm && x.km ? `${esc(x.km)}<small>${esc(x.title)}</small>` : esc(x.title)}</h4>${x.desc && !(nwKm && x.km) ? `<p>${esc(x.desc)}</p>` : ""}</a>`;
   }).join("") : `<div class="fut-note" style="padding:12px">គ្មានព័ត៌មានក្នុងក្រុមនេះទេ</div>`;
 }
-$("nwFlt").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; nwFilter = b.dataset.f; [...$("nwFlt").children].forEach(x => x.classList.toggle("on", x === b)); renderNews(); });
+$("nwFlt").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.lang) { nwKm = !nwKm; try { localStorage.setItem("nwKm", nwKm ? "1" : "0"); } catch (x) {} paintLang(); nwFull = 0; renderNews(); return; }
+  nwFilter = b.dataset.f; [...$("nwFlt").children].forEach(x => { if (!x.dataset.lang) x.classList.toggle("on", x === b); }); renderNews(); });
+function paintLang() { $("nwLang").textContent = nwKm ? "🇰🇭 ខ្មែរ" : "🇬🇧 EN"; $("nwLang").classList.toggle("on", nwKm); }
+paintLang();
 $("nwStrip").addEventListener("click", () => showPage("news"));
 function markNewsSeen() { if (NEWS[0]) { setTimeout(() => { nwSeen = NEWS[0].t; try { localStorage.setItem("nwSeen", nwSeen); } catch (e) {} }, 15000); } }
+// ---- 📊 how the coin moved after past Fed decisions (1h candles from Binance)
+const FED_PAST = [[2025,1,29,19],[2025,3,19,18],[2025,5,7,18],[2025,6,18,18],[2025,7,30,18],[2025,9,17,18],[2025,10,29,18],[2025,12,10,19],
+                  [2026,1,28,19],[2026,3,18,18],[2026,4,29,18],[2026,6,17,18],[2026,7,29,18],[2026,9,16,18]].map(([y, m, d, h]) => Date.UTC(y, m - 1, d, h));
+let fhSym = "", fhBusy = false;
+async function loadFedHistory() {
+  if (fhBusy || fhSym === symbol) return;
+  const asked = symbol, key = "fedH:" + asked;
+  let rows = null;
+  try { const h = JSON.parse(localStorage.getItem(key)); if (h && Date.now() - h.at < 12 * 3600e3) rows = h.rows; } catch (e) {}
+  fhBusy = true;
+  try {
+    if (!rows) {
+      const got = await Promise.allSettled(FED_PAST.map(t => getJSON(`https://data-api.binance.vision/api/v3/klines?symbol=${asked}&interval=1h&startTime=${t - 3600e3}&limit=26`)));
+      rows = got.map((g, i) => {
+        if (g.status !== "fulfilled" || g.value.length < 26) return null;
+        const k = g.value.map(x => ({ t: x[0], o: +x[1], h: +x[2], l: +x[3], c: +x[4] }));
+        const before = k[0].c, at = k[1];                       // k[1] = the hour that starts at the decision
+        const two = k.slice(1, 3);
+        return { t: FED_PAST[i], m1: (at.c / before - 1) * 100, m24: (k[25].c / before - 1) * 100,
+                 sw: (Math.max(...two.map(x => x.h)) / Math.min(...two.map(x => x.l)) - 1) * 100 };
+      }).filter(Boolean);
+      try { localStorage.setItem(key, JSON.stringify({ at: Date.now(), rows })); } catch (e) {}
+    }
+    if (asked !== symbol) return;
+    fhSym = asked;
+    if (!rows.length) { $("fhBody").innerHTML = `<div class="fut-note">មិនមានទិន្នន័យ ${coinLabel()} គ្រប់គ្រាន់</div>`; return; }
+    const avg = f => rows.reduce((a, r) => a + f(r), 0) / rows.length;
+    const up = rows.filter(r => r.m24 > 0).length, p = x => (x > 0 ? "+" : "") + x.toFixed(2) + "%";
+    $("fhTitle").textContent = `📊 ពេល Fed សម្រេចការប្រាក់ ${rows.length} លើកមុន — ${coinLabel()} រំកិលប៉ុន្មាន?`;
+    $("fhBody").innerHTML = `<div class="fh-sum">
+        <div><small>ក្នុង 1 ម៉ោងដំបូង (មធ្យម)</small><b>±${avg(r => Math.abs(r.m1)).toFixed(2)}%</b></div>
+        <div><small>ឡើងចុះខ្លាំងបំផុតក្នុង 2 ម៉ោង (មធ្យម)</small><b class="c-HOLD">${avg(r => r.sw).toFixed(2)}%</b></div>
+        <div><small>24 ម៉ោងក្រោយ: ឡើង / ចុះ</small><b><span class="c-BUY">${up}</span> / <span class="c-SELL">${rows.length - up}</span></b></div></div>
+      <div class="hist-wrap"><table class="fh-t"><thead><tr><th>ថ្ងៃ (ម៉ោងអ្នក)</th><th>1 ម៉ោង</th><th>ឡើងចុះ 2 ម៉ោង</th><th>24 ម៉ោង</th></tr></thead><tbody>
+      ${rows.slice().reverse().map(r => `<tr><td>${dayName(r.t)} ${new Date(r.t).getFullYear()} · ${hhmm(r.t)}</td><td class="${r.m1 >= 0 ? "c-BUY" : "c-SELL"}">${p(r.m1)}</td><td>${r.sw.toFixed(2)}%</td><td class="${r.m24 >= 0 ? "c-BUY" : "c-SELL"}">${p(r.m24)}</td></tr>`).join("")}
+      </tbody></table></div>
+      <p class="fc-note">💡 ប្រើលេខ "ឡើងចុះខ្លាំងបំផុតក្នុង 2 ម៉ោង" ដើម្បីដឹងថា Stop-loss ជិតជាងនេះ ងាយត្រូវប៉ះពេល Fed។ ទិសដៅ (ឡើង/ចុះ) ខុសគ្នារាល់លើក — មិនអាចទាយបានទេ។</p>`;
+  } catch (e) { $("fhBody").innerHTML = `<div class="fut-note">មិនអាចទាញទិន្នន័យបាន — នឹងសាកម្តងទៀត</div>`; }
+  finally { fhBusy = false; }
+}
 pollCalendar(); pollNews();
 setInterval(pollNews, 180000); setInterval(pollCalendar, 1800000); setInterval(() => renderNews(false), 1000);
 
@@ -3775,7 +4184,7 @@ function showPage(name) {
   if (name === "chart") setTimeout(() => { lastW = 0; fitBars(); }, 30);      // chart was hidden → re-measure
   if (name === "test") setTimeout(drawEquity, 30);
   if (name === "scan") runScan();
-  if (name === "news" && typeof renderNews === "function") { renderNews(); markNewsSeen(); }
+  if (name === "news" && typeof renderNews === "function") { renderNews(); markNewsSeen(); loadFedHistory(); }
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 $("pages").addEventListener("click", e => { const b = e.target.closest("button"); if (b) showPage(b.dataset.page); });
