@@ -611,6 +611,7 @@
   .fx-d > div { padding-bottom: 14px; }
   .fx-d .fut-steps { margin-top: 0; padding-top: 0; border-top: 0; }
   .fx-inputs { padding-bottom: 12px; }
+  .fx-weak ol { margin: 6px 0; padding-left: 20px; display: grid; gap: 7px; font-size: 13px; line-height: 1.6; }
   @media (max-width: 560px) { .fx .fut-v { grid-template-columns: 1fr; } .fx-clock { text-align: left; } .fx-act { font-size: 28px; } .fx-tfs { width: 100%; } }
   .fut-tfrow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; font-size: 13px; color: var(--muted); }
   .fut-tfrow .seg { flex: 1; min-width: 260px; }
@@ -1092,6 +1093,21 @@
       <div class="tr-grid fut-top">
         <div><div class="hist-wrap"><table class="fut-all" id="futAll"></table></div></div>
         <div class="tr-pos" id="futWhen"></div>
+      </div>
+    </details>
+    <details class="fx-d" data-k="weak"><summary>🔬 ចំណុចខ្សោយ · ពេលណាសញ្ញាខុស</summary>
+      <div class="fx-weak">
+        <p class="fut-note">សិក្សាលើ 6 កាក់ (BTC, ETH, BNB, SOL, XRP, DOGE) · 4h 5 ឆ្នាំ · 1h 2 ឆ្នាំ · 15m 6 ខែ · ពិនិត្យទាំងទិន្នន័យចាស់ 2/3 និងទិន្នន័យថ្មី 1/3</p>
+        <ol>
+          <li><b>ត្រូវតែ ~45% ប៉ុណ្ណោះ</b> — ខាតញឹកជាងចំណេញ ជារឿងធម្មតា។ ចំណេញមកពីគោលដៅធំជាង Stop 3 ដង។ <b>ខាតជាប់គ្នា 4–8 ដង</b> ធ្លាប់កើត (XRP ដល់ 12 ដង) → ហ៊ានខាតត្រឹម 1%</li>
+          <li><b>សញ្ញាខ្សោយ ខុសច្រើនជាងគេ</b> — ពេលតម្លៃនៅជិត EMA20 (≤ 2 ATR) ចំណេញស្ទើរតែ 0 (ទិន្នន័យថ្មី <span class="bad">−0.12%</span>/ដង)។ ពេលតម្លៃឆ្ងាយ > 2 ATR ចំណេញ <span class="good">+1.47%</span>/ដង</li>
+          <li><b>ភាពរំញ័រខ្ពស់មិនធម្មតា</b> (ATR ក្នុង 80–95% នៃ 500 candle) — ខាត <span class="bad">−0.79%</span> និង <span class="bad">−1.36%</span>/ដង</li>
+          <li><b>Timeframe ខ្លីគ្មាន edge</b> — 15m និង 5m ខាតគ្រប់កាក់ ក្រោយថ្លៃសេវា · 1h ខាតក្នុងទិន្នន័យថ្មី · មានតែ <b>4h</b> ដែលចំណេញទាំងពីរផ្នែក</li>
+          <li><b>"ម៉ោងល្អ" គឺចៃដន្យ</b> — ម៉ោងដែលល្អក្នុងទិន្នន័យចាស់ មិនល្អក្នុងទិន្នន័យថ្មី (ទំនាក់ទំនង −0.16) → បានដកចេញ</li>
+          <li><b>"សញ្ញាទើបចាប់ផ្តើម = ពេលល្អ" ខុស</b> — សញ្ញាថ្មីៗ ចំណេញតិចជាង (0.00% ធៀប +0.49%) → បានដកចេញ</li>
+          <li>និន្នាការប្រចាំថ្ងៃ (1D) មិនជួយឱ្យត្រូវជាងទេ · ព្រឹត្តិការណ៍ធំ (Fed, CPI) អាចប៉ះ Stop ភ្លាមៗ</li>
+        </ol>
+        <p class="fut-note">✅ <b>អ្វីដែលបានកែ</b>: សញ្ញា 🟢/🔴 ឥឡូវចេញតែពេល <b>ខ្លាំង</b> (តម្លៃ > 2 ATR ពី EMA20 និងភាពរំញ័រមិននៅ 80–95%)។ 4h ចំណេញមធ្យមឡើងពី +0.49% → <b>+0.66%</b> (ចាស់) និង +0.30% → <b>+0.53%</b> (ថ្មី) · កាក់ទាំង 6 វិជ្ជមានក្នុងទិន្នន័យចាស់ · ចំនួនសញ្ញាតិចជាងមុន ~45%។ ការសាកល្បងមិនធានាអនាគតទេ។</p>
       </div>
     </details>
     <details class="fx-d" data-k="risk"><summary>🛡 Liquidation · Funding · ការគណនា</summary>
@@ -1583,7 +1599,8 @@ function renderSwing() {
   if (w.action === "BUY") {
     $("vHeadline").textContent = "4 ម៉ោងចង្អុលឡើង — ផែនការទិញ (កាន់ទុករហូតដល់ 7 ថ្ងៃ)";
     lines.push(`🕒 សញ្ញាទិញចាប់ផ្តើម ${agoTxt} នៅ ${fmt(w.sincePrice, 0)} (ឥឡូវ ${p2(moved)})`);
-    if (moved > 0 && w.price - w.sincePrice > 1.5 * w.atr) lines.push(`តម្លៃឡើងច្រើនហើយតាំងពីសញ្ញាចាប់ផ្តើម — ល្អជាងរង់ចាំស្រកមកជិត ${fmt(w.sincePrice + 0.5 * w.atr, 0)}`);
+    if (w.str) lines.push(w.str.strong ? `💪 សញ្ញាខ្លាំង — តម្លៃ ${w.str.ext.toFixed(1)} ATR លើ EMA20 (ប្រភេទដែលត្រូវច្រើនជាងគេ)`
+      : `🟠 សញ្ញាខ្សោយ — ${w.str.hot ? "ភាពរំញ័រខ្ពស់មិនធម្មតា" : `តម្លៃនៅជិត EMA20 (${w.str.ext.toFixed(1)} ATR)`} · ប្រភេទនេះខុសច្រើនជាងគេ · ចូលពេលលើស ${fmt(w.str.need, 0)}`);
   } else if (w.action === "SELL") {
     $("vHeadline").textContent = "4 ម៉ោងចង្អុលចុះ — លក់កាក់ដែលមាន ឬកុំទាន់ទិញ";
     lines.push(`🕒 សញ្ញាលក់ចាប់ផ្តើម ${agoTxt} នៅ ${fmt(w.sincePrice, 0)} (ឥឡូវ ${p2(moved)})`);
@@ -1814,17 +1831,16 @@ function renderEntry() {
   $("enAt").textContent = `នៅម៉ោង ${t2(nd)} ${nd.getDate() !== new Date().getDate() ? "(ស្អែក)" : ""} — candle 4h បិទ សញ្ញាអាចប្តូរ`;
 
   // can I enter now?
-  const fresh = w.sinceBars <= 2;                                  // signal started within the last ~8 hours
-  const moved = w.price - w.sincePrice;
+  // strength matters, not freshness (research Oct 2026): weak signals near EMA20 fail most
+  const str = w.str || {};
   let cls, state, sub;
-  if (w.action === "BUY" && fresh && moved <= 1.5 * w.atr) {
+  if (w.action === "BUY" && str.strong) {
     cls = "go"; state = "✅ អាចចូលទិញបានឥឡូវ";
-    sub = `សញ្ញាទិញថ្មីៗ · ទិញប្រហែល ${fmt(w.buy.entry, 0)} · Stop ${fmt(w.buy.stop, 0)} · គោលដៅ ${fmt(w.buy.tp, 0)} — មើល 💼 ខាងក្រោម ដើម្បីដឹងថាគួរទិញប៉ុន្មាន`;
+    sub = `សញ្ញាទិញខ្លាំង (${str.ext.toFixed(1)} ATR លើ EMA20) · ទិញប្រហែល ${fmt(w.buy.entry, 0)} · Stop ${fmt(w.buy.stop, 0)} · គោលដៅ ${fmt(w.buy.tp, 0)} — មើល 💼 ខាងក្រោម ដើម្បីដឹងថាគួរទិញប៉ុន្មាន`;
   } else if (w.action === "BUY") {
-    cls = "late"; state = "សញ្ញាទិញ តែយឺតហើយ";
-    sub = moved > 1.5 * w.atr
-      ? `តម្លៃឡើងច្រើនហើយតាំងពីសញ្ញាចាប់ផ្តើម — ល្អជាងរង់ចាំស្រកមកជិត ${fmt(w.sincePrice + 0.5 * w.atr, 0)}`
-      : `សញ្ញាចាប់ផ្តើមតាំងពី ${Math.round(w.sinceBars * 4)} ម៉ោងមុន — ចូលបាន តែប្រើ Stop ${fmt(w.buy.stop, 0)} ជានិច្ច`;
+    cls = "late"; state = "🟠 សញ្ញាទិញ តែកម្លាំងខ្សោយ";
+    sub = str.hot ? `ភាពរំញ័រខ្ពស់មិនធម្មតា (${Math.round(str.vol * 100)}%) — សញ្ញាប្រភេទនេះខុសច្រើនជាងគេ។ រង់ចាំ`
+      : `តម្លៃនៅជិត EMA20 ពេក (${str.ext != null ? str.ext.toFixed(1) : "—"} ATR) — សញ្ញាប្រភេទនេះខុសច្រើនជាងគេ។ ចូលពេលតម្លៃលើស ${fmt(str.need, 0)}`;
   } else if (w.action === "SELL") {
     cls = "stop"; state = "⛔ កុំទាន់ទិញ";
     sub = `សញ្ញា 4 ម៉ោងកំពុង "លក់" (ពិន្ទុ ${w.score}) — បើកាន់ ${coinLabel()} គួរលក់ · រង់ចាំសញ្ញាទិញ`;
@@ -2374,6 +2390,7 @@ const LT = (() => {
       buy: { entry: px(price), stop: px(price - risk), tp: px(price + SW.tp * risk) },
       sell: { entry: px(price), stop: px(price + risk), tp: px(price - SW.tp * risk) },
       reasons: score(S.a[last])[1],
+      str: action === "WAIT" ? null : strength(S, last, action === "BUY" ? 1 : -1),
     };
   }
 
@@ -2398,12 +2415,23 @@ const LT = (() => {
   /* ---- FUTURES on any timeframe: same rule as the 4h swing (score ±30, stop 3×ATR, target 3R, close after 42 candles),
      Long and Short tested separately with the futures fee (0.05% per side). Last 1/3 of the data = "new data" check. */
   const FT = { hold: 42, fee: 0.0005, days: { "5m": 90, "15m": 180, "30m": 365, "1h": 730, "4h": 1825 } };
-  function simFut(c, s, a) {
-    const T = []; let busy = -1;
+  /* strength of a signal at candle i (research Oct 2026, 6 coins, 5 years of 4h):
+     the signals that fail most are WEAK ones — price still close to EMA20 (≤ 2 ATR away in the trade direction)
+     or volatility unusually high but not extreme (ATR% in the 80–95th percentile of the last 500 candles). */
+  function strength(S, i, side) {
+    const r = S.a[i]; if (!r) return null;
+    const ext = side * (r.close - r.ema20) / r.atr, pct = j => S.a[j] ? S.a[j].atr / S.a[j].close : null, cur = pct(i);
+    let n = 0, lo = 0; for (let j = Math.max(200, i - 500); j < i; j++) { const v = pct(j); if (v != null) { n++; if (v < cur) lo++; } }
+    const vol = n ? lo / n : 0.5, hot = vol > 0.8 && vol <= 0.95;
+    return { ext, vol, hot, strong: ext > 2 && !hot, need: r.ema20 + side * 2 * r.atr };
+  }
+  function simFut(c, S, strongOnly = false) {
+    const s = S.s, a = S.a, T = []; let busy = -1;
     for (let i = 210; i < c.length - 2; i++) {
       if (i <= busy || s[i] == null) continue;
       const side = s[i] >= 30 ? "LONG" : s[i] <= -30 ? "SHORT" : null;
       if (!side) continue;
+      if (strongOnly && !strength(S, i, side === "LONG" ? 1 : -1).strong) continue;
       const e = c[i + 1].open, risk = SW.stop * a[i].atr, L = side === "LONG";
       if (!(risk > 0)) continue;
       const stop = L ? e - risk : e + risk, tp = L ? e + SW.tp * risk : e - SW.tp * risk;
@@ -2423,14 +2451,15 @@ const LT = (() => {
   async function futTest(sym, tf) {
     const c = await klinesRange(sym, tf, Date.now() - (FT.days[tf] * 86400 + 210 * STEP[tf]) * 1000);
     if (c.length < 600) throw new Error("NODATA");
-    const S = scoresOf(c), T = simFut(c, S.s, S.a), cut = c[Math.floor(c.length * 2 / 3)].time;
-    const st = xs => { const n = xs.length; return { n, win: n ? xs.filter(t => t.r > 0).length / n : 0, avg: n ? xs.reduce((a, t) => a + t.net, 0) / n : 0 }; };
-    const hrs = side => { const h = Array.from({ length: 24 }, () => [0, 0]); T.filter(t => t.side === side).forEach(t => { const x = h[new Date(t.t * 1000).getHours()]; x[0]++; x[1] += t.net; }); return h.map(([n, s]) => [n, n ? Math.round(s / n * 1000) / 1000 : 0]); };
-    const side = sd => T.filter(t => t.side === sd);
-    return { tf, from: c[0].time, to: c[c.length - 1].time,
-             LONG: st(side("LONG")), SHORT: st(side("SHORT")),
-             LONGoos: st(side("LONG").filter(t => t.t >= cut)), SHORToos: st(side("SHORT").filter(t => t.t >= cut)),
-             hrs: { LONG: hrs("LONG"), SHORT: hrs("SHORT") } };
+    const S = scoresOf(c), cut = c[Math.floor(c.length * 2 / 3)].time;
+    const st = xs => { const n = xs.length; let run = 0, worst = 0; xs.forEach(t => { run = t.r > 0 ? 0 : run + 1; worst = Math.max(worst, run); });
+      return { n, win: n ? xs.filter(t => t.r > 0).length / n : 0, avg: n ? xs.reduce((a, t) => a + t.net, 0) / n : 0, streak: worst }; };
+    const out = { tf, from: c[0].time, to: c[c.length - 1].time };
+    for (const [pre, T] of [["", simFut(c, S, false)], ["s", simFut(c, S, true)]]) for (const sd of ["LONG", "SHORT"]) {
+      const X = T.filter(t => t.side === sd);
+      out[pre + sd] = st(X); out[pre + sd + "oos"] = st(X.filter(t => t.t >= cut));
+    }
+    return out;
   }
   async function futNow(sym, tf) {
     const c = await klines(sym, tf, 500);
@@ -2438,13 +2467,15 @@ const LT = (() => {
     const b = x => x >= 30 ? "BUY" : x <= -30 ? "SELL" : "WAIT";
     const action = b(S.s[last]);
     let k = last; while (k - 1 >= 200 && b(S.s[k - 1]) === action) k--;
-    return { tf, action, score: S.s[last], price: c[c.length - 1].close, atr: S.a[last].atr,
+    const str = action === "WAIT" ? null : strength(S, last, action === "BUY" ? 1 : -1);
+    return { tf, action, score: S.s[last], price: c[c.length - 1].close, atr: S.a[last].atr, ema20: S.a[last].ema20,
+             ext: str && str.ext, vol: str && str.vol, hot: str && str.hot, strong: !!(str && str.strong), need: str && str.need,
              since: c[k].time + STEP[tf], sinceBars: last - k + 1, nextClose: (c[c.length - 1].time + STEP[tf]) * 1000 };
   }
 
   async function futMarks(sym, tf) {
     const c = await klines(sym, tf, 500), S = scoresOf(c);
-    return simFut(c, S.s, S.a);
+    return simFut(c, S, true);
   }
 
   return { analyzeAll, forecast, backtest, swingTest, swingNow, futTest, futNow, futMarks, FT, SW, series, lab: { klinesRange, scoresOf, indicators, score, levels, STEP } };
@@ -3251,7 +3282,7 @@ async function loadFutTests() {
   try {
     for (const tf of [futTf, ...FT_TFS.filter(x => x !== futTf)]) {
       if (asked !== symbol) break;
-      const key = `ft2:${asked}:${tf}`;
+      const key = `ft3:${asked}:${tf}`;
       let hit = null; try { hit = JSON.parse(localStorage.getItem(key)); } catch (e) {}
       if (hit && Date.now() - hit.at < 12 * 3600e3) { FTS[tf] = hit.s; continue; }
       try {
@@ -3273,7 +3304,11 @@ function tfGrade(tf) {
   if (!sig) return res;
   if (!st) { res.g = "test"; return res; }
   if (st.err) { res.g = "nodata"; return res; }
-  res.side = st[sig]; res.oos = st[sig + "oos"];
+  res.strong = w.strong;
+  const key = (w.strong ? "s" : "") + sig;
+  res.side = st[key]; res.oos = st[key + "oos"];
+  if (!res.side) { res.g = "test"; return res; }
+  if (!w.strong) { res.g = "soft"; return res; }          // a signal, but the kind that fails most often
   res.g = res.side.n < 15 ? "few" : res.side.avg > 0 && res.oos.avg > 0 ? "go" : res.side.avg > 0 || res.oos.avg > 0 ? "weak" : "no";
   return res;
 }
@@ -3321,9 +3356,9 @@ function renderFut() {
   const best = G.filter(r => r.g === "go").sort((a, b) => b.side.avg - a.side.avg)[0];
   const cell = (st, oos) => !st ? `<small>…</small>` : st.n ? `<span class="${st.avg >= 0 ? "c-BUY" : "c-SELL"}">${p2(st.avg)}</span>${oos && oos.n ? ` <small class="${oos.avg >= 0 ? "c-BUY" : "c-SELL"}">ថ្មី ${p2(oos.avg)}</small>` : ""}<small class="l2">ត្រូវ ${Math.round(st.win * 100)}% · ${st.n} ដង</small>` : `<small>—</small>`;
   const gtxt = r => ({ go: `<b class="${r.sig === "LONG" ? "c-BUY" : "c-SELL"}">✅ ${r.sig === "LONG" ? "Long ⬆" : "Short ⬇"}</b>`, weak: `<span class="c-HOLD">🟠 ${r.sig === "LONG" ? "Long" : "Short"} ខ្សោយ</span>`,
-    no: `<span class="c-SELL">❌ កុំ ${r.sig === "LONG" ? "Long" : "Short"}</span>`, few: `<span class="c-HOLD">🟠 ទិន្នន័យតិច</span>`, wait: `<span style="color:var(--muted)">⏸ រង់ចាំ</span>`,
+    no: `<span class="c-SELL">❌ កុំ ${r.sig === "LONG" ? "Long" : "Short"}</span>`, soft: `<span class="c-HOLD">🟠 ${r.sig === "LONG" ? "Long" : "Short"} ខ្សោយ</span>`, few: `<span class="c-HOLD">🟠 ទិន្នន័យតិច</span>`, wait: `<span style="color:var(--muted)">⏸ រង់ចាំ</span>`,
     test: `<small>កំពុងសាកល្បង…</small>`, load: `<small>…</small>`, nodata: `<small>គ្មានទិន្នន័យ</small>` })[r.g];
-  const chipIc = r => r.g === "go" ? (r.sig === "LONG" ? "🟢" : "🔴") : r.g === "no" ? "❌" : r.g === "weak" || r.g === "few" ? "🟠" : r.g === "wait" ? "⏸" : "…";
+  const chipIc = r => r.g === "go" ? (r.sig === "LONG" ? "🟢" : "🔴") : r.g === "no" ? "❌" : r.g === "weak" || r.g === "few" || r.g === "soft" ? "🟠" : r.g === "wait" ? "⏸" : "…";
   [...$("futTf").children].forEach(b => { const r = G.find(x => x.tf === b.dataset.tf); b.classList.toggle("on", b.dataset.tf === futTf); b.innerHTML = `${b.dataset.tf}<i>${chipIc(r)}${best && best.tf === r.tf ? "⭐" : ""}</i>`; });
   $("futAll").innerHTML = `<thead><tr><th>TF</th><th>សញ្ញាឥឡូវ</th><th>Long សាកល្បង</th><th>Short សាកល្បង</th><th>គួរលេង?</th></tr></thead><tbody>` +
     G.map(r => `<tr data-tf="${r.tf}" class="${r.tf === futTf ? "sel" : ""}"><td>${r.tf}${best && best.tf === r.tf ? " ⭐" : ""}</td>
@@ -3354,10 +3389,11 @@ function renderFut() {
   const lo = Math.min(...pts.map(p => p[2])), hi = Math.max(...pts.map(p => p[2])), span = hi - lo || 1;
   const near = P.liq > 0 && Math.abs(P.liq - P.stop) / span < 0.18;
   const bar = pts.map(p => `<span class="${p[0]}" style="left:${(p[2] - lo) / span * 100}%"><i></i>${near && p[0] === "liq" ? "" : near && p[0] === "stop" ? "Stop · Liq" : p[1]}</span>`).join("");
-  const T = FTS[futTf], side = T && !T.err ? T[P.dir] : null, oos = T && !T.err ? T[P.dir + "oos"] : null;
+  const SK = (P.w.strong ? "s" : "") + P.dir;
+  const T = FTS[futTf], side = T && !T.err ? T[SK] : null, oos = T && !T.err ? T[SK + "oos"] : null;
   const yrs = T && !T.err ? durTxt(T.to - T.from) : "";
   const test = side && side.n
-    ? `📊 សាកល្បង ${D} លើ ${futTf} ${yrs} ចុងក្រោយ: <b>${side.n}</b> ដង · ត្រូវ <b>${Math.round(side.win * 100)}%</b> · មធ្យមម្តង <b class="${side.avg >= 0 ? "good" : "bad"}">${p2(side.avg)}</b> · ទិន្នន័យថ្មី 1/3 <b class="${oos.avg >= 0 ? "good" : "bad"}">${p2(oos.avg)}</b> (ក្រោយថ្លៃសេវា មុនគុណ leverage)`
+    ? `📊 សាកល្បង ${D} ${P.w.strong ? "ពេលសញ្ញាខ្លាំង" : "គ្រប់សញ្ញា"} លើ ${futTf} ${yrs} ចុងក្រោយ: <b>${side.n}</b> ដង · ត្រូវ <b>${Math.round(side.win * 100)}%</b> · មធ្យមម្តង <b class="${side.avg >= 0 ? "good" : "bad"}">${p2(side.avg)}</b> · ទិន្នន័យថ្មី 1/3 <b class="${oos.avg >= 0 ? "good" : "bad"}">${p2(oos.avg)}</b> (ក្រោយថ្លៃសេវា មុនគុណ leverage)`
     : T && T.err ? "📊 មិនមានទិន្នន័យគ្រប់គ្រាន់ដើម្បីសាកល្បង" : `📊 កំពុងសាកល្បង ${futTf}…`;
   $("futRes").innerHTML = `
     <div class="tr-status ${st[0]}">${st[1]}</div>
@@ -3371,43 +3407,37 @@ function renderFut() {
     <div class="fut-note">${test}</div>${fmBox(P)}`;
 
   // ---- ⏰ when to play
-  const H = T && !T.err ? T.hrs[P.dir] : null, nowH = new Date().getHours();
-  let hrsHtml = "";
-  if (H) {
-    const tot = H.reduce((a, x) => a + x[0], 0), min = Math.max(4, Math.round(tot / 60));
-    const ok = H.map((x, h) => ({ h, n: x[0], a: x[1] })).filter(x => x.n >= min);
-    const good = ok.filter(x => x.a > 0).sort((a, b) => b.a - a.a).slice(0, 5), bad = ok.filter(x => x.a < 0).sort((a, b) => a.a - b.a).slice(0, 4);
-    const chip = (x, c) => `<span class="${c} ${x.h === nowH ? "now" : ""}">${String(x.h).padStart(2, "0")}:00 ${p2(x.a)}</span>`;
-    const nowX = ok.find(x => x.h === nowH);
-    hrsHtml = `<div class="fc-sub" style="margin-top:6px">🕐 ម៉ោងល្អសម្រាប់ ${D} ${futTf} (ម៉ោងចូល)</div>
-      <div class="fut-hrs">${good.map(x => chip(x, "g")).join("") || `<small style="color:var(--muted)">គ្មានម៉ោងណាល្អច្បាស់ទេ</small>`}</div>
-      ${bad.length ? `<div class="fc-sub" style="margin-top:6px">⛔ ម៉ោងគួរជៀស</div><div class="fut-hrs">${bad.map(x => chip(x, "b")).join("")}</div>` : ""}
-      <div class="fut-note">ឥឡូវម៉ោង ${String(nowH).padStart(2, "0")}:00 — ${!nowX ? "ទិន្នន័យតិចពេកសម្រាប់ម៉ោងនេះ" : nowX.a > 0 ? `<span class="good">ម៉ោងល្អ (${p2(nowX.a)})</span>` : `<span class="bad">ម៉ោងខ្សោយ (${p2(nowX.a)})</span>`} · ម៉ោងនីមួយៗប្រែប្រួល — ប្រើជាជំនួយ មិនមែនច្បាប់</div>`;
-  }
+  const W = P.w, strTxt = !P.sig ? "" : `<div class="fc-sub" style="margin-top:6px">💪 កម្លាំងសញ្ញា</div>
+      <div class="fut-note">តម្លៃឆ្ងាយពី EMA20 <b class="${W.ext > 2 ? "good" : "bad"}">${W.ext != null ? W.ext.toFixed(1) : "—"} ATR</b> ${W.ext > 2 ? "✅ ខ្លាំង" : `— ត្រូវការ > 2 (${P.L ? "លើ" : "ក្រោម"} ${fmt(W.need)})`}
+      · ភាពរំញ័រ <b class="${W.hot ? "bad" : ""}">${W.vol != null ? Math.round(W.vol * 100) : "—"}%</b> ${W.hot ? "— ខ្ពស់មិនធម្មតា (80–95%) ភាគច្រើនខុស" : ""}</div>`;
+  const hrsHtml = strTxt + (side && side.streak ? `<div class="fut-note">📉 ធ្លាប់ខាតជាប់គ្នា <b class="bad">${side.streak} ដង</b> ក្នុងការសាកល្បង — ហ៊ានខាតតិច (1%) ដើម្បីទ្រាំបាន</div>` : "");
   const nc = P.w.nextClose || swing && swing.nextClose;
   const ev = eventSoon(holdSec(futTf));
   $("futWhen").innerHTML = `<div class="fc-sub">⏰ ពេលលេង · ${TFK}</div>
     <div class="fut-note">Candle ${futTf} បន្ទាប់បិទ ម៉ោង <b>${nc ? hhmm(nc) : "—"}</b> — សញ្ញាពិនិត្យរៀងរាល់ពេល candle បិទ</div>
     <div class="fut-when-big">${nc ? cdTxt(nc - Date.now()) : "—"}</div>
-    <div class="fut-note">${P.sig ? `សញ្ញា ${D} ចាប់ផ្តើម ${P.w.sinceBars} candle មុន (${durTxt(P.w.sinceBars * LT.lab.STEP[futTf])}) ${P.w.sinceBars <= 2 ? "· <span class=\"good\">ទើបចាប់ផ្តើម — ពេលល្អ</span>" : P.w.sinceBars > 12 ? "· <span class=\"bad\">ចាស់ហើយ — ប្រហែលហួសពេល</span>" : ""}` : "គ្មានសញ្ញា — រង់ចាំពិន្ទុ ≥ +30 (Long) ឬ ≤ -30 (Short)"}</div>
+    <div class="fut-note">${P.sig ? `សញ្ញា ${D} ចាប់ផ្តើម ${P.w.sinceBars} candle មុន (${durTxt(P.w.sinceBars * LT.lab.STEP[futTf])}) — សញ្ញាចាស់មិនមែនអាក្រក់ទេ អ្វីដែលសំខាន់គឺកម្លាំង` : "គ្មានសញ្ញា — រង់ចាំពិន្ទុ ≥ +30 (Long) ឬ ≤ -30 (Short)"}</div>
     ${ev ? `<div class="fut-note"><span class="bad">📅 ${evInfo(ev.title).km} ${ev.t * 1000 > Date.now() ? "ក្នុង " + leftTxt(ev.t * 1000 - Date.now()).replace("នៅសល់ ", "") : "ទើបចេញ"}</span> — នៅក្នុងរយៈពេលកាន់ (${hold})</div>` : ""}
     ${hrsHtml}`;
 
   // ---- one clear answer: 4 checks
-  const cSig = P.sig ? (P.sig === P.dir ? "y" : "n") : "m";
+  const cSig = P.sig ? (P.sig !== P.dir ? "n" : P.w.strong ? "y" : "m") : "m";
   const cTest = !side || !side.n || (!P.sig && futDir === "auto") ? "m" : side.n < 15 ? "m" : side.avg > 0 && oos.avg > 0 ? "y" : side.avg > 0 || oos.avg > 0 ? "m" : "n";
   const cLev = P.level === "ok" ? "y" : P.level === "warn" ? "m" : "n";
   const evNear = eventSoon(2 * 3600), cEv = evNear ? "n" : ev ? "m" : "y";
   const alt = best && best.tf !== futTf ? ` · ⭐ <b>${best.tf} ${best.sig === "LONG" ? "Long" : "Short"}</b> ល្អជាង — ចុច ${best.tf} ខាងលើ` : "";
   let v, act, why;
   if (cLev === "n") { v = "no"; act = "🛑 Leverage ខ្ពស់ពេក"; why = `${P.lev}x នឹងត្រូវ Liquidate មុនដល់ Stop — បន្ថយមក ≤ ${P.safe}x`; }
-  else if (cSig === "m") { v = "wait"; act = "⏸ រង់ចាំ"; why = `គ្មានសញ្ញា ${futTf} ទេ (ពិន្ទុ ${P.w.score > 0 ? "+" : ""}${P.w.score}) — Long ពេល ≥ +30 · Short ពេល ≤ -30` + alt; }
+  else if (cSig === "m" && !P.sig) { v = "wait"; act = "⏸ រង់ចាំ"; why = `គ្មានសញ្ញា ${futTf} ទេ (ពិន្ទុ ${P.w.score > 0 ? "+" : ""}${P.w.score}) — Long ពេល ≥ +30 · Short ពេល ≤ -30` + alt; }
+  else if (cSig === "m" && P.sig) { v = "wait"; act = `🟠 ${D} — រង់ចាំកម្លាំង`;
+    why = P.w.hot ? `ភាពរំញ័រខ្ពស់មិនធម្មតា (${Math.round(P.w.vol * 100)}%) — សញ្ញាប្រភេទនេះខុសច្រើនជាងគេ` + alt
+      : `សញ្ញា ${D} មាន តែតម្លៃនៅជិត EMA20 ពេក (${P.w.ext.toFixed(1)} ATR) — ចូលពេល${P.L ? "លើស" : "ធ្លាក់ក្រោម"} <b>${fmt(P.w.need)}</b>` + alt; }
   else if (cSig === "n") { v = "no"; act = `❌ កុំ ${D}`; why = `សញ្ញា ${futTf} ចង្អុល ${P.sig === "LONG" ? "Long ⬆" : "Short ⬇"} — អ្នកកំពុងលេងបញ្ច្រាស`; }
   else if (cEv === "n") { v = "wait"; act = "⏸ រង់ចាំ"; why = `${evInfo(evNear.title).km} ${evNear.t * 1000 > Date.now() ? "ម៉ោង " + hhmm(evNear.t * 1000) : "ទើបចេញ"} — តម្លៃអាចលោតប៉ះ Stop។ ចូលក្រោយ 30–60 នាទី`; }
   else if (cTest === "n") { v = "no"; act = "❌ កុំលេង"; why = `មានសញ្ញា ${D} ប៉ុន្តែ ${D} លើ ${futTf} ខាតក្នុងការសាកល្បង (${p2(side.avg)}/ដង)` + alt; }
   else if (cTest === "m" && (!side || !side.n)) { v = "wait"; act = `🟠 ${D}?`; why = `កំពុងសាកល្បង ${futTf}…`; }
   else if (cTest === "m") { v = "wait"; act = `🟠 ${D} ខ្សោយ`; why = (side.n < 15 ? `សាកល្បងបានតែ ${side.n} ដង` : `ចំណេញតែក្នុងទិន្នន័យមួយផ្នែក (សរុប ${p2(side.avg)} · ថ្មី ${p2(oos.avg)})`) + " — ទំហំតូច ឬរង់ចាំ" + alt; }
-  else { v = "go"; act = P.L ? "🟢 LONG ⬆" : "🔴 SHORT ⬇"; why = `ការសាកល្បង: ត្រូវ <b>${Math.round(side.win * 100)}%</b> · ចំណេញមធ្យម <b class="good">${p2(side.avg)}</b>/ដង (${side.n} ដង)`; }
+  else { v = "go"; act = P.L ? "🟢 LONG ⬆" : "🔴 SHORT ⬇"; why = `ការសាកល្បង: ត្រូវ <b>${Math.round(side.win * 100)}%</b> · ចំណេញមធ្យម <b class="good">${p2(side.avg)}</b>/ដង (${side.n} ដង) · ធ្លាប់ខាតជាប់គ្នា ${side.streak} ដង`; }
   if (v === "go" && cLev === "m") { v = "wait"; act = `🟠 ${D} — បន្ថយ Leverage`; why = `Liquidation ជិត Stop ពេក — ប្រើ ≤ ${P.safe}x`; }
   if (v === "go" && cEv === "m") why += ` · <span class="bad">📅 ${evInfo(ev.title).km} ក្នុងរយៈពេលកាន់</span>`;
   const ic = { y: "✅", n: "❌", m: "⏳" };
@@ -3429,7 +3459,7 @@ function renderFut() {
     <div class="fx-clock"><small>Candle ${futTf} បិទក្នុង</small><b>${nc ? cdTxt(nc - Date.now()) : "—"}</b><small>ម៉ោង ${nc ? hhmm(nc) : "—"}</small></div>
     <div class="fx-nums">${nums}</div>
     <div class="fut-checks">
-      <span class="${cSig}">${ic[cSig]} សញ្ញា</span><span class="${cTest}">${ic[cTest]} សាកល្បង</span>
+      <span class="${cSig}">${ic[cSig]} សញ្ញា${P.sig && !P.w.strong ? " ខ្សោយ" : P.sig ? " ខ្លាំង" : ""}</span><span class="${cTest}">${ic[cTest]} សាកល្បង</span>
       <span class="${cLev}">${ic[cLev]} Leverage</span><span class="${cEv}">${ic[cEv]} ${evNear ? evInfo(evNear.title).km.replace(/^\S+\s/, "") : ev ? evInfo(ev.title).km.replace(/^\S+\s/, "") + " ក្នុងពេលកាន់" : "គ្មានព្រឹត្តិការណ៍ធំ"}</span></div>`;
 
   // ---- exactly what to do on Binance

@@ -92,6 +92,7 @@ Dashboard មាន៖
 - 🌐 **ទីផ្សារ Futures ឥឡូវ**៖ Funding rate, ពេល funding បន្ទាប់, Open Interest, សមាមាត្រ Long/Short, Liquidation 24 ម៉ោង (ពី Gate.io ព្រោះ Binance Futures ចូលមិនបានពីកម្ពុជា) និង funding ដែលអ្នកត្រូវបង់
 - 📊 **Fed លើកមុនៗ**៖ កាក់រំកិលប៉ុន្មានក្នុង 1 ម៉ោង, 2 ម៉ោង និង 24 ម៉ោង ក្រោយ Fed សម្រេចការប្រាក់ 14 លើកចុងក្រោយ
 - 🇰🇭 ចំណងជើងព័ត៌មានបកប្រែជាខ្មែរ (ចុច 🇰🇭/🇬🇧 ដើម្បីប្តូរ)
+- 💪 **តម្រងកម្លាំងសញ្ញា** (សិក្សា ខែតុលា 2026)៖ សញ្ញា 🟢/🔴 ចេញតែពេលតម្លៃឆ្ងាយពី EMA20 > 2 ATR ហើយភាពរំញ័រមិននៅ 80–95% — សញ្ញាខ្សោយបង្ហាញ 🟠។ មើល "🔬 ចំណុចខ្សោយ" ក្នុងកាត Futures
 - ⏱ **Futures គ្រប់ Timeframe (5m, 15m, 30m, 1h, 4h)**៖ សញ្ញា Long/Short ឥឡូវ, លទ្ធផលសាកល្បង Long និង Short ដាច់ពីគ្នា (ថ្លៃសេវា Futures 0.05%), ⭐ timeframe ល្អបំផុត, ម៉ោងល្អ/គួរជៀស និងការពិនិត្យព្រឹត្តិការណ៍ធំ
 - ⚡ **Futures · Long / Short**៖ គណនា Leverage, Margin, តម្លៃ Liquidation, ពិនិត្យថា Stop-loss នៅមុន Liquidation ឬអត់ ហើយបង្ហាញលទ្ធផលសាកល្បង 5 ឆ្នាំ ខាង Long និង Short
 - 🪙 **ជ្រើសរើសកាក់**៖ BTC, មាស (PAXG = មាស 1 អោន), ETH, BNB, SOL, XRP, DOGE ឬវាយឈ្មោះកាក់ផ្សេង (ឧ. ADA, LINK)
@@ -143,3 +144,17 @@ python btc_monitor.py --backtest         # សាកល្បងលើទិន�
 - AI អាចអានបានតែអ្វីដែលមើលឃើញក្នុងរូបប៉ុណ្ណោះ វាមិនអាចទាយតម្លៃអនាគតបានត្រឹមត្រូវទេ។
 - នេះមិនមែនជាដំបូន្មានហិរញ្ញវត្ថុទេ។ សូមប្រើជាជំនួយក្នុងការគិតតែប៉ុណ្ណោះ។
 - ការហៅ API នីមួយៗមានថ្លៃ។ កុំចែករំលែកឯកសារ `.env` ឬ API key ជាមួយអ្នកណាម្នាក់។
+
+## 📲 ជូនដំណឹងតាម Telegram (24/7 ដោយមិនចាំបាច់បើក Mac)
+
+GitHub Actions ដំណើរការ `telegram_alert.py` រៀងរាល់ពេល candle 4h បិទ (07:03, 11:03, 15:03, 19:03, 23:03, 03:03 ម៉ោងកម្ពុជា)
+ហើយផ្ញើសារតែពេលមាន 🟢 LONG ឬ 🔴 SHORT **ថ្មី** ដែលឆ្លងការពិនិត្យទាំងអស់ (សញ្ញាខ្លាំង + សាកល្បង 5 ឆ្នាំចំណេញ)។
+
+1. Telegram › ស្វែងរក **@BotFather** › `/newbot` › ដាក់ឈ្មោះ → ទទួលបាន **token**
+2. បើក bot ថ្មីរបស់អ្នក ហើយចុច **Start** (ឬផ្ញើសារណាមួយ)
+3. រក chat id: `TELEGRAM_TOKEN=token_របស់អ្នក python3 telegram_alert.py --chatid`
+4. GitHub › repo › **Settings › Secrets and variables › Actions › New repository secret**:
+   `TELEGRAM_TOKEN` និង `TELEGRAM_CHAT_ID`
+5. GitHub › **Actions › Telegram alerts › Run workflow** → អ្នកនឹងទទួលសារសាកល្បង
+
+ជម្រើស (Variables): `COINS` = បញ្ជីកាក់ (ឧ. `BTCUSDT,SOLUSDT`) · `DASHBOARD_URL` = link dashboard របស់អ្នក
