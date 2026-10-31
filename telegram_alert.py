@@ -7,8 +7,8 @@ telegram_alert.py — ផ្ញើសារ Telegram ពេលមានសញ្
   • ទិសនោះត្រូវចំណេញក្នុងការសាកល្បង 5 ឆ្នាំ (ទាំងទិន្នន័យទាំងអស់ និងទិន្នន័យថ្មី 1/3) ហើយមាន ≥ 15 ដង
   • Stop = 3 × ATR(4h) · គោលដៅ = 3R · កាន់យូរបំផុត 42 candle (7 ថ្ងៃ) · ថ្លៃសេវា Futures 0.05%/ដង
 
-ដំណើរការ (GitHub Actions ធ្វើដោយស្វ័យប្រវត្តិ រៀងរាល់ពេល candle 4h បិទ):
-    TELEGRAM_TOKEN=... TELEGRAM_CHAT_ID=... python telegram_alert.py           # ផ្ញើតែពេលមាន setup ថ្មី
+ដំណើរការ (GitHub Actions ធ្វើដោយស្វ័យប្រវត្តិ រៀងរាល់ 15 នាទី · សារម្តងក្នុង 1 setup):
+    TELEGRAM_TOKEN=... TELEGRAM_CHAT_ID=... python telegram_alert.py           # ផ្ញើពេលកាក់ណាមួយអាចចូលលេងបាន
     TELEGRAM_TOKEN=... TELEGRAM_CHAT_ID=... python telegram_alert.py --test    # ផ្ញើស្ថានភាពគ្រប់កាក់ឥឡូវ (សាក)
     TELEGRAM_TOKEN=... python telegram_alert.py --chatid                       # រក chat id របស់អ្នក
 """
@@ -19,6 +19,7 @@ import os
 import sys
 import time
 import urllib.parse
+import urllib.error
 import urllib.request
 
 API = "https://data-api.binance.vision/api/v3/klines"
@@ -208,8 +209,10 @@ def check(sym, tests):
     prev_side, _ = setup_at(last - 1)
     side = side_of(s[last])
     price, atr = c[-1]["close"], a[last]["atr"]
-    fresh_close = time.time() - (c[last]["time"] + STEP) < 3.5 * 3600      # one alert per candle, even if the run is late
-    return {"sym": sym, "score": s[last], "side": side, "go": now_side, "new": bool(now_side) and prev_side != now_side and fresh_close,
+    age = 0
+    while side and age < 200 and side_of(s[last - age - 1]) == side:
+        age += 1
+    return {"sym": sym, "score": s[last], "side": side, "go": now_side, "age_h": (age + 1) * 4,
             "st": st, "price": price, "atr": atr, "close_at": c[last]["time"] + STEP, "tests": tests}
 
 
@@ -232,7 +235,7 @@ def setup_message(r):
     stop, tp = p - side * risk, p + side * TP_R * risk
     t = r["tests"][side]["all"]
     head = "🟢 <b>LONG ⬆</b>" if side > 0 else "🔴 <b>SHORT ⬇</b>"
-    when = time.strftime("%d/%m %H:%M", time.gmtime(r["close_at"] + 7 * 3600))
+    when = time.strftime("%d/%m %H:%M", time.gmtime(time.time() + 7 * 3600))
     lines = [
         f"{head}  <b>{label(r['sym'])}</b> · 4h",
         "",
@@ -240,10 +243,10 @@ def setup_message(r):
         f"Stop-loss <code>{fmt(stop)}</code>",
         f"គោលដៅ (TP) <code>{fmt(tp)}</code>",
         "",
-        f"💪 កម្លាំង {r['st']['ext']:.1f} ATR · ពិន្ទុ {r['score']:+d}",
+        f"💪 កម្លាំង {r['st']['ext']:.1f} ATR · ពិន្ទុ {r['score']:+d} · សញ្ញាចាប់ផ្តើម {r['age_h']} ម៉ោងមុន",
         f"📊 សាកល្បង 5 ឆ្នាំ: ត្រូវ {t['win'] * 100:.0f}% · {t['avg']:+.2f}%/ដង · {t['n']} ដង",
         f"📉 ធ្លាប់ខាតជាប់គ្នា {t['streak']} ដង — ហ៊ានខាតត្រឹម 1%",
-        f"⏳ កាន់យូរបំផុត 7 ថ្ងៃ · candle បិទ {when} (ម៉ោងកម្ពុជា)",
+        f"⏳ កាន់យូរបំផុត 7 ថ្ងៃ · ពិនិត្យ {when} (ម៉ោងកម្ពុជា)",
     ]
     if DASHBOARD:
         lines += ["", f"🔗 {DASHBOARD}?s={r['sym']}"]
@@ -260,16 +263,65 @@ def status_line(r):
 
 
 # ------------------------------------------------------------------ telegram
-def tg(method, **params):
+def tg(method, tries=4, **params):
     token = os.environ["TELEGRAM_TOKEN"].strip()
     data = urllib.parse.urlencode(params).encode()
-    with urllib.request.urlopen(f"https://api.telegram.org/bot{token}/{method}", data=data, timeout=20) as r:
-        return json.loads(r.read())
+    for k in range(tries):
+        try:
+            with urllib.request.urlopen(f"https://api.telegram.org/bot{token}/{method}", data=data, timeout=40) as r:
+                return json.loads(r.read())
+        except urllib.error.HTTPError as e:            # wrong token / chat id → no point retrying
+            body = e.read().decode(errors="replace")[:200]
+            raise RuntimeError(f"Telegram {e.code}: {body}") from None
+        except Exception as e:
+            print(f"Telegram try {k + 1}/{tries} failed: {type(e).__name__}: {e}")
+            if k == tries - 1:
+                raise RuntimeError(f"Telegram unreachable: {type(e).__name__}") from None
+            time.sleep(5 * (k + 1))
 
 
 def send(text):
+    ok = True
     for chat in os.environ["TELEGRAM_CHAT_ID"].split(","):
-        tg("sendMessage", chat_id=chat.strip(), text=text, parse_mode="HTML", disable_web_page_preview="true")
+        try:
+            tg("sendMessage", chat_id=chat.strip(), text=text, parse_mode="HTML", disable_web_page_preview="true")
+            print("✓ sent to chat", chat.strip()[-4:].rjust(8, "*"))
+        except Exception as e:
+            ok = False
+            print("✗ SEND FAILED:", e)
+    return ok
+
+
+STATE_FILE = os.environ.get("STATE_FILE", "alert_state.json")
+
+
+def load_state():
+    try:
+        with open(STATE_FILE, encoding="utf-8") as f:
+            st = json.load(f)
+    except Exception:
+        st = {}
+    st.setdefault("alerted", {})
+    st.setdefault("tests", {})
+    return st
+
+
+def save_state(st):
+    with open(STATE_FILE, "w", encoding="utf-8") as f:
+        json.dump(st, f, separators=(",", ":"))
+
+
+def tests_for(sym, st):
+    """5-year test of each coin, re-run once a day (it barely changes) so each check stays fast."""
+    hit = st["tests"].get(sym)
+    if hit and time.time() - hit["at"] < 86400:
+        return {1: hit["1"], -1: hit["-1"]}
+    hist = klines_range(sym, int((time.time() - YEARS * 365 * 86400 - 210 * STEP) * 1000))
+    if len(hist) < 600:
+        raise RuntimeError("ទិន្នន័យតិចពេក")
+    t = backtest(hist)
+    st["tests"][sym] = {"at": int(time.time()), "1": t[1], "-1": t[-1]}
+    return t
 
 
 def main():
@@ -279,30 +331,40 @@ def main():
         print("chat id:", ", ".join(map(str, ids)) if ids else "មិនទាន់ឃើញ — សូមផ្ញើសារណាមួយទៅ bot របស់អ្នកសិន ហើយដំណើរការម្តងទៀត")
         return
     test_mode = "--test" in sys.argv
+    state = load_state()
     results, errors = [], []
     for sym in COINS:
         sym = sym.strip().upper()
         try:
-            hist = klines_range(sym, int((time.time() - YEARS * 365 * 86400 - 210 * STEP) * 1000))
-            if len(hist) < 600:
-                raise RuntimeError("ទិន្នន័យតិចពេក")
-            results.append(check(sym, backtest(hist)))
+            results.append(check(sym, tests_for(sym, state)))
         except Exception as e:
             errors.append(f"{sym}: {e}")
     for r in results:
         print(status_line(r))
     for e in errors:
         print("ERR", e)
-    new = [r for r in results if r["new"]]
-    for r in new:
-        send(setup_message(r))
+    print(f"checked {len(results)} coin(s), {len(errors)} error(s)")
+    # one message per setup: send when a coin becomes tradable, stay quiet while it stays tradable,
+    # and forget it once the setup is gone (so the next one is announced again)
+    new, sent_ok = [], True
+    for r in results:
+        before = state["alerted"].get(r["sym"], 0)
+        if r["go"] and r["go"] != before:
+            ok = send(setup_message(r))
+            sent_ok &= ok
+            if ok:
+                state["alerted"][r["sym"]] = r["go"]
+                new.append(r)
+        elif not r["go"] and before:
+            state["alerted"].pop(r["sym"], None)
+    save_state(state)
     if test_mode:
         body = "\n".join(status_line(r) for r in results) or "—"
-        send("🧪 <b>សាកល្បង Telegram</b> — ស្ថានភាព 4h ឥឡូវ\n\n" + body +
+        sent_ok &= send("🧪 <b>សាកល្បង Telegram</b> — ស្ថានភាព 4h ឥឡូវ\n\n" + body +
              ("\n\n⚠️ " + "; ".join(errors) if errors else "") +
-             "\n\nអ្នកនឹងទទួលសារ ពេលមាន 🟢 LONG ឬ 🔴 SHORT ថ្មី (ពិនិត្យរៀងរាល់ 4 ម៉ោង)")
+             "\n\nអ្នកនឹងទទួលសារភ្លាមៗ ពេលកាក់ណាមួយអាចចូល 🟢 LONG ឬ 🔴 SHORT បាន (ពិនិត្យរៀងរាល់ 15 នាទី)")
     print(f"sent {len(new)} setup message(s)" + (" + test" if test_mode else ""))
-    if errors and not results:
+    if (errors and not results) or not sent_ok:
         sys.exit(1)
 
 

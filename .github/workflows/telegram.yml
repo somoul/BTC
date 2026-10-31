@@ -1,15 +1,20 @@
 name: Telegram alerts
 
-# Runs right after every 4h candle closes (00, 04, 08, 12, 16, 20 UTC = 07, 11, 15, 19, 23, 03 in Cambodia)
+# Checks every 15 minutes and sends a message as soon as a coin becomes tradable
+# (one message per setup — it stays quiet while the setup lasts).
 on:
   schedule:
-    - cron: "3 0,4,8,12,16,20 * * *"
+    - cron: "*/15 * * * *"
   workflow_dispatch:
     inputs:
       test:
         description: "Send a test message with the status of every coin"
         type: boolean
         default: true
+
+concurrency:
+  group: telegram-alerts
+  cancel-in-progress: false
 
 jobs:
   alert:
@@ -20,6 +25,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      # remembers which setups were already sent + the daily 5-year tests
+      - uses: actions/cache/restore@v4
+        with:
+          path: alert_state.json
+          key: alert-state-${{ github.run_id }}
+          restore-keys: alert-state-
       - name: Check signals and send Telegram messages
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
@@ -27,3 +38,8 @@ jobs:
           DASHBOARD_URL: ${{ vars.DASHBOARD_URL }}
           COINS: ${{ vars.COINS }}
         run: python telegram_alert.py ${{ github.event_name == 'workflow_dispatch' && inputs.test && '--test' || '' }}
+      - uses: actions/cache/save@v4
+        if: always() && hashFiles('alert_state.json') != ''
+        with:
+          path: alert_state.json
+          key: alert-state-${{ github.run_id }}

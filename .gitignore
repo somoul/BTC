@@ -11,3 +11,4 @@ upload-to-github/
 .DS_Store
 calendar_cache.json
 calendar_cache.json.tmp
+alert_state.json
