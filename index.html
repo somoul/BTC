@@ -705,6 +705,9 @@
   }
   .tabs button.active { background: var(--line); color: var(--text); }
   #chart { height: 440px; width: 100%; }
+  .ch-wrap { position: relative; }
+  .ch-ohlc { position: absolute; top: 4px; left: 6px; z-index: 3; pointer-events: none; font-family: var(--mono); font-size: 11px; color: var(--muted); background: rgba(11,14,17,.72); padding: 3px 7px; border-radius: 6px; display: flex; gap: 8px; flex-wrap: wrap; max-width: calc(100% - 90px); }
+  .ch-ohlc b { color: var(--text); font-weight: 600; }
   .ind-tg { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: -4px 0 10px; font-size: 12px; color: var(--muted); }
   .ind-tg button {
     font: inherit; font-family: var(--mono); font-size: 12px; cursor: pointer; color: var(--muted);
@@ -1144,6 +1147,7 @@
             <button data-tf="1h">1h</button>
             <button data-tf="4h">4h</button>
             <button data-tf="1d">1D</button>
+            <button data-fit="1" title="បង្ហាញ candle ថ្មីៗវិញ">⟲</button>
           </div>
         </h2>
         <div class="ind-tg" id="indTg">
@@ -1152,7 +1156,7 @@
           <button data-i="bb">Bollinger</button><button data-i="rsi">RSI</button><button data-i="macd">MACD</button><button data-i="fut">⚡ Futures</button>
         </div>
         <div class="fx-badge" id="fxBadge" hidden></div>
-        <div id="chart"></div>
+        <div class="ch-wrap"><div class="ch-ohlc" id="chOhlc"></div><div id="chart"></div></div>
         <div class="subpane" id="rsiPane"><span class="sp-l">RSI 14 <b id="rsiNow"></b></span><div id="rsiChart"></div></div>
         <div class="subpane" id="macdPane"><span class="sp-l">MACD 12/26/9 <b id="macdNow"></b></span><div id="macdChart"></div></div>
         <div class="legend">
@@ -1302,7 +1306,8 @@ const fmt = (n, d = 2) => {
 };
 const $ = id => document.getElementById(id);
 
-let tf = "5m";
+let tf = "4h";
+try { const t = localStorage.getItem("chartTf"); if (["5m", "15m", "1h", "4h", "1d"].includes(t)) tf = t; } catch (e) {}
 let payload = null;
 let lastUpdated = null;
 let livePrice = null;
@@ -1360,14 +1365,15 @@ const toLocal = arr => arr.map(p => ({ ...p, time: p.time + TZ }));
 function drawChart(f) {
   shown = toLocal(f.candles);
   candles.setData(shown);
+  paintOhlc(shown[shown.length - 1]);
   ema20.setData(toLocal(f.ema20));
   ema50.setData(toLocal(f.ema50));
   priceLines.forEach(l => candles.removePriceLine(l));
   priceLines = [];
-  f.resistances.slice(0, 2).forEach((r, i) => priceLines.push(candles.createPriceLine({
+  f.resistances.slice(0, 1).forEach((r, i) => priceLines.push(candles.createPriceLine({
     price: r.price, color: "#ff5d6c", lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: "R" + (i + 1),
   })));
-  f.supports.slice(0, 2).forEach((s, i) => priceLines.push(candles.createPriceLine({
+  f.supports.slice(0, 1).forEach((s, i) => priceLines.push(candles.createPriceLine({
     price: s.price, color: "#2ecc8f", lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: "S" + (i + 1),
   })));
   if (lastChartTf !== tf) { fitBars(); lastChartTf = tf; }
@@ -1462,6 +1468,20 @@ setInterval(() => { if (document.querySelector('.page[data-page="chart"]').class
 
 // show the most recent ~120 candles across the full width.
 // (computed from the real width, so it still works if the chart was drawn before layout finished)
+// hover legend: time · O H L C · change · volume (falls back to the newest candle)
+function paintOhlc(c) {
+  if (!c) { $("chOhlc").innerHTML = ""; return; }
+  const ch = (c.close / c.open - 1) * 100, d = new Date((c.time - TZ) * 1000);
+  const t = `${d.getDate()}/${d.getMonth() + 1} ${hhmm(d.getTime())}`;
+  $("chOhlc").innerHTML = `<span>${t}</span><span>O <b>${fmt(c.open)}</b></span><span>H <b>${fmt(c.high)}</b></span><span>L <b>${fmt(c.low)}</b></span><span>C <b>${fmt(c.close)}</b></span>` +
+    `<span class="${ch >= 0 ? "c-BUY" : "c-SELL"}">${ch > 0 ? "+" : ""}${ch.toFixed(2)}%</span>` + (c.volume != null ? `<span>Vol <b>${Number(c.volume).toLocaleString("en-US", { maximumFractionDigits: 0 })}</b></span>` : "");
+}
+chart.subscribeCrosshairMove(p => {
+  const c = p && p.time != null ? p.seriesData.get(candles) : null;
+  if (c) { const full = shown.find(x => x.time === p.time); paintOhlc({ ...c, time: p.time, volume: full && full.volume }); }
+  else paintOhlc(shown[shown.length - 1]);
+});
+
 function fitBars() {
   const w = $("chart").clientWidth - 70;
   if (w <= 0) return;
@@ -1929,7 +1949,7 @@ function render() {
   if (!payload) return;
   // only offer timeframes the server actually sent (older servers have no 5m)
   const have = ALL_TF.filter(k => payload.frames[k]);
-  document.querySelectorAll("#tabs button").forEach(b => {
+  document.querySelectorAll("#tabs button[data-tf]").forEach(b => {
     b.style.display = have.includes(b.dataset.tf) ? "" : "none";
     b.classList.toggle("active", b.dataset.tf === tf);
   });
@@ -1948,7 +1968,12 @@ function render() {
   $("sigWord").textContent = f.signal;
   $("sigKm").textContent = KM[f.signal] + "  ·  ពិន្ទុ " + (f.score > 0 ? "+" : "") + f.score;
   const o = payload.overall;
-  $("sigSub").innerHTML = `សរុបគ្រប់ timeframe: <b class="c-${o.signal}">${o.signal} (${o.score > 0 ? "+" : ""}${o.score})</b>`;
+  let fg = null; try { fg = tf !== "1d" && FT_TFS.includes(tf) ? tfGrade(tf) : null; } catch (e) {}
+  const fgTxt = !fg || fg.g === "load" ? "" : fg.g === "go" ? `<b class="${fg.sig === "LONG" ? "c-BUY" : "c-SELL"}">✅ ${fg.sig === "LONG" ? "Long" : "Short"} អាចចូលបាន</b>`
+    : fg.g === "soft" ? `<span class="c-HOLD">🟠 សញ្ញាខ្សោយ — រង់ចាំកម្លាំង</span>` : fg.g === "no" ? `<span class="c-SELL">❌ ការសាកល្បងខាត</span>` : fg.g === "wait" ? `<span style="color:var(--muted)">⏸ គ្មានសញ្ញា</span>` : `<span class="c-HOLD">🟠 មិនទាន់ច្បាស់</span>`;
+  $("sigSub").innerHTML = `សរុបគ្រប់ timeframe: <b class="c-${o.signal}">${o.signal} (${o.score > 0 ? "+" : ""}${o.score})</b>` +
+    (fgTxt ? `<br>⚡ គួរលេង? ${fgTxt}` : "") +
+    (["5m", "15m", "1h"].includes(tf) ? `<br><span class="c-HOLD">🟠 ${tf} គ្មាន edge ក្នុងការសាកល្បង (ខាតក្រោយថ្លៃសេវា) — សញ្ញានេះសម្រាប់មើលប៉ុណ្ណោះ · ប្រើ 4h</span>` : "");
   $("pin").style.left = ((f.score + 100) / 2) + "%";
   $("mtf").style.gridTemplateColumns = `repeat(${have.length}, 1fr)`;
   $("mtf").innerHTML = have.map(k => [k, payload.mtf[k]]).map(([k, v]) =>
@@ -2970,7 +2995,9 @@ async function pollHistory() {
 $("tabs").addEventListener("click", e => {
   const b = e.target.closest("button");
   if (!b) return;
+  if (b.dataset.fit) { lastW = 0; fitBars(); return; }
   tf = b.dataset.tf;
+  try { localStorage.setItem("chartTf", tf); } catch (x) {}
   try { render(); } catch (err) { console.error(err); }
 });
 
@@ -3488,16 +3515,15 @@ candles.applyOptions({ autoscaleInfoProvider: orig => {
 function paintFutChart() {
   const on = IND.fut, T = tf === "1d" ? null : tf;
   const P = on && T ? futPlan(T) : null, g = on && T ? tfGrade(T) : null;
-  const sig = P && P.sig;
-  // lines (only when there is a live signal on this timeframe)
-  const k = sig ? [symbol, T, P.dir, px2(P.entry), px2(P.stop), px2(P.tp), px2(P.liq), P.lev].join("|") : "none";
+  const sig = P && P.sig, draw = sig && (g.g === "go" || futDir !== "auto");
+  // SL / TP / Liq lines only when the setup is tradable (or you picked a direction) — weak signals stay off the chart
+  const k = draw ? [symbol, T, P.dir, px2(P.entry), px2(P.stop), px2(P.tp), px2(P.liq), P.lev].join("|") : "none";
   if (k !== fxKey) {
     fxKey = k;
     fxLines.forEach(l => candles.removePriceLine(l)); fxLines = [];
-    fxRange = sig ? [Math.min(P.stop, P.tp), Math.max(P.stop, P.tp)] : null;
-    if (sig) {
+    fxRange = draw ? [Math.min(P.stop, P.tp), Math.max(P.stop, P.tp)] : null;
+    if (draw) {
       const add = (price, color, title, style = 0, w = 2) => price > 0 && fxLines.push(candles.createPriceLine({ price, color, lineWidth: w, lineStyle: style, axisLabelVisible: true, title }));
-      add(P.entry, "#e6e9ee", "ចូល " + (P.L ? "Long" : "Short"), 2, 1);
       add(P.stop, "#ff5d6c", "SL");
       add(P.tp, "#2ecc8f", "TP");
       add(P.liq, "#b3261e", `Liq ${P.lev}x`, 1, 1);
@@ -3510,12 +3536,14 @@ function paintFutChart() {
     if (!T) { B.className = "fx-badge"; B.innerHTML = `⚡ Futures មិនមាន 1D — ជ្រើស 5m, 15m, 1h ឬ 4h`; }
     else if (!g || g.g === "load") { B.className = "fx-badge"; B.innerHTML = `⚡ កំពុងទាញសញ្ញា ${T}…`; }
     else {
-      const word = !sig ? "⏸ រង់ចាំ" : g.g === "go" ? (P.L ? "🟢 LONG ⬆" : "🔴 SHORT ⬇") : g.g === "no" ? `❌ ${P.L ? "Long" : "Short"} (មិនណែនាំ)` : `🟠 ${P.L ? "Long" : "Short"} ខ្សោយ`;
+      const word = !sig ? "⏸ រង់ចាំ" : g.g === "go" ? (P.L ? "🟢 LONG ⬆" : "🔴 SHORT ⬇") : g.g === "no" ? `❌ ${P.L ? "Long" : "Short"} (មិនណែនាំ)`
+        : g.g === "soft" ? `🟠 ${P.L ? "Long" : "Short"} ខ្សោយ — រង់ចាំ${P.w.hot ? "ភាពរំញ័រធូរ" : ` លើស ${fmt(P.w.need)}`}` : `🟠 ${P.L ? "Long" : "Short"} — កំពុងពិនិត្យ`;
       B.className = "fx-badge " + (sig && g.g === "go" ? P.dir : "");
       B.innerHTML = `<span class="a ${sig ? (P.L ? "c-BUY" : "c-SELL") : "c-HOLD"}">${word}</span><span class="n">${T}</span>` +
-        (sig ? `<span class="n">ចូល <b>${fmt(P.entry)}</b></span><span class="n">SL <b class="c-SELL">${fmt(P.stop)}</b></span><span class="n">TP <b class="c-BUY">${fmt(P.tp)}</b></span><span class="n">Liq ${P.lev}x <b>${fmt(P.liq)}</b></span>`
+        (draw ? `<span class="n">ចូល <b>${fmt(P.entry)}</b></span><span class="n">SL <b class="c-SELL">${fmt(P.stop)}</b></span><span class="n">TP <b class="c-BUY">${fmt(P.tp)}</b></span><span class="n">Liq ${P.lev}x <b>${fmt(P.liq)}</b></span>`
+             : sig ? `<span class="n">ពិន្ទុ <b>${(P.w.score > 0 ? "+" : "") + P.w.score}</b> · កម្លាំង <b>${P.w.ext != null ? P.w.ext.toFixed(1) : "—"} ATR</b> (ត្រូវការ > 2)${P.w.hot ? " · ភាពរំញ័រខ្ពស់" : ""}</span>`
              : `<span class="n">ពិន្ទុ <b>${P ? (P.w.score > 0 ? "+" : "") + P.w.score : "—"}</b> · Long ≥ +30 · Short ≤ -30</span>`) +
-        (g.st && !g.st.err && sig ? `<span class="n">សាកល្បង ${g.side ? `<b class="${g.side.avg >= 0 ? "c-BUY" : "c-SELL"}">${(g.side.avg > 0 ? "+" : "") + g.side.avg.toFixed(2)}%</b>/ដង` : "…"}</span>` : "") +
+        (g.st && !g.st.err && draw ? `<span class="n">សាកល្បង ${g.side ? `<b class="${g.side.avg >= 0 ? "c-BUY" : "c-SELL"}">${(g.side.avg > 0 ? "+" : "") + g.side.avg.toFixed(2)}%</b>/ដង` : "…"}</span>` : "") +
         `<span class="go">⚡ មើលលម្អិត ›</span>`;
     }
   }
