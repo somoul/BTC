@@ -1,0 +1,29 @@
+name: Telegram alerts
+
+# Runs right after every 4h candle closes (00, 04, 08, 12, 16, 20 UTC = 07, 11, 15, 19, 23, 03 in Cambodia)
+on:
+  schedule:
+    - cron: "3 0,4,8,12,16,20 * * *"
+  workflow_dispatch:
+    inputs:
+      test:
+        description: "Send a test message with the status of every coin"
+        type: boolean
+        default: true
+
+jobs:
+  alert:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check signals and send Telegram messages
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          DASHBOARD_URL: ${{ vars.DASHBOARD_URL }}
+          COINS: ${{ vars.COINS }}
+        run: python telegram_alert.py ${{ github.event_name == 'workflow_dispatch' && inputs.test && '--test' || '' }}
