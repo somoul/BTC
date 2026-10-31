@@ -157,4 +157,6 @@ GitHub Actions ដំណើរការ `telegram_alert.py` រៀងរាល�
    `TELEGRAM_TOKEN` និង `TELEGRAM_CHAT_ID`
 5. GitHub › **Actions › Telegram alerts › Run workflow** → អ្នកនឹងទទួលសារសាកល្បង
 
-ជម្រើស (Variables): `COINS` = បញ្ជីកាក់ (ឧ. `BTCUSDT,SOLUSDT`) · `DASHBOARD_URL` = link dashboard របស់អ្នក
+ជម្រើស (Settings › Secrets and variables › Actions › **Variables**): `CAPITAL` = ទុន Futures (លំនាំដើម 500) · `RISK_PCT` = ហ៊ានខាត % (1) · `LEVERAGE` (3) · `COINS` = បញ្ជីកាក់ (ឧ. `BTCUSDT,SOLUSDT`) · `DASHBOARD_URL` = link dashboard
+
+សារនីមួយៗមាន: ចូល · Stop-loss · Take-profit · ទំហំ USDT · margin · ខាត/ចំណេញ $ · Liquidation។ បន្ទាប់មក bot តាមដាន ហើយប្រាប់ពេល **ដល់ SL 🛑, ដល់ TP 🎯 ឬដល់ 7 ថ្ងៃ ⏱**។

@@ -28,6 +28,10 @@ LABEL = {"PAXGUSDT": "មាស (PAXG)"}
 TF, STEP = "4h", 14400
 STOP_ATR, TP_R, HOLD, FEE, YEARS = 3, 3, 42, 0.0005, 5
 DASHBOARD = os.environ.get("DASHBOARD_URL", "")
+CAPITAL = float(os.environ.get("CAPITAL") or 500)        # Futures account size in USDT (GitHub Variable CAPITAL)
+RISK_PCT = float(os.environ.get("RISK_PCT") or 1)        # % of the account you accept to lose per trade
+LEVERAGE = int(float(os.environ.get("LEVERAGE") or 3))
+HOLD_SEC = HOLD * STEP
 
 
 # ------------------------------------------------------------------ data
@@ -230,26 +234,80 @@ def label(sym):
     return LABEL.get(sym, sym.replace("USDT", ""))
 
 
-def setup_message(r):
+def plan(r):
     side, p, risk = r["go"], r["price"], STOP_ATR * r["atr"]
     stop, tp = p - side * risk, p + side * TP_R * risk
+    sd = risk / p
+    notional = min(CAPITAL * RISK_PCT / 100 / (sd + 2 * FEE), CAPITAL * LEVERAGE)
+    mmr = 0.004 if r["sym"].startswith(("BTC", "ETH")) else 0.005
+    liq = p * (1 - 1 / LEVERAGE) / (1 - mmr) if side > 0 else p * (1 + 1 / LEVERAGE) / (1 + mmr)
+    loss = notional * sd + notional * FEE + notional / p * stop * FEE
+    gain = notional * sd * TP_R - notional * FEE - notional / p * tp * FEE
+    return {"side": side, "entry": p, "stop": stop, "tp": tp, "sd": sd, "notional": notional,
+            "margin": notional / LEVERAGE, "liq": liq if liq > 0 else 0, "loss": loss, "gain": gain}
+
+
+def setup_message(r):
+    P, side = plan(r), r["go"]
     t = r["tests"][side]["all"]
     head = "🟢 <b>LONG ⬆</b>" if side > 0 else "🔴 <b>SHORT ⬇</b>"
-    when = time.strftime("%d/%m %H:%M", time.gmtime(time.time() + 7 * 3600))
+    until = time.strftime("%d/%m %H:%M", time.gmtime(time.time() + HOLD_SEC + 7 * 3600))
+    liq_ok = P["liq"] == 0 or (P["liq"] < P["stop"] if side > 0 else P["liq"] > P["stop"])
     lines = [
         f"{head}  <b>{label(r['sym'])}</b> · 4h",
         "",
-        f"ចូល ~<code>{fmt(p)}</code>",
-        f"Stop-loss <code>{fmt(stop)}</code>",
-        f"គោលដៅ (TP) <code>{fmt(tp)}</code>",
+        f"▶️ ចូល (Market) ~<code>{fmt(P['entry'])}</code>",
+        f"🛑 Stop-loss <code>{fmt(P['stop'])}</code>  ({-side * P['sd'] * 100:+.2f}%)",
+        f"🎯 Take-profit <code>{fmt(P['tp'])}</code>  ({side * P['sd'] * TP_R * 100:+.2f}%)",
         "",
-        f"💪 កម្លាំង {r['st']['ext']:.1f} ATR · ពិន្ទុ {r['score']:+d} · សញ្ញាចាប់ផ្តើម {r['age_h']} ម៉ោងមុន",
-        f"📊 សាកល្បង 5 ឆ្នាំ: ត្រូវ {t['win'] * 100:.0f}% · {t['avg']:+.2f}%/ដង · {t['n']} ដង",
-        f"📉 ធ្លាប់ខាតជាប់គ្នា {t['streak']} ដង — ហ៊ានខាតត្រឹម 1%",
-        f"⏳ កាន់យូរបំផុត 7 ថ្ងៃ · ពិនិត្យ {when} (ម៉ោងកម្ពុជា)",
+        f"💼 ទុន ${CAPITAL:,.0f} · ហ៊ានខាត {RISK_PCT:g}% · {LEVERAGE}x Isolated",
+        f"   ទំហំ <code>{P['notional']:,.2f}</code> USDT · margin ${P['margin']:,.2f}",
+        f"   ដល់ SL ខាត <b>-${P['loss']:,.2f}</b> · ដល់ TP ចំណេញ <b>+${P['gain']:,.2f}</b>",
+        f"   Liquidation ~{fmt(P['liq'])} " + ("✅ ឆ្ងាយជាង SL" if liq_ok else "⚠️ ជិតជាង SL — បន្ថយ leverage"),
+        "",
+        f"💪 កម្លាំង {r['st']['ext']:.1f} ATR · សញ្ញាចាប់ផ្តើម {r['age_h']} ម៉ោងមុន",
+        f"📊 សាកល្បង 5 ឆ្នាំ: ត្រូវ {t['win'] * 100:.0f}% · {t['avg']:+.2f}%/ដង · ធ្លាប់ខាតជាប់គ្នា {t['streak']} ដង",
+        f"⏳ បើមិនដល់ SL/TP — បិទនៅ {until} (7 ថ្ងៃ)",
+        "🔔 ខ្ញុំនឹងប្រាប់អ្នក ពេលដល់ SL, TP ឬ 7 ថ្ងៃ",
     ]
     if DASHBOARD:
         lines += ["", f"🔗 {DASHBOARD}?s={r['sym']}"]
+    return "\n".join(lines)
+
+
+def follow_trade(sym, tr):
+    """Did price reach Stop-loss or Take-profit since the alert? (15m candles; if both in one candle → count SL)."""
+    raw = get_json(f"{API}?symbol={sym}&interval=15m&startTime={int(tr['at'] * 1000)}&limit=1000")
+    side, hit = tr["side"], None
+    for k in _rows(raw):
+        if (k["low"] <= tr["stop"]) if side > 0 else (k["high"] >= tr["stop"]):
+            hit = ("sl", tr["stop"], k["time"])
+            break
+        if (k["high"] >= tr["tp"]) if side > 0 else (k["low"] <= tr["tp"]):
+            hit = ("tp", tr["tp"], k["time"])
+            break
+    last = float(raw[-1][4]) if raw else tr["entry"]
+    if not hit and time.time() - tr["at"] >= HOLD_SEC:
+        hit = ("time", last, time.time())
+    return hit, last
+
+
+def exit_message(sym, tr, hit):
+    kind, price, _ = hit
+    side = tr["side"]
+    pct = side * (price / tr["entry"] - 1) * 100 - 2 * FEE * 100
+    usd = tr.get("notional", 0) * pct / 100
+    hours = (time.time() - tr["at"]) / 3600
+    name = f"{'Long' if side > 0 else 'Short'} <b>{label(sym)}</b>"
+    head = {"tp": "🎯 <b>ដល់ Take-profit!</b>", "sl": "🛑 <b>ដល់ Stop-loss</b>", "time": "⏱ <b>ដល់ 7 ថ្ងៃ — បិទ position ឥឡូវ</b>"}[kind]
+    lines = [head, f"{name} · ចូល {fmt(tr['entry'])} → {fmt(price)}",
+             f"{'ចំណេញ' if pct >= 0 else 'ខាត'} <b>{pct:+.2f}%</b>" + (f" · ≈ <b>{'+' if usd >= 0 else '-'}${abs(usd):,.2f}</b>" if usd else "") + f" (ក្រោយថ្លៃសេវា · {hours:.0f} ម៉ោង)"]
+    if kind == "sl":
+        lines.append("ខាតម្តងៗ ជាផ្នែកមួយនៃផែនការ (ត្រូវ ~45%) — កុំបង្កើនទំហំដើម្បីសងវិញ")
+    elif kind == "tp":
+        lines.append("Binance បិទឱ្យដោយខ្លួនឯង បើអ្នកបានដាក់ TP · បើមិនទាន់ សូមបិទឥឡូវ")
+    else:
+        lines.append("ផែនការកាន់យូរបំផុត 7 ថ្ងៃ — បិទដោយដៃនៅលើ Binance")
     return "\n".join(lines)
 
 
@@ -344,22 +402,34 @@ def main():
     for e in errors:
         print("ERR", e)
     print(f"checked {len(results)} coin(s), {len(errors)} error(s)")
-    # one message per setup: send when a coin becomes tradable, stay quiet while it stays tradable,
-    # and forget it once the setup is gone (so the next one is announced again)
-    new, sent_ok = [], True
+    # 1) follow the trades already announced: tell when they hit SL / TP / 7 days
+    state.setdefault("trades", {})
+    state.pop("alerted", None)
+    sent_ok, new = True, []
+    for sym, tr in list(state["trades"].items()):
+        try:
+            hit, last = follow_trade(sym, tr)
+        except Exception as e:
+            errors.append(f"{sym} follow: {e}")
+            continue
+        print(f"open {sym} {'L' if tr['side'] > 0 else 'S'} entry {fmt(tr['entry'])} now {fmt(last)}" + (f" → {hit[0]}" if hit else ""))
+        if hit and send(exit_message(sym, tr, hit)):
+            del state["trades"][sym]
+    # 2) announce new setups — one at a time per coin, like the 5-year test
     for r in results:
-        before = state["alerted"].get(r["sym"], 0)
-        if r["go"] and r["go"] != before:
+        if r["go"] and r["sym"] not in state["trades"]:
             ok = send(setup_message(r))
             sent_ok &= ok
             if ok:
-                state["alerted"][r["sym"]] = r["go"]
+                P = plan(r)
+                state["trades"][r["sym"]] = {"side": r["go"], "entry": P["entry"], "stop": P["stop"], "tp": P["tp"],
+                                             "notional": round(P["notional"], 2), "at": int(time.time())}
                 new.append(r)
-        elif not r["go"] and before:
-            state["alerted"].pop(r["sym"], None)
     save_state(state)
     if test_mode:
         body = "\n".join(status_line(r) for r in results) or "—"
+        if state["trades"]:
+            body += "\n\n📂 កំពុងតាមដាន: " + ", ".join(f"{'Long' if t['side'] > 0 else 'Short'} {label(k)} (SL {fmt(t['stop'])} · TP {fmt(t['tp'])})" for k, t in state["trades"].items())
         sent_ok &= send("🧪 <b>សាកល្បង Telegram</b> — ស្ថានភាព 4h ឥឡូវ\n\n" + body +
              ("\n\n⚠️ " + "; ".join(errors) if errors else "") +
              "\n\nអ្នកនឹងទទួលសារភ្លាមៗ ពេលកាក់ណាមួយអាចចូល 🟢 LONG ឬ 🔴 SHORT បាន (ពិនិត្យរៀងរាល់ 15 នាទី)")
