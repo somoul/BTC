@@ -37,9 +37,9 @@ HOLD_SEC = HOLD * STEP
 #      the message gives MT5 symbol, LOT and SL/TP *distances* (broker prices differ slightly from Binance).
 MT5 = (os.environ.get("MT5") or "1") != "0"
 # binance:mt5_symbol:contract_size   (check MT5 › symbol › Specification › Contract size)
-MT5_SYMBOLS = os.environ.get("MT5_SYMBOLS") or "PAXGUSDT:XAUUSDc:100,BTCUSDT:BTCUSDc:1"
+MT5_SYMBOLS = os.environ.get("MT5_SYMBOLS") or "PAXGUSDT:XAUUSDc:100,BTCUSDT:BTCUSDc:1"   # BTCUSDc = 1 verified from a closed trade (0.02 lot × +5.30 = 0.11 USC)
 MT5_MAP = {b: {"name": n, "contract": float(cs)} for b, n, cs in (x.strip().split(":") for x in MT5_SYMBOLS.split(","))}
-BALANCE = float(os.environ.get("BALANCE") or 10000)       # account balance in account currency (Standard Cent: USC)
+BALANCE = float(os.environ.get("BALANCE") or 4800)        # account balance in USC (Standard Cent) — set GitHub Variable BALANCE when it changes
 CURRENCY = os.environ.get("CURRENCY") or "USC"
 VALUE_MULT = float(os.environ.get("VALUE_MULT") or 1)      # account-currency value of 1.0 price move × 1 contract unit
 MIN_LOT = float(os.environ.get("MIN_LOT") or 0.01)
