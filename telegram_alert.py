@@ -33,6 +33,20 @@ RISK_PCT = float(os.environ.get("RISK_PCT") or 1)        # % of the account you 
 LEVERAGE = int(float(os.environ.get("LEVERAGE") or 3))
 HOLD_SEC = HOLD * STEP
 
+# ---- MT5 (Exness) — on by default. Signals come from Binance (PAXG ≈ gold, BTCUSDT ≈ BTC),
+#      the message gives MT5 symbol, LOT and SL/TP *distances* (broker prices differ slightly from Binance).
+MT5 = (os.environ.get("MT5") or "1") != "0"
+# binance:mt5_symbol:contract_size   (check MT5 › symbol › Specification › Contract size)
+MT5_SYMBOLS = os.environ.get("MT5_SYMBOLS") or "PAXGUSDT:XAUUSDc:100,BTCUSDT:BTCUSDc:1"
+MT5_MAP = {b: {"name": n, "contract": float(cs)} for b, n, cs in (x.strip().split(":") for x in MT5_SYMBOLS.split(","))}
+BALANCE = float(os.environ.get("BALANCE") or 10000)       # account balance in account currency (Standard Cent: USC)
+CURRENCY = os.environ.get("CURRENCY") or "USC"
+VALUE_MULT = float(os.environ.get("VALUE_MULT") or 1)      # account-currency value of 1.0 price move × 1 contract unit
+MIN_LOT = float(os.environ.get("MIN_LOT") or 0.01)
+LOT_STEP = float(os.environ.get("LOT_STEP") or 0.01)
+if MT5 and not os.environ.get("COINS"):
+    COINS = list(MT5_MAP)
+
 
 # ------------------------------------------------------------------ data
 def get_json(url, tries=3):
@@ -49,6 +63,36 @@ def get_json(url, tries=3):
 def _rows(raw):
     return [{"time": k[0] // 1000, "open": float(k[1]), "high": float(k[2]), "low": float(k[3]),
              "close": float(k[4]), "volume": float(k[5])} for k in raw]
+
+
+# ---- MT5 gold trades Mon–Fri only (Exness server time = UTC). PAXG on Binance also trades at the weekend,
+#      so for gold we drop weekend candles: the indicators then match the MT5 XAUUSD chart and no signal
+#      comes from a weekend move you could not have traded.
+GOLD = {"PAXGUSDT"}
+
+
+def weekend_bar(t, sec=STEP):
+    """True if a candle opening at t (UTC seconds) lies (mostly) inside the gold weekend: Fri 20:00 → Sun 20:00 UTC."""
+    w = time.gmtime(t)
+    h = w.tm_wday * 24 + w.tm_hour + w.tm_min / 60          # hours since Monday 00:00
+    if sec >= STEP:
+        return 4 * 24 + 20 <= h < 6 * 24 + 20          # 4h candles: Fri 20:00 … Sun 16:00 bars
+    return 4 * 24 + 21 <= h < 6 * 24 + 22              # 15m candles: market closed Fri 21:00 → Sun 22:00
+
+
+def gold_open(t=None):
+    """Is XAUUSD tradable now? (closed Fri 21:00 → Sun 22:05 UTC, plus the daily break 21:00–22:00)"""
+    w = time.gmtime(t if t is not None else time.time())
+    h = w.tm_wday * 24 + w.tm_hour + w.tm_min / 60
+    if 4 * 24 + 21 <= h < 6 * 24 + 22 + 5 / 60:
+        return False
+    return not (w.tm_hour == 21)
+
+
+def mt5_hours(sym, rows, sec=STEP):
+    if MT5 and sym in GOLD:
+        return [x for x in rows if not weekend_bar(x["time"], sec)]
+    return rows
 
 
 def klines(sym, limit=500):
@@ -198,7 +242,7 @@ def tested_ok(stats):
 
 # ------------------------------------------------------------------ live check
 def check(sym, tests):
-    c = klines(sym, 500)
+    c = mt5_hours(sym, klines(sym, 500))
     s, a = scores_of(c)
     last = len(c) - 2                              # last CLOSED 4h candle
 
@@ -231,6 +275,8 @@ def fmt(x):
 
 
 def label(sym):
+    if MT5 and sym in MT5_MAP:
+        return MT5_MAP[sym]["name"]
     return LABEL.get(sym, sym.replace("USDT", ""))
 
 
@@ -247,7 +293,52 @@ def plan(r):
             "margin": notional / LEVERAGE, "liq": liq if liq > 0 else 0, "loss": loss, "gain": gain}
 
 
+def mt5_lots(sym, sl_dist):
+    m = MT5_MAP[sym]
+    per_lot = sl_dist * m["contract"] * VALUE_MULT            # account-currency loss of 1.00 lot at the stop
+    risk = BALANCE * RISK_PCT / 100
+    lots = math.floor(risk / per_lot / LOT_STEP + 1e-9) * LOT_STEP if per_lot > 0 else 0
+    too_small = lots < MIN_LOT
+    if too_small:
+        lots = MIN_LOT
+    return round(lots, 2), per_lot, too_small
+
+
+def mt5_message(r):
+    P, side, m = plan(r), r["go"], MT5_MAP[r["sym"]]
+    t = r["tests"][side]["all"]
+    d_sl, d_tp = abs(P["entry"] - P["stop"]), abs(P["tp"] - P["entry"])
+    lots, per_lot, too_small = mt5_lots(r["sym"], d_sl)
+    loss, gain = lots * per_lot, lots * per_lot * TP_R
+    head = "🟢 <b>BUY ⬆</b>" if side > 0 else "🔴 <b>SELL ⬇</b>"
+    sgn_sl, sgn_tp = ("−", "+") if side > 0 else ("+", "−")
+    until = time.strftime("%d/%m %H:%M", time.gmtime(time.time() + HOLD_SEC + 7 * 3600))
+    lines = [
+        f"{head}  <b>{m['name']}</b> · 4h  (MT5)",
+        "",
+        f"📦 Lot: <code>{lots:.2f}</code>",
+        f"🛑 Stop Loss = តម្លៃចូល {sgn_sl} <code>{fmt(d_sl)}</code>",
+        f"🎯 Take Profit = តម្លៃចូល {sgn_tp} <code>{fmt(d_tp)}</code>",
+        f"   (ឧ. បើចូល {fmt(P['entry'])} → SL <code>{fmt(P['stop'])}</code> · TP <code>{fmt(P['tp'])}</code> — តាម Binance)",
+        "",
+        f"💼 ទុន {BALANCE:,.0f} {CURRENCY} · ហ៊ានខាត {RISK_PCT:g}%",
+        f"   ដល់ SL ខាត ≈ <b>{loss:,.0f} {CURRENCY}</b> ({loss / BALANCE * 100:.1f}%) · ដល់ TP ចំណេញ ≈ <b>{gain:,.0f} {CURRENCY}</b>",
+    ]
+    if too_small:
+        lines.append(f"   ⚠️ lot តូចបំផុតគឺ {MIN_LOT} → ខាតលើស {RISK_PCT:g}% — ទុនតូចពេកសម្រាប់ trade នេះ")
+    lines += [
+        "",
+        f"💪 កម្លាំង {r['st']['ext']:.1f} ATR · សញ្ញាចាប់ផ្តើម {r['age_h']} ម៉ោងមុន",
+        f"📊 សាកល្បង 5 ឆ្នាំ: ត្រូវ {t['win'] * 100:.0f}% · {t['avg']:+.2f}%/ដង · ធ្លាប់ខាតជាប់គ្នា {t['streak']} ដង",
+        f"⏳ បើមិនដល់ SL/TP — បិទនៅ {until} (7 ថ្ងៃ) · ⚠️ ពិនិត្យ swap ពេលកាន់លើសមួយយប់",
+        "🔔 ខ្ញុំនឹងប្រាប់អ្នក ពេលដល់ SL, TP ឬ 7 ថ្ងៃ",
+    ]
+    return "\n".join(lines)
+
+
 def setup_message(r):
+    if MT5 and r["sym"] in MT5_MAP:
+        return mt5_message(r)
     P, side = plan(r), r["go"]
     t = r["tests"][side]["all"]
     head = "🟢 <b>LONG ⬆</b>" if side > 0 else "🔴 <b>SHORT ⬇</b>"
@@ -279,7 +370,7 @@ def follow_trade(sym, tr):
     """Did price reach Stop-loss or Take-profit since the alert? (15m candles; if both in one candle → count SL)."""
     raw = get_json(f"{API}?symbol={sym}&interval=15m&startTime={int(tr['at'] * 1000)}&limit=1000")
     side, hit = tr["side"], None
-    for k in _rows(raw):
+    for k in mt5_hours(sym, _rows(raw), 900):                    # gold: ignore PAXG moves while MT5 gold is closed
         if (k["low"] <= tr["stop"]) if side > 0 else (k["high"] >= tr["stop"]):
             hit = ("sl", tr["stop"], k["time"])
             break
@@ -297,17 +388,23 @@ def exit_message(sym, tr, hit):
     side = tr["side"]
     pct = side * (price / tr["entry"] - 1) * 100 - 2 * FEE * 100
     usd = tr.get("notional", 0) * pct / 100
+    if tr.get("lots"):                                           # MT5: profit in account currency from the lot size
+        usd = 0
+        acc = tr["lots"] * MT5_MAP.get(sym, {"contract": 0})["contract"] * VALUE_MULT * side * (price - tr["entry"])
     hours = (time.time() - tr["at"]) / 3600
-    name = f"{'Long' if side > 0 else 'Short'} <b>{label(sym)}</b>"
+    name = (f"{'Buy' if side > 0 else 'Sell'} {tr['lots']:.2f} lot" if tr.get("lots") else f"{'Long' if side > 0 else 'Short'}") + f" <b>{label(sym)}</b>"
     head = {"tp": "🎯 <b>ដល់ Take-profit!</b>", "sl": "🛑 <b>ដល់ Stop-loss</b>", "time": "⏱ <b>ដល់ 7 ថ្ងៃ — បិទ position ឥឡូវ</b>"}[kind]
     lines = [head, f"{name} · ចូល {fmt(tr['entry'])} → {fmt(price)}",
-             f"{'ចំណេញ' if pct >= 0 else 'ខាត'} <b>{pct:+.2f}%</b>" + (f" · ≈ <b>{'+' if usd >= 0 else '-'}${abs(usd):,.2f}</b>" if usd else "") + f" (ក្រោយថ្លៃសេវា · {hours:.0f} ម៉ោង)"]
+             f"{'ចំណេញ' if pct >= 0 else 'ខាត'} <b>{pct:+.2f}%</b>" + (f" · ≈ <b>{'+' if usd >= 0 else '-'}${abs(usd):,.2f}</b>" if usd else "")
+             + (f" · ≈ <b>{acc:+,.0f} {CURRENCY}</b>" if tr.get("lots") else "") + f" ({hours:.0f} ម៉ោង)"]
     if kind == "sl":
         lines.append("ខាតម្តងៗ ជាផ្នែកមួយនៃផែនការ (ត្រូវ ~45%) — កុំបង្កើនទំហំដើម្បីសងវិញ")
     elif kind == "tp":
-        lines.append("Binance បិទឱ្យដោយខ្លួនឯង បើអ្នកបានដាក់ TP · បើមិនទាន់ សូមបិទឥឡូវ")
+        lines.append("MT5 បិទឱ្យដោយខ្លួនឯង បើអ្នកបានដាក់ TP · បើមិនទាន់ សូមបិទឥឡូវ")
     else:
-        lines.append("ផែនការកាន់យូរបំផុត 7 ថ្ងៃ — បិទដោយដៃនៅលើ Binance")
+        lines.append("ផែនការកាន់យូរបំផុត 7 ថ្ងៃ — បិទ position ដោយដៃក្នុង MT5")
+    if tr.get("lots"):
+        lines.append("ℹ️ គណនាតាមតម្លៃ Binance — លទ្ធផលក្នុង MT5 អាចខុសបន្តិច (spread · swap)")
     return "\n".join(lines)
 
 
@@ -374,7 +471,7 @@ def tests_for(sym, st):
     hit = st["tests"].get(sym)
     if hit and time.time() - hit["at"] < 86400:
         return {1: hit["1"], -1: hit["-1"]}
-    hist = klines_range(sym, int((time.time() - YEARS * 365 * 86400 - 210 * STEP) * 1000))
+    hist = mt5_hours(sym, klines_range(sym, int((time.time() - YEARS * 365 * 86400 - 210 * STEP) * 1000)))
     if len(hist) < 600:
         raise RuntimeError("ទិន្នន័យតិចពេក")
     t = backtest(hist)
@@ -417,6 +514,9 @@ def main():
             del state["trades"][sym]
     # 2) announce new setups — one at a time per coin, like the 5-year test
     for r in results:
+        if r["go"] and MT5 and r["sym"] in GOLD and not gold_open():
+            print(f"{label(r['sym'])}: setup found but MT5 gold market is closed — will alert when it opens")
+            continue
         if r["go"] and r["sym"] not in state["trades"]:
             ok = send(setup_message(r))
             sent_ok &= ok
@@ -424,6 +524,8 @@ def main():
                 P = plan(r)
                 state["trades"][r["sym"]] = {"side": r["go"], "entry": P["entry"], "stop": P["stop"], "tp": P["tp"],
                                              "notional": round(P["notional"], 2), "at": int(time.time())}
+                if MT5 and r["sym"] in MT5_MAP:
+                    state["trades"][r["sym"]]["lots"] = mt5_lots(r["sym"], abs(P["entry"] - P["stop"]))[0]
                 new.append(r)
     save_state(state)
     if test_mode:

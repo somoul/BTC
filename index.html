@@ -993,7 +993,7 @@
     <div class="md-note" id="moodNote">ព័ត៌មានបរិបទផ្សារ — មិនមែនជាសញ្ញាទិញ/លក់ដែលបានសាកល្បងទេ</div>
   </section>
 
-  <section class="hrs" id="hrsCard">
+  <section class="hrs" id="hrsCard" hidden>
     <div class="hrs-now" id="hrsNow">
       <div class="hrs-clock num" id="hrsClock">--:--</div>
       <div class="hrs-state" id="hrsState">⏰ កំពុងរកម៉ោងល្អ…</div>
@@ -1054,6 +1054,7 @@
         <div class="v-headline" id="sHeadline"></div>
         <ol class="steps" id="sSteps"></ol>
         <div class="s-why" id="sWhy"></div>
+        <div class="s-why" style="color:var(--hold)">🟠 សាកល្បងហើយ៖ សញ្ញា 5 នាទីត្រូវតែ 46–48% ហើយខាតក្រោយថ្លៃសេវា — សម្រាប់មើលចលនាប៉ុណ្ណោះ។ ចូល trade តាម 🎯 4h ឬ ⚡ Futures (✅)។</div>
       </div>
     </section>
   </div>
@@ -1131,7 +1132,7 @@
         <tbody id="scanBody"><tr><td colspan="10" class="skeleton">កំពុងស្កេន…</td></tr></tbody>
       </table>
     </div>
-    <p class="fc-note" id="scanNote">តម្រៀប៖ សញ្ញាទិញថ្មីៗមុនគេ · "5 ឆ្នាំ Long/Short" = ចំណេញមធ្យមម្តងក្រោយថ្លៃសេវា · "Futures ✅" = មានសញ្ញា ហើយទិសនោះចំណេញក្នុងការសាកល្បង ពេលធ្វើតាមសញ្ញាទិញរបស់កាក់នោះ (បង្ហាញពេលអ្នកបានបើកកាក់នោះម្តង)។ ចុចលើជួរ ដើម្បីមើលកាក់នោះ។</p>
+    <p class="fc-note" id="scanNote">តម្រៀប៖ សញ្ញាទិញថ្មីៗមុនគេ · "5 ឆ្នាំ Long/Short" = ចំណេញមធ្យមម្តងក្រោយថ្លៃសេវា · "Futures ✅" = មានសញ្ញាខ្លាំង ហើយទិសនោះចំណេញក្នុងការសាកល្បង ពេលធ្វើតាមសញ្ញាទិញរបស់កាក់នោះ (បង្ហាញពេលអ្នកបានបើកកាក់នោះម្តង)។ ចុចលើជួរ ដើម្បីមើលកាក់នោះ។</p>
   </section>
   </div>
 
@@ -1221,7 +1222,7 @@
 
   <div class="page" data-page="forecast">
   <section class="card fc" id="fcCard">
-    <h2><span>📅 ការព្យាករណ៍ពេលខាងមុខ — ឡើង ឬចុះ?</span><span class="fc-upd num" id="fcUpd"></span></h2>
+    <h2><span>📅 តម្លៃអាចរំកិលដល់ណា? — ជួរតម្លៃពេលខាងមុខ (80%)</span><span class="fc-upd num" id="fcUpd"></span></h2>
     <div class="fc-grid">
       <div>
         <div class="fc-sub">ម៉ោងខាងមុខ</div>
@@ -1583,7 +1584,7 @@ async function pollSwing() {
 }
 
 async function loadSwingStats() {
-  const asked = symbol, key = "sw5y2:" + asked;
+  const asked = symbol, key = "sw5y3:" + asked;
   let hit = null;
   try { hit = JSON.parse(localStorage.getItem(key)); } catch (e) {}
   if (hit && Date.now() - hit.at < SW_TTL) { swingStats = hit.s; renderSwing(); drawEquity(); return; }
@@ -1662,7 +1663,8 @@ function renderSwing() {
     $("vStats").innerHTML =
       `📊 សាកល្បង ${yrs} ឆ្នាំលើ ${coinLabel()}: <b>${st.all.n}</b> ដង · ត្រូវ <b>${Math.round(st.all.win * 100)}%</b> · ` +
       `មធ្យមម្តង <b class="${c(st.all.avg)}">${p2(st.all.avg)}</b> ក្រោយថ្លៃសេវា · ` +
-      `ទិញតែប៉ុណ្ណោះ <b class="${c(st.buy.avg)}">${p2(st.buy.avg)}</b> (${st.buy.n} ដង) · ` +
+      (st.sbuy && st.sbuy.n ? `💪 ទិញតែពេលសញ្ញាខ្លាំង <b class="${c(st.sbuy.avg)}">${p2(st.sbuy.avg)}</b> (${st.sbuy.n} ដង · ថ្មី ${p2(st.sbuyOos.avg)}) · ` : "") +
+      `ទិញគ្រប់សញ្ញា <b class="${c(st.buy.avg)}">${p2(st.buy.avg)}</b> (${st.buy.n} ដង) · ` +
       `ទិន្នន័យថ្មីបំផុត 1/3 <b class="${c(st.oos.avg)}">${p2(st.oos.avg)}</b>` +
       (st.buy.avg < 0 ? `<br><span class="bad">សញ្ញានេះមិនដំណើរការល្អលើ ${coinLabel()} ទេ — ប្រើដោយប្រុងប្រយ័ត្ន</span>` : "");
   }
@@ -1718,7 +1720,8 @@ setInterval(renderAlerts, 5000);
 /* ---------------- 🔍 scanner ---------------- */
 let scanBusy = false, scanAt = 0;
 // a futures setup = a live 4h signal AND that side made money in the 5-year test
-const futOf = r => !r.w || !r.st ? null : r.w.action === "BUY" && r.st.buy.avg > 0 ? "LONG" : r.w.action === "SELL" && r.st.sell.avg > 0 ? "SHORT" : null;
+const futOf = r => !r.w || !r.st || !(r.w.str && r.w.str.strong) ? null      // only strong signals (weak ones fail most — research Oct 2026)
+  : r.w.action === "BUY" && (r.st.sbuy || r.st.buy).avg > 0 ? "LONG" : r.w.action === "SELL" && r.st.sell.avg > 0 ? "SHORT" : null;
 async function runScan(force = false) {
   if (scanBusy || (!force && Date.now() - scanAt < 5 * 60000)) return;
   scanBusy = true; $("scanRun").disabled = true;
@@ -1729,7 +1732,7 @@ async function runScan(force = false) {
     const got = await Promise.allSettled(list.map(sym => LT.swingNow(sym)));
     const rows = list.map((sym, i) => {
       const w = got[i].status === "fulfilled" ? got[i].value : null;
-      let st = null; try { const h = JSON.parse(localStorage.getItem("sw5y2:" + sym)); st = h && h.s; } catch (e) {}
+      let st = null; try { const h = JSON.parse(localStorage.getItem("sw5y3:" + sym)); st = h && h.s; } catch (e) {}
       return { sym, w, t: T[sym], st };
     });
     const rank = r => !r.w ? 9 : r.w.action === "BUY" ? (r.w.sinceBars <= 2 ? 0 : 1) : r.w.action === "WAIT" ? 2 : 3;
@@ -1771,11 +1774,11 @@ async function fillScanStats(list) {
   try {
     for (const sym of list) {
       let ok = false;
-      try { const h = JSON.parse(localStorage.getItem("sw5y2:" + sym)); ok = h && Date.now() - h.at < SW_TTL; } catch (e) {}
+      try { const h = JSON.parse(localStorage.getItem("sw5y3:" + sym)); ok = h && Date.now() - h.at < SW_TTL; } catch (e) {}
       if (ok) continue;
       try {
         const st = await LT.swingTest(sym);
-        try { localStorage.setItem("sw5y2:" + sym, JSON.stringify({ at: Date.now(), s: st })); } catch (e) {}
+        try { localStorage.setItem("sw5y3:" + sym, JSON.stringify({ at: Date.now(), s: st })); } catch (e) {}
         scanAt = 0; scanBusy = false; await runScan(true);
       } catch (e) {}
     }
@@ -1874,7 +1877,7 @@ function renderEntry() {
 
   // the next six 4h closes = the times worth checking
   const s5 = btCached(symbol, "5m"), hotH = new Set();
-  if (s5 && s5.s.hours) s5.s.hours.forEach(h => { if (h.cls === "good") hotH.add(h.h); });
+  // (best-hours highlighting removed: tested Oct 2026, "good hours" from the past did not stay good)
   const times = Array.from({ length: 6 }, (_, k) => new Date(next + k * H4)).sort((a, b) => a.getHours() - b.getHours());
   $("enTimes").innerHTML = times.map(d => {
     const isNext = d.getTime() === next, tomorrow = d.getDate() !== new Date().getDate();
@@ -1882,9 +1885,7 @@ function renderEntry() {
       <b>${t2(d)}</b><small>${isNext ? "បន្ទាប់" : tomorrow ? "ស្អែក" : "ថ្ងៃនេះ"}</small></div>`;
   }).join("");
   const goodTxt = [...hotH].sort((a, b) => a - b).map(h => `${h}:00`).join(", ");
-  $("en5m").innerHTML = goodTxt
-    ? `⚡ សម្រាប់ជួញដូរ 5 នាទី ម៉ោងដែលត្រូវច្រើនជាងគេ: <b>${goodTxt}</b> (ប៉ុន្តែនៅតែខាតក្រោយថ្លៃសេវា)`
-    : "";
+  $("en5m").innerHTML = "💡 ម៉ោងនៃថ្ងៃមិនមានឥទ្ធិពលពិតប្រាកដទេ (សាកល្បងហើយ) — អ្វីដែលសំខាន់គឺសញ្ញាខ្លាំង នៅពេល candle 4h បិទ";
 }
 setInterval(renderEntry, 1000);
 
@@ -2363,12 +2364,13 @@ const LT = (() => {
      stop = 3 × ATR(4h), target = 3 × the risk (9 × ATR), close after 42 candles (7 days) if neither hit. */
   const SW = { tf: "4h", stop: 3, tp: 3, hold: 42, years: 5 };
 
-  function simSwing(c, s, a, fee = 0.001) {
+  function simSwing(c, s, a, fee = 0.001, opt = {}) {
     const T = []; let busy = -1;
     for (let i = 210; i < c.length - 2; i++) {
       if (i <= busy || s[i] == null) continue;
       const side = s[i] >= 30 ? "BUY" : s[i] <= -30 ? "SELL" : null;
-      if (!side) continue;
+      if (!side || (opt.buyOnly && side !== "BUY")) continue;
+      if (opt.strong && !strength({ s, a }, i, side === "BUY" ? 1 : -1).strong) continue;
       const e = c[i + 1].open, risk = SW.stop * a[i].atr;
       if (!(risk > 0)) continue;
       const stop = side === "BUY" ? e - risk : e + risk, tp = side === "BUY" ? e + SW.tp * risk : e - SW.tp * risk;
@@ -2397,6 +2399,8 @@ const LT = (() => {
              buyHold: (c[c.length - 1].close / c[210].close - 1) * 100,
              start: c[210].time,
              curve: T.map(t => [t.tx, Math.round(t.net * 1000) / 1000, t.side === "BUY" ? 1 : 0]),
+             ...(() => { const B = simSwing(c, S.s, S.a, 0.001, { buyOnly: true, strong: true });     // spot + strong signals only
+               return { sbuy: st(B), sbuyOos: st(B.filter(t => t.t >= cut)), curveS: B.map(t => [t.tx, Math.round(t.net * 1000) / 1000, 1]) }; })(),
              daily: c.filter((x, i) => i >= 210 && (i - 210) % 6 === 0).map(x => [x.time, x.close]) };
   }
 
@@ -2650,11 +2654,7 @@ function renderHoursCard() {
   $("hrsClock").textContent = `${String(h).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
   // ⏰ badge in the 5-minute panel always uses the 5-minute test
   const s5 = btCached(symbol, "5m");
-  if (s5 && s5.s.hours) {
-    const c5 = s5.s.hours[h].cls;
-    $("sHour").className = "s-hour " + c5;
-    $("sHour").textContent = c5 === "good" ? "⏰ ម៉ោងល្អ" : c5 === "bad" ? "⏰ ម៉ោងគួរជៀស" : "⏰ ម៉ោងធម្មតា";
-  }
+  $("sHour").className = "s-hour"; $("sHour").textContent = "🟠 សម្រាប់មើលប៉ុណ្ណោះ";
   if (!S) return;
   const pc = x => x == null ? "–" : Math.round(x * 100) + "%";
   $("hrsSub").textContent = `${coinLabel()} · សញ្ញា ${BT_CFG[btTf].label} · ${BT_CFG[btTf].days} ថ្ងៃ · ${S.n} ដង · សរុបត្រូវ ${Math.round(S.win * 100)}%`;
@@ -2691,8 +2691,10 @@ $("btRun").addEventListener("click", () => runBacktest(true));
 /* ---------------- forecast panel ---------------- */
 const WD = ["អាទិត្យ", "ច័ន្ទ", "អង្គារ", "ពុធ", "ព្រហ", "សុក្រ", "សៅរ៍"];
 const HKEY = { "15m": "15 នាទី", "30m": "30 នាទី", "1h": "1 ម៉ោង", "2h": "2 ម៉ោង", "4h": "4 ម៉ោង", "12h": "12 ម៉ោង", "1d": "1 ថ្ងៃ" };
-const dirOf = p => p >= 0.58 ? "UP" : p <= 0.42 ? "DOWN" : "FLAT";
-const DIR_KM = { UP: "📈 ឡើង", DOWN: "📉 ចុះ", FLAT: "➖ 50/50" };
+// tested Oct 2026 (6 coins, walk-forward): "up/down" calls were right 47–54% of the time = a coin flip,
+// while the 80% price ranges held 79–83% of the time → show ranges, never a direction
+const dirOf = p => "FLAT";
+const DIR_KM = { UP: "📈 ឡើង", DOWN: "📉 ចុះ", FLAT: "↕ ជួរ" };
 const hhmm = t => { const d = new Date(t); return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; };
 let fcBusy = false;
 // compact price for the small calendar cells: 80,541 → 80.5k
@@ -2720,9 +2722,9 @@ function renderForecast(f) {
     return `<div class="fc-row" title="ផ្អែកលើ ${r.samples} ករណីពីមុន (${r.tf})">
       <div class="fc-when"><b>${hhmm(r.at)}</b><small>+${HKEY[r.key]}</small></div>
       <div class="fc-dir ${d}">${DIR_KM[d]}</div>
-      <div class="fc-prob"><div class="bar"><i style="width:${r.pUp * 100}%"></i></div>
-        <small><span>ឡើង ${pctTxt(r.pUp)}</span><span>ចុះ ${pctTxt(1 - r.pUp)}</span></small></div>
-      <div class="fc-px"><b>${fmt(r.price, 0)}</b><small>${fmt(r.low, 0)} – ${fmt(r.high, 0).slice(1)}</small></div>
+      <div class="fc-prob"><b class="c-HOLD">±${(Math.max(r.high - r.price, r.price - r.low) / r.price * 100).toFixed(2)}%</b>
+        <small><span>ចលនាធម្មតា (80%)</span></small></div>
+      <div class="fc-px"><b>${fmt(r.low)} – ${fmt(r.high).slice(1)}</b><small>កណ្តាល ${fmt(r.price)}</small></div>
     </div>`;
   }).join("");
   $("fcDays").innerHTML = f.days.map(r => {
@@ -2730,8 +2732,8 @@ function renderForecast(f) {
     const ar = d === "UP" ? "▲" : d === "DOWN" ? "▼" : "◆";
     return `<div class="fc-day ${d}" title="ចន្លោះទំនង: ${fmt(r.low, 0)} – ${fmt(r.high, 0)} · ${r.samples} ករណី">
       <span class="wd">${WD[dt.getDay()]}</span><span class="dt">${dt.getDate()}</span>
-      <span class="ar fc-dir ${d}">${ar}</span><span class="pc">ឡើង ${pctTxt(r.pUp)}</span>
-      <span class="pp">${shortPx(r.price)}</span></div>`;
+      <span class="ar fc-dir ${d}">↕</span><span class="pc">±${(Math.max(r.high - r.price, r.price - r.low) / r.price * 100).toFixed(1)}%</span>
+      <span class="pp">${shortPx(r.high)}</span><span class="pp">${shortPx(r.low)}</span></div>`;
   }).join("");
   $("fcUpd").textContent = "គណនា " + hhmm(Date.now());
   const b = f.hours[0] || f.days[0];
@@ -2739,7 +2741,8 @@ function renderForecast(f) {
   $("fcNote").innerHTML =
     `របៀបគណនា៖ ក្នុង 1000 candle ចុងក្រោយ យកតែពេលដែលសញ្ញាដូចពេលនេះ (<b>${bucketKm}</b>) ហើយរាប់ថាក្រោយមកតម្លៃឡើងប៉ុន្មានដង។ ` +
     `តម្លៃធំ = តម្លៃមធ្យមដែលធ្លាប់កើតឡើង · លេខតូច = ចន្លោះដែលកើតឡើង 80% នៃពេល។ ` +
-    `<b>ឡើង/ចុះ</b> បង្ហាញតែពេលឱកាសលើស 58% ប៉ុណ្ណោះ — 50/50 មានន័យថាគ្មាននរណាដឹង។ កាន់តែឆ្ងាយ កាន់តែមិនច្បាស់។ នេះជាស្ថិតិពីអតីតកាល មិនមែនជាការធានាទេ។`;
+    `<br>🔬 <b>សាកល្បងលើ 6 កាក់</b>: ការទាយ <b>ឡើង/ចុះ</b> ត្រូវតែ 47–54% (ស្មើនឹងបោះកាក់) — ដូច្នេះខ្ញុំលែងបង្ហាញទិសដៅទៀតហើយ។ ` +
+    `ប៉ុន្តែ <b>ជួរតម្លៃ</b> (លេខធំ) ត្រូវ 79–83% នៃពេល — ប្រើវាដើម្បីដាក់ Stop ឱ្យឆ្ងាយជាងជួរ ឬដឹងថាតម្លៃអាចរំកិលប៉ុន្មាន។ កាន់តែឆ្ងាយ ជួរកាន់តែធំ។`;
 }
 setInterval(pollForecast, 60000);
 
@@ -3094,7 +3097,7 @@ checkVersion();
 setInterval(checkVersion, 15000);
 
 /* ---------------- 📈 equity curve of the 4h signal ---------------- */
-let eqChart = null, eqLine = null, eqHold = null;
+let eqChart = null, eqLine = null, eqHold = null, eqOld = null;
 function drawEquity() {
   const st = swingStats;
   if (!document.querySelector('.page[data-page="test"]').classList.contains("on")) return;   // draw when visible
@@ -3109,16 +3112,18 @@ function drawEquity() {
       crosshair: { mode: 0 }, autoSize: true,
     });
     eqHold = eqChart.addLineSeries({ color: "#8a94a3", lineWidth: 1.5, priceLineVisible: false });
+    eqOld = eqChart.addLineSeries({ color: "rgba(46,204,143,.35)", lineWidth: 1.5, lineStyle: 2, priceLineVisible: false });
     eqLine = eqChart.addLineSeries({ color: "#2ecc8f", lineWidth: 2.5, priceLineVisible: false });
   }
   // compounding: the whole $1,000 goes into each trade (fees included)
-  let eq = 1000, peak = 1000, dd = 0;
-  const pts = [{ time: st.start, value: 1000 }];
-  for (const [t, net, isBuy] of st.curve) {
-    if (!isBuy) continue;                       // Spot: on a SELL signal you just hold cash
-    eq *= 1 + net / 100; peak = Math.max(peak, eq); dd = Math.min(dd, eq / peak - 1);
-    if (t > pts[pts.length - 1].time) pts.push({ time: t, value: Math.round(eq * 100) / 100 });
-  }
+  const run = curve => { let eq = 1000, peak = 1000, dd = 0; const pts = [{ time: st.start, value: 1000 }];
+    for (const [t, net, isBuy] of curve) { if (!isBuy) continue;      // Spot: on a SELL signal you just hold cash
+      eq *= 1 + net / 100; peak = Math.max(peak, eq); dd = Math.min(dd, eq / peak - 1);
+      if (t > pts[pts.length - 1].time) pts.push({ time: t, value: Math.round(eq * 100) / 100 }); }
+    return { eq, dd, pts }; };
+  const strong = run(st.curveS || st.curve), old = run(st.curve);
+  let { eq, dd, pts } = strong;
+  eqOld.setData(st.curveS ? old.pts : []);
   const p0 = st.daily[0][1];
   const hold = st.daily.map(([t, c]) => ({ time: t, value: Math.round(1000 * c / p0 * 100) / 100 }));
   let hpeak = 0, hdd = 0; hold.forEach(x => { hpeak = Math.max(hpeak, x.value); hdd = Math.min(hdd, x.value / hpeak - 1); });
@@ -3126,13 +3131,13 @@ function drawEquity() {
   const holdEnd = hold[hold.length - 1].value;
   const u = x => "$" + Math.round(x).toLocaleString("en-US");
   $("eqTiles").innerHTML = `
-    <div><small>ធ្វើតាមសញ្ញា 🎯</small><b class="${eq >= 1000 ? "c-BUY" : "c-SELL"}">${u(eq)}</b></div>
+    <div><small>ធ្វើតាមសញ្ញាខ្លាំង 💪</small><b class="${eq >= 1000 ? "c-BUY" : "c-SELL"}">${u(eq)}</b>${st.curveS ? `<small>គ្រប់សញ្ញា ${u(old.eq)}</small>` : ""}</div>
     <div><small>ទិញទុកមិនលក់</small><b class="${holdEnd >= 1000 ? "c-BUY" : "c-SELL"}">${u(holdEnd)}</b></div>
     <div><small>ធ្លាក់ខ្លាំងបំផុត (សញ្ញា)</small><b class="c-SELL">${(dd * 100).toFixed(0)}%</b></div>
     <div><small>ធ្លាក់ខ្លាំងបំផុត (ទិញទុក)</small><b class="c-SELL">${(hdd * 100).toFixed(0)}%</b></div>`;
   const yrs = ((st.to - st.start) / 31536000).toFixed(1);
   $("eqNote").innerHTML = `${coinLabel()} · ${yrs} ឆ្នាំ · ${st.all.n} trade (ទិញ ${st.buy.n} · លក់/short ${st.sell.n}) · ត្រូវ ${Math.round(st.all.win * 100)}%។ ` +
-    `ខ្សែពណ៌បៃតង៖ ទិញពេលសញ្ញាទិញ ដាក់លុយទាំងអស់ ហើយលក់ពេលដល់គោលដៅ Stop ឬ 7 ថ្ងៃ។ ពេលសញ្ញាលក់ ទុកលុយជាសាច់ប្រាក់ (Spot)។ ` +
+    `ខ្សែពណ៌បៃតង៖ ទិញតែពេលសញ្ញាទិញ<b>ខ្លាំង</b> (> 2 ATR លើ EMA20) · ខ្សែដាច់ៗ៖ ទិញគ្រប់សញ្ញា (ច្បាប់ចាស់) · ដាក់លុយទាំងអស់ ហើយលក់ពេលដល់គោលដៅ Stop ឬ 7 ថ្ងៃ។ ពេលសញ្ញាលក់ ទុកលុយជាសាច់ប្រាក់ (Spot)។ ` +
     `"ធ្លាក់ខ្លាំងបំផុត" = ពេលដែលលុយធ្លាក់ពីកំពូលខ្លាំងបំផុត — ត្រូវត្រៀមចិត្តទ្រាំ។ អតីតកាលមិនធានាអនាគតទេ។`;
 }
 

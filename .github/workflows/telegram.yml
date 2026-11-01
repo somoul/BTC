@@ -40,6 +40,13 @@ jobs:
           CAPITAL: ${{ vars.CAPITAL }}
           RISK_PCT: ${{ vars.RISK_PCT }}
           LEVERAGE: ${{ vars.LEVERAGE }}
+          MT5: ${{ vars.MT5 }}
+          MT5_SYMBOLS: ${{ vars.MT5_SYMBOLS }}
+          BALANCE: ${{ vars.BALANCE }}
+          CURRENCY: ${{ vars.CURRENCY }}
+          VALUE_MULT: ${{ vars.VALUE_MULT }}
+          MIN_LOT: ${{ vars.MIN_LOT }}
+          LOT_STEP: ${{ vars.LOT_STEP }}
         run: python telegram_alert.py ${{ github.event_name == 'workflow_dispatch' && inputs.test && '--test' || '' }}
       - uses: actions/cache/save@v4
         if: always() && hashFiles('alert_state.json') != ''
